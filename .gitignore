@@ -4,4 +4,6 @@
 !dummy.md
 !.gitignore
 !*/
+!file
+!file2
 

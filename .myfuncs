@@ -1,0 +1,9 @@
+#
+# gcc compilation aliases, c89, c99, debug mod, release mode
+alias gd='gcc -ansi -pedantic-erros -Wall -Wextra -g'
+alias gc='gcc -ansi -pedantic-erros -Wall -Wextra -DNDEBUG -03'
+alias gd9='gcc -std=c99 -pedantic-erros -Wall -Wextra -9'
+alias gc9='gcc -std=c99 -pedantic-erros -Wall -Wextra -DNDEBUG -03'
+#
+#Valgrind alias
+alias vlg='valgrind --leak-check=yes --track-origins=yes'

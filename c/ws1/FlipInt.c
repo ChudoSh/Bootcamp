@@ -1,15 +1,15 @@
 #include <stdio.h>
 
-int flipint(int n);
+int FlipInt(int n);
 
 void main()
 {
 
-	printf("%d\n", flipint(-3456));
+	printf("%d\n", FlipInt(-3456));
 	
 }
 
-int flipint(int n)
+int FlipInt(int n)
 {
 	int flag = 0;
 	int result = 0;

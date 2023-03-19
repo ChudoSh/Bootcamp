@@ -18,6 +18,7 @@ void main()
 
 void SwapSize_t(size_t *p, size_t *q)
 {
+	assert(p != 0 || q != 0);
 	size_t flag = *p; 
 	*p = *q; 
 	*q = flag;		
@@ -26,6 +27,7 @@ void SwapSize_t(size_t *p, size_t *q)
 void SwapSize_t_Pointers(size_t **p, size_t **q)
 {
 	
+	assert(p != 0 || q != 0);
 	SwapSize_t(*p, *q);	
 }
 

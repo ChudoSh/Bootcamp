@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-char* CpArr(char *ArrToCopy, int SIZE);
+char *CpArr(char *ArrToCopy, int SIZE);
 
 void main()
 {	 
@@ -10,24 +10,25 @@ void main()
 	char Original[] = {'a','b','\0'};
 	char *p = Original;
 	char *Copy = CpArr(p, 3);
+	
 	printf("%s\n", Copy);
 	free(Copy);
+	
 	Copy == NULL; 
 	
 }
 
 
-char* CpArr(char *ArrToCopy, int SIZE) /*The function returns a char type pointer and receives*/ 
-				       /*a pointer to a char array and its size*/				
+char *CpArr(char *ArrToCopy, int SIZE) 	
 {	 
-	char *p = (char*)malloc(SIZE * sizeof(int)); /*Allocating the memory of the array */
-						    /*to the pointer*/
-	assert(ArrToCopy != 0);					 
+	char *p = (char*)malloc(SIZE * sizeof(int)); 
+	int i = 0;
+						   
+	assert(0 != ArrToCopy);					 
 						 
-	int i; /*Defining the index for the loop*/
 	
 
-	for(i = 0; i < SIZE; i++) /*Looping over the array and assinging the address to the pointer*/
+	for(i = 0; i < SIZE; ++i) 
 	{
 		p[i] = ArrToCopy[i]; 
 		

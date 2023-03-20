@@ -1,7 +1,10 @@
 #Ignore_everything
-*
+*.md
+*.out
+
 #exception_rule
 !dummy.md
 !.gitignore
+!test.*
 !*/
 

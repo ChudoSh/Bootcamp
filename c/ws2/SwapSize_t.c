@@ -29,7 +29,7 @@ void SwapSize_t_Pointers(size_t **p, size_t **q)
 {
 	
 	assert(p != 0 || q != 0);
-	SwapSize_t(*p, *q);	
+	SwapSize_t((size_t*)p, (size_t*)q);	
 }
 
 

@@ -1,11 +1,24 @@
 #include <stdio.h>
+/*
+Dev: BarSh
+Rev: EtaiSH
+Status: Tested By Alon
+Date: 19.3.23
+*/
+
+
 
 int FlipInt(int n);
 
-void main()
+int main()
 {
 
-	printf("%d\n", FlipInt(-3456));
+	if( 1234 == FlipInt(4321))
+	{
+		printf("Success!\n");
+	}
+	
+	return 0; 
 	
 }
 
@@ -22,9 +35,9 @@ int FlipInt(int n)
 		
 	while(n > 9)
 	{
-		result = result*10 + n%10;
-		n = n/10;		
+		result = result * 10 + n % 10;
+		n = n / 10;		
 	}
 	
-	return flag ? -(result*10 + n) : result*10 +n; 
+	return flag ? -(result * 10 + n) : result * 10 + n; 
 }

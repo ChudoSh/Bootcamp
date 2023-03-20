@@ -15,13 +15,13 @@ double Pow(int n)
 
 	if(n < 0)
 	{
-		n=-n;
+		n = -n;
 		base = 0.1;
 	}
 
-	for(int i = 0;i < n; i++)
+	for(int i = 0; i < n; ++i)
 	{
-		result *= base ;
+		result *= base;
 	}
 	
 		return result;

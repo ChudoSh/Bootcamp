@@ -1,3 +1,10 @@
+/* 
+Dev: BarSH
+Rev: TalG
+Staus: Reviewed
+Date of latest update: 23.2.23
+*/
+
 #include <assert.h>/*assert()*/
 #include <stddef.h>/*size_t*/
 #include <stdlib.h>/*malloc()*/
@@ -92,7 +99,7 @@ int StrNCmp(const char *str1, const char *str2, size_t num_to_compare)
 int StrCaseCmp(const char *str1, const char *str2)
 {
 	
-	assert(str1 != 0 || str2 != 0);
+	assert(str1 != 0 && str2 != 0);
 	
 	while(toupper(*str1) == toupper(*str2))
 	{

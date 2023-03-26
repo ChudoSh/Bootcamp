@@ -1,41 +1,50 @@
-
-
+/*
+Dev:BarSH
+Rev:AlonL
+Date:26.3.23
+Status:Approved
+*/
 
 
 #include <stdio.h>/*prinf*/
-#include <assert.h>/*asert*/
-#include <stdlib.h> /*abort*/
 
-#define ESC 27
+#define ESC 27/*We must use define*/
+#define Key1 'A'
+#define Key2 'T'
 
-void PressAT(char *c)
-{
+void PressAT() /*We dont need to receive anything in this function*/
+{  
 	
-	assert(NULL != c);
-
-	scanf("%c",c);
-	
-	if('A' == *c)
+	while(1)
 	{
-		printf("A-Pressed\n");
-	}
-	else if('T' == *c)
-	{
-		printf("T-Pressed\n");
-	}	
-	else if(ESC == *c)
-	{
-		abort();
+		char input = '\0';
+		
+		input = getchar();
+		
+		if(Key1 == input)
+		{
+			printf("A-Pressed\n");
+		}
+		else if(Key2 == input)
+		{
+			printf("T-Pressed\n");
+		}	
+		else if(ESC == input)
+		{
+			break;
+		}
 	}
 }
 
 
 
-int main(int argc, char* argv[])
-{			
-		char str[1] = "";
+int main()
+{		
+	system("stty -icanon -echo"); 	
+	
+		PressAT();
 		
-		PressAT(str);
+		system("stty icanon echo"); 
 		
 		return 0; 			
 }

@@ -1,29 +1,42 @@
-#include <stdio.h>
-#include <assert.h>
-#include <stdlib.h>
+/*
+Dev:BarSH
+Rev:AlonL
+Date:26.3.23
+Status:Approved
+*/
 
-typedef void (*funcpt)();
+
+#include <stdio.h>/*printf*/
+#include <stdlib.h>/*system*/
+
+#define ESC 27
+#define KEY1 'A'
+#define KEY2 'T'
+#define STOP 0
+#define CONTINUE 1
+
+typedef int (*funcpt)();
 funcpt LUT[256];
 
-void PressA()
+static int PrintA()
 {
 	printf("A-Pressed\n");
-	
+	return CONTINUE;
 }
 
-void PressT()
+int PrintT()
 {
-	printf("T-Pressed\n");		
-	
+	printf("T-Pressed\n");	
+	return CONTINUE;	
 }
-void PressESC()
+static int PressESC()
 {
-	abort();		
+	return STOP;		
 }
 
-void PressNULL()
+static int DoNothing()
 {
-	
+	return CONTINUE;
 }
 
 void SetLut(funcpt LUT[])
@@ -32,24 +45,36 @@ void SetLut(funcpt LUT[])
 	
 	for(i = 0; i < 256; ++i)
 	{	
-	 	LUT[i] = PressNULL;
+	 	LUT[i] = DoNothing;
 	}
 		
-	LUT['A'] = PressA;
-	LUT['T'] = PressT;
-	LUT[27] = PressESC;
+	LUT[KEY1] = PrintA;
+	LUT[KEY2] = PrintT;
+	LUT[ESC] = PressESC;
 		
 }
 
 int main(int argc, char* argv[])
-{			
+{		
 		
-		int c = 0;
-		
+		system("stty -icanon -echo"); 	
 		SetLut(LUT);
-			
-	 	scanf("%c\n", &c);
-	 	LUT[c]();
+		  
+		while(1)
+		{
+				
+			char input = '\0';
+			input = getchar();
+	 	
+	 		if(STOP == LUT[input]())
+	 		{
+	 			break;
+	 		}
+		
+		}
+		system("stty icanon echo"); 
+		
+		
 	
 		return 0; 			
 }

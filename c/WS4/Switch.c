@@ -1,36 +1,55 @@
-#include <stdio.h>
-#include <assert.h>
-#include <stdlib.h>
+/*
+Dev:BarSH
+Rev:AlonL
+Date:26.3.23
+Status:Approved
+*/
+
+
+
+#include <stdio.h>/*printf*/
+#include <stdlib.h>/*system*/
 
 
 #define ESC 27
+#define Key1 'A'
+#define Key2 'T'
+#define STOP 0
+#define CONTINUE 1
 
-void PressAT(char *c)
+static void PrintPressed(char c)
 {
-	
-	assert(NULL != c);
+	printf("%c Pressed\n", c);
+}
+static int PressAT()
+{
+	char input = '\0';
 
-	scanf("%c",c);
-	switch (*c)
+	input = getchar();
+	
+	while(1)
 	{
-		case 'A':
-			printf("A-Pressed\n");
-			break;
-		case 'T':
-			printf("T-Pressed\n");
-			break;
-		case ESC:
-			abort();
+		switch (input)
+		{
+			case Key1:
+			case Key2:
+				PrintPressed(input);
+				return CONTINUE;
+			case ESC:
+				return STOP;
+		}
 	}
 }
 
 
 
 int main(int argc, char* argv[])
-{			
-		char str[1] = "";
+{		
+		system("stty -icanon -echo");
+		 	
+		PressAT();
 		
-		PressAT(str);
+		system("stty icanon echo"); 
 		
 		return 0; 			
 }

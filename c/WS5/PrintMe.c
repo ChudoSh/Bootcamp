@@ -21,14 +21,10 @@ int main()
 	{
 		printing[i].input = i;
 		printing[i].output = Print; 
+		printing[i].output(printing[i].input); 
 		
 	}
-	for (i = 0; i < 10; ++i)
-	{
-		printing[i].output(printing[i].input); 
-	}
 	
-
 	return 0;
 }
 

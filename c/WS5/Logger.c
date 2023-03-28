@@ -1,20 +1,26 @@
-#include<stdio.h>
-#include<string.h>
+/**********
+Dev: BarSH
+Rev: DanielHA
+Date: 28.3.23
+Status: Approved
+***********/
+
+#include<stdio.h> /*printf*/	
+#include<string.h> /*strncmp*/
 
 #define CORS 5
 #define SIZE 500
 #define APPEND ""
-#define RMVE "-remove"
-#define COUT "-count"
-#define EXIT "-exit"
+#define RMVE "-remove\n"
+#define COUT "-count\n"
+#define EXIT "-exit\n"
 #define STRT "<"
 #define UNUSED(x) (void)(x)
-#define CHECKFILE (file_name)(if(NULL!=file_name){return FAIL;})
 	
 
 typedef enum FILE_RESULT{
+	FAIL = -1,
 	SUCCESS = 0,
-	FAIL,
 	REMOVED,
 	TERMINATED
 }FILE_RESULT;
@@ -54,12 +60,10 @@ int main(int argc, char *argv[])
         perror("No file entered.\n");
         return FAIL;
     }
-    else
-    {
-        return Logger(argv[1]);
-    }
+    
+    return Logger(argv[1]);
+    
 	
-	return SUCCESS; 
 }
 /*******************/
 
@@ -89,14 +93,14 @@ FILE_RESULT Cmp(char *str, char *flag)
 	if(NULL == str)
 	{
 		return FAIL;
-		
-	}
-	if(0 == strncmp(str, flag, strlen(flag)))
-	{
-		return SUCCESS;
 	}
 	
-	return FAIL; 
+	if(SUCCESS != strcmp(str, flag))
+	{
+		return FAIL;
+	}
+	
+	return SUCCESS; 
 	
 }
 
@@ -115,6 +119,7 @@ FILE_RESULT OptRmve(char *file_name, char *str)
 		perror("Error with removing the file.\n");
 		return	FAIL;
 	}
+	
 	printf("File was removed from directory.\n");
 	
 	return REMOVED;	
@@ -123,23 +128,22 @@ FILE_RESULT OptRmve(char *file_name, char *str)
 FILE_RESULT OptCout(char *file_name, char *str)
 {
 	char c = '\0'; 
-	int i  = 0; 
+	size_t i  = 0; 
 	
 	FILE *fp = fopen(file_name, "r");
 	UNUSED(str);
 	
-	c = getc(fp);
-	
 	while(EOF != c)
 	{
+		c = getc(fp);
+		
 		if('\n' == c)
 		{
 			++i;
-		}
-		c = getc(fp);	
+		}	
 	}
 	
-	printf("The number of lines is %d", i);
+	printf("The number of lines is %lu", i);
 	
 	if(SUCCESS != fclose(fp))
 	{
@@ -159,6 +163,7 @@ FILE_RESULT OptExit(char *file_name, char *str)
 	
 	return TERMINATED;	
 }
+
 FILE_RESULT CmpToStrt(char *str, char *flag)
 {
 	if(NULL == str)
@@ -170,8 +175,8 @@ FILE_RESULT CmpToStrt(char *str, char *flag)
 		return SUCCESS;
 	}
 	return FAIL; 
-	
 }
+
 FILE_RESULT OptToStrt(char *file_name, char *str)
 {	 
 	FILE *fp_original;
@@ -179,32 +184,29 @@ FILE_RESULT OptToStrt(char *file_name, char *str)
 	char c = '\0';
 	const char *dummy = NULL;
 	
-	if(0 != rename(file_name,"temp"))
+	if(SUCCESS != rename(file_name,"temp"))
 	{
 		return FAIL;
 	}
 	
 	fp_original = fopen(file_name, "a+");
-	fp_copy = fopen("temp","r");
 
 	if (NULL == fp_original)
 	{
-	  
 		perror("Invalid file.\n");
-		  
 		return FAIL;
 	}
+	
+	fp_copy = fopen("temp","r");
 	
 	if (NULL == fp_copy)
 	{
-		fclose(fp_original);
-		  
+		fclose(fp_original);  
 		perror("Invalid file.\n");
-		  
 		return FAIL;
 	}
 	
-	dummy = ++str; 
+	dummy = str + 1; /*Removed the small sign*/
 	
 	while (*dummy != '\0')
 	{
@@ -217,18 +219,24 @@ FILE_RESULT OptToStrt(char *file_name, char *str)
 	while (c != EOF)
 	{
 		fputc(c, fp_original);
-		  
 		c = fgetc(fp_copy);
 	}
 	
-	remove("temp");
 	
-	if(0 != fclose(fp_original))
+	if(SUCCESS != remove("temp"))
+	{
+		fclose(fp_original);
+		fclose(fp_copy);
+		return FAIL;
+	}
+	
+	if(SUCCESS != fclose(fp_original))
 	{
 		fclose(fp_copy);
 		return FAIL;
 	}
-	if(0 != fclose(fp_copy))
+	
+	if(SUCCESS != fclose(fp_copy))
 	{
 		return FAIL;
 	}
@@ -237,6 +245,7 @@ FILE_RESULT OptToStrt(char *file_name, char *str)
 	
 	return SUCCESS;
 }
+
 FILE_RESULT Append(char *file_name, char* str)
 {	
 
@@ -265,6 +274,7 @@ FILE_RESULT Append(char *file_name, char* str)
 	
 	return SUCCESS;
 }
+
 FILE_RESULT DoNothing(char *file_name, char *str)
 {		
 	UNUSED(file_name);
@@ -274,8 +284,8 @@ FILE_RESULT DoNothing(char *file_name, char *str)
 
 FILE_RESULT Logger(char* file_name)
 {
-	char str[SIZE];
-	struct COR cor[CORS];
+	char str[SIZE] = {0};
+	COR cor[CORS] = {0};
 	int i = 0;
 	int termination = SUCCESS; 
 	
@@ -289,20 +299,20 @@ FILE_RESULT Logger(char* file_name)
 	
 	printf("Please enter a string to add to the file up to 500 characters.\nTo stop appending please enter '-exit'.\n");
 		
-		while(SUCCESS == termination)
+	while(SUCCESS == termination)
+	{
+		fgets(str, SIZE, stdin);
+		
+		for(i = 0; i < CORS; ++i)
 		{
-			fgets(str, SIZE, stdin);
-		
-			for(i = 0; i < CORS; ++i)
-			{
-				if(SUCCESS == cor[i].cmp(str, cor[i].flag))
-				{	
-					termination	= cor[i].opt(file_name, str);
-					break;
-				}
+			if(SUCCESS == cor[i].cmp(str, cor[i].flag))
+			{	
+				termination	= cor[i].opt(file_name, str);
+				break;
+			}
 				
-			}	
-		}
+		}	
+	}
 		
-	return SUCCESS;	
+	return (FAIL != termination) ? SUCCESS : FAIL;	
 }

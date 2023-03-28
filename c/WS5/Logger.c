@@ -69,23 +69,23 @@ int main(int argc, char *argv[])
 
 void InitCOR(struct COR *cor)
 {	
-		cor[0].flag = RMVE;
-		cor[1].flag = COUT;
-		cor[2].flag = EXIT;
-		cor[3].flag = STRT;
-		cor[4].flag = APPEND;
+	cor[0].flag = RMVE;
+	cor[1].flag = COUT;
+	cor[2].flag = EXIT;
+	cor[3].flag = STRT;
+	cor[4].flag = APPEND;
 		
-		cor[0].cmp = Cmp;
-		cor[1].cmp = Cmp;
-		cor[2].cmp = Cmp;
-		cor[3].cmp = CmpToStrt;
-		cor[4].cmp = DoNothing;
+	cor[0].cmp = Cmp;
+	cor[1].cmp = Cmp;
+	cor[2].cmp = Cmp;
+	cor[3].cmp = CmpToStrt;
+	cor[4].cmp = DoNothing;
 		
-		cor[0].opt = OptRmve;
-		cor[1].opt = OptCout;
-		cor[2].opt = OptExit;
-		cor[3].opt = OptToStrt;
-		cor[4].opt = Append;
+	cor[0].opt = OptRmve;
+	cor[1].opt = OptCout;
+	cor[2].opt = OptExit;
+	cor[3].opt = OptToStrt;
+	cor[4].opt = Append;
 }
 
 FILE_RESULT Cmp(char *str, char *flag)
@@ -106,7 +106,6 @@ FILE_RESULT Cmp(char *str, char *flag)
 
 FILE_RESULT OptRmve(char *file_name, char *str)
 {	
-
 	UNUSED(str);
 	
 	if(NULL == file_name)

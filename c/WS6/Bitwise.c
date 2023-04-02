@@ -1,3 +1,10 @@
+/*
+Dev:BarSH
+Rev:b ShlomiA
+Date: 2.4.23
+Status: Approved
+*/
+
 #include <stdio.h> /*printf*/	
 #include "Bitwise.h"
 
@@ -17,10 +24,10 @@ long Pow2(unsigned int x, unsigned int y)
 }
 /**/
 
-/*EXER 2 WITHOUT LOOP*/
+/*EXER 2 WITH LOOP*/
 unsigned int IsPow2_Lp(unsigned int n)
 {
-	unsigned int i = 1;
+	size_t i = 1;
 	
 	while(i <= SIZE_INT)
 	{
@@ -37,11 +44,11 @@ unsigned int IsPow2_Lp(unsigned int n)
 }
 /**/
 
-/*EXER 2 WITH LOOP*/
+/*EXER 2 WITHOUT LOOP*/
 unsigned int IsPow2_No_Lp(unsigned int n)
 {
 
-	if((n & (n-ONE)) == NONE)
+	if((n & (n - 1)))
 	{
 		return ONE;
 	}
@@ -55,7 +62,7 @@ unsigned int AddOne(unsigned int n)
 {	
 	int Add = 1; 
 
-	while(ONE == (n & Add))
+	while((n & Add))
 	{
 		n = n ^ Add;
 		Add = Add << 1;
@@ -67,11 +74,11 @@ unsigned int AddOne(unsigned int n)
 }	
 /**/
 
-/* EXER 4*/
-unsigned int CountThreeBit(unsigned int n)
+/* EXER 4 - ALSO USED IN EXER 9 WITH LOOP*/
+unsigned int CountBit(unsigned int n)
 {
 	int count = 0; 
-	int i = 0;
+	size_t i = 0;
 	
 	for(i = 0; i < SIZE_INT; ++i)
 	{
@@ -86,7 +93,7 @@ unsigned int CountThreeBit(unsigned int n)
 	
 }
  
-void ThreeBit(unsigned int *n, size_t size)
+void ThreeBit(unsigned int n[], size_t size)
 {
 	size_t i = 0;
 	
@@ -98,9 +105,9 @@ void ThreeBit(unsigned int *n, size_t size)
 	
 	while(i < size)
 	{
-		if(3 == CountThreeBit(*n))
+		if(3 == CountBit(*n))
 		{
-			printf("Index with exactly 3 bits is %u\n", *n);
+			printf("The number with exactly 3 bits is %u in the address %u\n",*n ,n[i]);
 		}
 		++i;
 		++n;
@@ -109,17 +116,17 @@ void ThreeBit(unsigned int *n, size_t size)
 /**/
 
 /*EXER 5 WITHLOOP*/
-unsigned int ByteMirror_LP(unsigned n)
+unsigned char ByteMirrors_LP(unsigned char n)
 {
     unsigned int output = 0;	
 	unsigned int temp = 0; 
-	int i = 0;
+	size_t i = 0;
 	
 	for(i = 0; i < SIZE_CHAR; ++i)
 	{
+		output = output << 1; 
 		temp = n & 1; 
 		output = output | temp;
-		output = output << 1; 
 		n = n >> 1;
 	}
 	
@@ -129,17 +136,17 @@ unsigned int ByteMirror_LP(unsigned n)
 /**/
 
 /*EXER 5 NO LOOP*/
-unsigned int ByteMirror_No_LP(unsigned n)
+unsigned char ByteMirrors_No_LP(unsigned char n)
 {
     static int LUT[SIZE_LUT] = {0};
-	int i = 0; 
-	static int flag = NONE;
+	size_t i = 0; 
+	static int flag = 0;
 	
 	if(NONE == flag)
 	{
 		for(i = 0; i < SIZE_LUT; ++i)
 		{
-			LUT[i] = ByteMirror_LP(i);
+			LUT[i] = ByteMirrors_LP(i);
 		}
 		
 	flag =  ONE; 
@@ -156,7 +163,7 @@ unsigned int ByteMirror_No_LP(unsigned n)
 unsigned int BothTwoSix(unsigned char n)
 {
 
-	return (((unsigned int)n & (1 << 1)) && ((unsigned int)n & (1 << 1)));
+	return ((n & TRUE34) == TRUE34);
 
 }
 
@@ -164,19 +171,22 @@ unsigned int BothTwoSix(unsigned char n)
 unsigned int EitherTwoSix(unsigned char n)
 {
 
-	return (((unsigned int)n & (1 << 1)) || ((unsigned int)n & (1 << 1)));
+	return ((n & (32)) || (n & (2)));
 
 }
 
 /*C*/
 unsigned int SwapThreeFive(unsigned char n)
 {	
-	unsigned int temp1 = 16; 
-	unsigned int temp2  = 4;
+	unsigned int temp1 = 0; 
+	unsigned int temp2  = 0;
 	
+	
+	temp1 = n & 16; 
+	temp2 = n & 4;
 	n = n & (~20);
-	n = n | temp1 >> 2;
-	n = n | temp2 << 2;
+	n = n | (temp1 >> 2);
+	n = n | (temp2 << 2);
 	
 	
 	return n; 	
@@ -187,7 +197,7 @@ unsigned int SwapThreeFive(unsigned char n)
 unsigned int HexaDec(unsigned char n)
 {
 
-	return ((unsigned int)n & 240);
+	return ((unsigned int)n & TRUE240);
 
 }
 /**/ 
@@ -195,46 +205,36 @@ unsigned int HexaDec(unsigned char n)
 /*EXER 8*/
 void SwapValues(unsigned int *p,unsigned int *q )
 {
-	/*This will work only when *p != *q, else will return 0;*/
+	if(*p == *q)
+	{
+		printf("The values are equal, nothing to swap.\n");
+	}	
 	
-	*p = *p ^ *q;
-	*q = *p ^ *q;
-	*p = *p ^ *q;
+	else
+	{
+		*p = *p ^ *q;
+		*q = *p ^ *q;
+		*p = *p ^ *q;
+	}
 }
 /**/
 
 /*EXER 9*/
 
-/*WITH LOOP*/
-unsigned int CountNumBits_LP(unsigned int n)
-{
-	unsigned int count = 0; 
-	int i = 0; 
+/*WITH LOOP - SEE EXER 4*/
 	
-	for(i = 0;i < SIZE_CHAR;++i)
-	{
-		if((n & 1) == 1)
-		{
-			++count;
-			n = n >> 1;
-		}
-	}
-	
-	return count; 
-	
-}	
 /*WITHOUT LOOP*/ 
 unsigned int CountNumBits_No_Lp(unsigned int n)
 {
-	static int LUT[SIZE_CHAR] = {0};
+	static int LUT[SIZE_LUT] = {0};
 	unsigned int i = 0;
 	static int flag = NONE;
-	
+
 	if(NONE == flag)
 	{
-		for(i = 0; i < SIZE_CHAR; ++i)
+		for(i = 0; i < SIZE_LUT; ++i)
 		{
-			LUT[i] = CountNumBits_LP(i);
+			LUT[i] = CountBit(i);
 		} 
 		
 		flag = ONE;
@@ -248,15 +248,15 @@ unsigned int CountNumBits_No_Lp(unsigned int n)
 /*EXER 10*/
 void BitFloat(float num)
 {
-    int i = NONE;
+    int i = 0;
     unsigned int *p = NULL;
     
     p = (unsigned int*)&num;
     
     for(i = 0;i < SIZE_INT; ++i)
    	{
-    	printf("%d", *p & ONE);
-    	*p = *p >> ONE;
+    	printf("%d", *p & 1);
+    	*p = *p >> 1;
     }
  
     printf("\n"); 

@@ -7,6 +7,8 @@
 
 static int AddInt(element_t *element, int num_to_add)
 {
+	assert(NULL != element);	
+	
 	*((int*)&(element->val)) += num_to_add;
 	
 	return TRUE;
@@ -14,6 +16,8 @@ static int AddInt(element_t *element, int num_to_add)
 
 static int AddFloat(element_t *element, int num_to_add)
 {
+	assert(NULL != element);
+	
 	*((float*)&(element->val)) += num_to_add;
 	
 	return TRUE;
@@ -44,27 +48,35 @@ static int AddString(element_t *element, int num_to_add)
 
 static void DoNothing(element_t *element)
 {	
+	assert(NULL != element);	
+	
 	UNUSED(element);
 }
 
 static void ClearStr(element_t *element)
-{	
+{
+	assert(NULL != element);
+		
 	free(element->val); 
 }
 
 static void PrintInt(element_t *element)
 {
+	assert(NULL != element);
+
 	printf("%d\n",*((int*)&(element->val)));
 }
 
 static void PrintFloat(element_t *element)
 {
+	assert(NULL != element);	
+	
 	printf("%f\n",*((float*)&(element->val)));
 }
 
 static void PrintStr(element_t *element)
 {
-	assert(NULL != arr);	
+	assert(NULL != element);	
 	
 	printf("%s\n",(char*)(element->val));
 }

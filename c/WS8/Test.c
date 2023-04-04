@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdio.h>/*printf*/
+#include <stdlib.h>/*malloc*/
+#include <string.h>/*strlen, strcat*/
 #include "Structs.h"
 
 #define MAX2(a, b) (a >= b ? a : b)
@@ -39,6 +39,8 @@ int main()
 	printf("The largest number between 1, 2 and 3 is %d\n", MAX3(1, 2, 3));
 	printf("The size of 3 is %lu\n", VAR_SIZE(x));
 	printf("The size of the struct Element is %lu\n", TYPE_SIZE(element_t));
+	
+	
 	
 	return 0;
 	

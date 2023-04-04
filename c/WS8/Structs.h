@@ -1,9 +1,14 @@
 #ifndef __STRUCTS_H__
 #define __STRUCTS_H__
 
-#define TRUE 1
-#define FAIL 0
 #define UNUSED(x) (void)(x)
+
+enum RESULTS
+{	
+	FAILMEMORY = -1,
+	FAIL = 0,
+	TRUE = 1	
+};
 
 typedef struct Element element_t;
 
@@ -56,7 +61,7 @@ arguments:
 	num 	 - number to be added.
 return: Returns 1 if it succeeded and 0 if it Failed.
 */
-void AddAll(element_t *arr, size_t size, int num);
+int AddAll(element_t *arr, size_t size, int num);
 
 /*
 Description: Frees all allocated memory used by Elements within the array.

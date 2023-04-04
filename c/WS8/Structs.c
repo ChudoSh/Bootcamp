@@ -1,6 +1,8 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdio.h>/*printf*/
+#include <stdlib.h>/*malloc*/
+#include <string.h>/*strlen, strcat*/
+#include <assert.h> /*assert*/
+
 #include "Structs.h"
 
 static int AddInt(element_t *element, int num_to_add)
@@ -20,14 +22,24 @@ static int AddFloat(element_t *element, int num_to_add)
 static int AddString(element_t *element, int num_to_add)
 {
 	char copy[12];
+	char *temp = NULL; 
+	
+	assert(NULL != element);
 
 	sprintf(copy, "%d", num_to_add);
 	
-	element->val = realloc(element->val, strlen(copy) + 1 + strlen(element->val));
+	temp = realloc(element->val, strlen(copy) + 1 + strlen(element->val));
 	
-	strcat((char*)element->val, copy);
+	if(NULL == temp)
+	{
+		return FAILMEMORY;
+	}	
 	
-	return (NULL == element->val) ? FAIL : TRUE;	
+	strcat((char*)temp, copy);
+	
+	element->val = temp;
+	
+	return TRUE;	
 }
 
 static void DoNothing(element_t *element)
@@ -52,12 +64,16 @@ static void PrintFloat(element_t *element)
 
 static void PrintStr(element_t *element)
 {
+	assert(NULL != arr);	
+	
 	printf("%s\n",(char*)(element->val));
 }
 
 
 int CreateInt(element_t *element, int num)
 {
+	assert(NULL != element);
+	
 	*((int*)&(element->val)) = num;
 	element->add = AddInt;
 	element->print = PrintInt;
@@ -68,6 +84,8 @@ int CreateInt(element_t *element, int num)
 
 int CreateFloat(element_t *element, float num)
 {
+	assert(NULL != element);
+	
 	*((float*)&(element->val)) = num;
 	element->add = AddFloat;
 	element->print = PrintFloat;
@@ -78,19 +96,30 @@ int CreateFloat(element_t *element, float num)
 
 int CreateString(element_t *element, char *str)
 {
+	assert(NULL != element);
+	
 	element->val = (char*)(malloc(strlen(str) + 1)); 
+	
+	if(NULL == element->val)
+	{
+		return FAILMEMORY;
+	} 
+	
 	strcpy(element->val, str);
 	
 	element->add = AddString;
 	element->print = PrintStr;
 	element->clean = ClearStr;
 	
-	return (NULL == element->val) ? FAIL : TRUE;
+	return TRUE;
 }
 
 
 void PrintAll(element_t *arr, size_t size)
 {
+	
+	assert(NULL != arr);	
+	
 	size_t i = 0; 
 	
 	for(i = 0; i < size; ++i)
@@ -99,26 +128,34 @@ void PrintAll(element_t *arr, size_t size)
 	}
 }
 
-void AddAll(element_t *arr, size_t size, int num_to_add)
+int AddAll(element_t *arr, size_t size, int num_to_add)
 {
+
+	assert(NULL != arr);
+	
 	size_t i = 0; 
 	
 	for(i = 0; i < size; ++i)
 	{
-		arr[i].add(&arr[i],num_to_add);
+		if(FAIL == arr[i].add(&arr[i],num_to_add))
+		{
+			return FAIL;
+		}
 	}
 	
+	return TRUE;	
 }
 
 void CleanUpAll(element_t *arr, size_t size)
 {
+	assert(NULL != arr);
+	
 	size_t i = 0; 
 	
 	for(i = 0; i < size; ++i)
 	{
 		arr[i].clean(&arr[i]);
-	}
-	
+	}	
 }
 
 

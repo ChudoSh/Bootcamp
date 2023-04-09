@@ -1,29 +1,59 @@
 #include <assert.h> /*assert*/
+#include <stddef.h>/*size*/
+#include <stdio.h>
+
 #include "WordOpt.h"
+
+static RESULT IsAligned(void *p)
+{    
+    assert(NULL != p);
+    
+    if(SUCCESS == ((size_t)p & (ALIGN - 1)))
+    {
+        return ALIGNED;
+    }
+    
+    return FAIL;   
+}
+
 
 void *Memset(void *str, int c, size_t n)
 {
     size_t i = 0;
-    void *start = NULL;
-    char *buffer = NULL;  
+    unsigned char *temp = NULL;
+    char buffer[ALIGN] = {0};  
     
     assert(NULL != str);
-    
-    IsAligned(str, 
-    
-    if(sizeof(*str) < sizeof(n))
+  
+    if(sizeof(str) <= n)/*check again if its an error*/
     {
-        return FAIL;
+        perror("Given n bigger than the size of the string");
     }
     
-    start = str;
-    
-    for(i = 0; i < n; ++i)
+    for(i = 0; i < ALIGN; ++i)
     {
-        str[i] = (char)c; 
+        buffer[i] = (unsigned char)(c);
     }
- 
     
-    return start;
- 
+    temp = str;
+    i = 0; 
+    
+    while(n)
+    {   
+        if(ALIGNED == IsAligned(str))
+        {  
+            *temp = (size_t)buffer;
+            n -= ALIGN;
+            *temp  += ALIGN;
+        }
+        
+        else if(FAIL == IsAligned(str))
+        {       
+            *temp = (unsigned char)c;
+            --n;
+            ++temp;
+        } 
+    }
+    
+    return str;
 }

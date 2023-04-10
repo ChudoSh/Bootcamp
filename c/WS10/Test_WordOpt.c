@@ -8,9 +8,9 @@
 
 int main()
 {
-    char test[10] = "BANANANANA";
-    
-    if(SUCCESS == memcmp(Memset(test,'5',2), memset(test,'5',2), 10))
+    char test1[100]= "aaaaaaaaaaaaaaaaaaaaaaa";
+    char test2[100]= "aaaaaaaaaaaaaaaaaaaaaaa";
+    /*if(SUCCESS == memcmp(Memset(test1 + 5,'5',16, memset(test2 + 5,'5',16), 16))
     {
         printf("Test 1 for Memset succeeded!!!\n");
     }
@@ -19,7 +19,7 @@ int main()
          printf("Test 1 for Memset failed..\n");
     }
     
-    if(SUCCESS == memcmp(Memset(test,'A',10), memset(test,'A',10), 10))
+    if(SUCCESS == memcmp(Memset(test2,'P',8), memset(test2,'P',8), 10))
     {
         printf("Test 2 for Memset succeeded!!!\n");
     }
@@ -27,8 +27,13 @@ int main()
     {  
          printf("Test 2 for Memset failed..\n");
     }
- 
-   
-    
+    */
+    Memset(test1,'5',16);
+   /*Memset(test1,'P',8);*/
+    memset(test2,'5',16);
+    /*memset(test2,'P',8);*/
+    printf("%s\n",test1);
+    printf("%s\n", test2);
+
     return 0;
 }

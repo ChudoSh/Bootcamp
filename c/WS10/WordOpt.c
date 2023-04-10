@@ -4,56 +4,80 @@
 
 #include "WordOpt.h"
 
+static void CopyByChar(unsigned char* str, int c, size_t *n)
+{
+    assert(NULL != str);
+    
+    *str = (unsigned char)c;
+    --*n;       
+}
+
+static void CopyByWords(unsigned char* str, unsigned char *buffer, size_t *n)
+{
+    assert(NULL != str || NULL != buffer); 
+     
+   *(size_t*)str = *(size_t*)buffer;
+    *n = *n - ALIGN;  
+}
+
 static RESULT IsAligned(void *p)
 {    
     assert(NULL != p);
     
-    if(SUCCESS == ((size_t)p & (ALIGN - 1)))
+    if(0 == ((size_t)p & (ALIGN - 1)))
     {
         return ALIGNED;
     }
-    
     return FAIL;   
 }
 
 
 void *Memset(void *str, int c, size_t n)
 {
-    size_t i = 0;
-    unsigned char *temp = NULL;
-    char buffer[ALIGN] = {0};  
+     assert(NULL != str);
+     
+     Memcpy(str, (void*)&c, n);
+     
+     return str;
+}  
+   
     
-    assert(NULL != str);
-  
-    if(sizeof(str) <= n)/*check again if its an error*/
-    {
-        perror("Given n bigger than the size of the string");
-    }
+void *Memcpy(void *dest, void *src, size_t n)
+{
+    size_t i = 0;
+    unsigned char *tempdest = NULL;
+    unsigned char buffer[ALIGN] = {0};  
+    
+    assert(NULL != dest || NULL != src);
+           
+    tempdest = dest;
     
     for(i = 0; i < ALIGN; ++i)
     {
-        buffer[i] = (unsigned char)(c);
+        buffer[i] = *((unsigned char*)src);       
     }
     
-    temp = str;
-    i = 0; 
-    
-    while(n)
+   
+    while(0 < n)
     {   
-        if(ALIGNED == IsAligned(str))
-        {  
-            *temp = (size_t)buffer;
-            n -= ALIGN;
-            *temp  += ALIGN;
+        switch(IsAligned(dest))
+        {
+            case(ALIGNED):
+                CopyByWords(tempdest, buffer,   &n);
+                tempdest += ALIGN;              
+                break;
+            
+            default:  
+                CopyByChar(tempdest, *((int*)src), &n);
+                ++tempdest;             
+                break;
         }
-        
-        else if(FAIL == IsAligned(str))
-        {       
-            *temp = (unsigned char)c;
-            --n;
-            ++temp;
-        } 
+       
     }
-    
-    return str;
+    return dest;
 }
+
+
+
+
+

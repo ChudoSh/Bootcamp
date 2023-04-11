@@ -8,7 +8,8 @@ typedef enum RESULT
 {
 	FAIL = -1,
 	SAVED = 0,
-	LOADED
+	LOADED = 1,
+	ELEM = 1
 }RESULT;
 
 
@@ -24,18 +25,18 @@ typedef struct HumaneGrades
 	float literature; 
 	float english;
 	float history;
-}humanes;
+}humane;
 
 typedef struct Grades
 {	
-	humanes humane; 
+	humane hum; 
 	reals real;
 	float sports;
-}gardes;
+}grades;
 
 typedef struct Student
 {
-	gardes grades; 
+	grades grades; 
 	char first_name[NAME_LEN];
 	char last_name[NAME_LEN];	
 }students;
@@ -44,19 +45,20 @@ typedef struct Student
 /*
 Description:Saves a student into a file .
 arguments:
-	*num 	 - A valid address of a Student.
-return: Returns 1 if it succeeded and 0 if it Failed.
+    *file_name 	 - A valid file name pointer.
+	*stu 	 - A valid address of a Student.
+return: Returns 1 if it succeeded and 0 if Failed.
 */
-RESULT SaveStudent(char *file_name,students *stu);
+RESULT SaveStudent(students *stu, FILE *fp);
 
 /*
 Description:Loads a student from a file into a new Student type.
 arguments:
-	*file name - A valid file name.		
-	*num 	 - A valid address of a Student.
-return: Returns 1 if it succeeded and 0 if it Failed.
+	*file name - A valid file name pointer.		
+	*stu 	 - A valid address of a Student.
+return: Returns 1 if it succeeded and 0 if Failed.
 */
-RESULT LoadStudent(char *file_name,students *stu);
+RESULT LoadStudent(students *stu, FILE *fp);
 
 #endif /*__SERIALIZATION_H__
 */

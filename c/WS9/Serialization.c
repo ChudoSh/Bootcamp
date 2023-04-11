@@ -5,49 +5,84 @@
 #include "Serialization.h"
 
 
-
-RESULT SaveStudent(char *file_name,students *stu)
-{	
-    FILE *fp = fopen(file_name,"wb");
-
-    assert(NULL != file_name || NULL != stu);
+static RESULT SaveReal(students *stu, FILE *fp)
+{  
+    fwrite(&(stu->grades.real.math), sizeof(float), ELEM, fp);
+    fwrite(&(stu->grades.real.physics), sizeof(float), ELEM, fp);
+    fwrite(&(stu->grades.real.computer_science), sizeof(float), ELEM, fp);
     
-    if(NULL == fp)
-    {
-        perror("File did not open properly");
-        return FAIL;   
-    }
-    
-    if(1 != fwrite(stu, sizeof(*stu), 1, fp))
-    {
-        perror("Did not save the file");
-        fclose(fp);
-        return FAIL; 
-    }
-   
-    return (EOF != fclose(fp)) ? SAVED : FAIL; 
+    return SAVED;
 }
 
-RESULT LoadStudent(char *file_name, students *stu)
-{	
-    FILE *fp = fopen(file_name,"rb");
+static RESULT LoadHumane(students *stu, FILE *fp)
+{
+    fread(&(stu->grades.hum.literature), sizeof(float), ELEM, fp);
+    fread(&(stu->grades.hum.english), sizeof(float), ELEM, fp);
+    fread(&(stu->grades.hum.history), sizeof(float), ELEM, fp);   
+    
+    return LOADED;                
+}
 
-    assert(NULL != file_name || NULL != stu);
+static RESULT LoadReal(students *stu, FILE *fp)
+{
+    fread(&(stu->grades.real.math), sizeof(float), ELEM, fp);
+    fread(&(stu->grades.real.physics), sizeof(float), ELEM, fp);
+    fread(&(stu->grades.real.computer_science), sizeof(float), ELEM, fp);
     
-    if(NULL == fp)
-    {
-        perror("File did not open properly");
-        return FAIL;   
-    }
+    return LOADED;
+}
+
+static RESULT SaveHumane(students *stu, FILE *fp)
+{
+    fwrite(&(stu->grades.hum.literature), sizeof(float), ELEM, fp);
+    fwrite(&(stu->grades.hum.english), sizeof(float), ELEM, fp);
+    fwrite(&(stu->grades.hum.history), sizeof(float), ELEM, fp); 
     
-    if(1 != fread(stu, sizeof(*stu), 1, fp))
-    {
-        perror("Did not load the file");
-        fclose(fp);
-        return FAIL; 
-    }
+    return SAVED; 
+}
+
+static RESULT SaveGrades(students *stu, FILE *fp)
+{
+    SaveHumane(stu, fp);
+    SaveReal(stu, fp);
     
-    return (EOF != fclose(fp)) ? LOADED : FAIL; 	
+    fwrite(&(stu->grades.sports), sizeof(float), ELEM, fp);
+    
+    return SAVED;
+}
+static RESULT LoadGrades(students *stu, FILE *fp)
+{
+    LoadHumane(stu, fp);
+    LoadReal(stu, fp);
+    
+    fread(&(stu->grades.sports), sizeof(float), ELEM, fp);
+    
+    return LOADED;
+}
+
+
+RESULT SaveStudent(students *stu ,FILE *fp)
+{	
+    assert(NULL != stu);
+    
+    fwrite(stu->first_name, sizeof(char), NAME_LEN, fp);
+	fwrite(stu->last_name, sizeof(char), NAME_LEN, fp);
+	
+    SaveGrades(stu, fp);
+  
+    return SAVED; 
+}
+
+RESULT LoadStudent(students *stu, FILE *fp)
+{	
+    assert(NULL != stu);
+    
+    fread(stu->first_name, sizeof(char), NAME_LEN, fp);
+	fread(stu->last_name, sizeof(char), NAME_LEN, fp);
+	
+    LoadGrades(stu, fp);
+    
+    return LOADED; 	
 }
 
 

@@ -6,7 +6,7 @@
 #include "WordOpt.h"
 static void InitBuffer(unsigned char* buffer, int c)
 {
-    int i = 0; 
+    size_t i = 0; 
     
     for(i = 0; i < WORD; ++i)
     {
@@ -33,7 +33,6 @@ static void CopyByWords(unsigned char* str, unsigned char *buffer, size_t *n)
 
 void *Memset(void *str, int c, size_t n)
 {
-    size_t i = 0; 
     unsigned char buffer[WORD];
     unsigned char* temp = NULL;
      
@@ -51,7 +50,7 @@ void *Memset(void *str, int c, size_t n)
             temp += WORD; 
         }
                                     
-        elses
+        else
         {  
             CopyByChar(temp, c, &n);
             ++temp;            

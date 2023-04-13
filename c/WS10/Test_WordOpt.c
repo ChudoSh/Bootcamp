@@ -1,3 +1,10 @@
+/*
+Dev: BarSh
+Rev: AmitaiB
+Status: Approved
+Date: 13.4.23
+*/
+
 #include <assert.h>/*assert*/
 #include <stdlib.h> /*exit*/ 
 #include <stdio.h> /*printf*/

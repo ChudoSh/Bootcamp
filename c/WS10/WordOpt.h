@@ -1,8 +1,7 @@
 #ifndef __WORDOPT_H__
 #define __WORDOPT_H__
 
-#define WORD sizeof(size_t)
-
+#define WORD (sizeof(size_t))
 #define IS_ALIGNED(p) ((size_t)p % WORD)
 
 
@@ -24,17 +23,17 @@ return: Returns the string if it succeeded.
 void *Memset(void *str, int c, size_t n);
 
 /*
-Description: Changes the string's n first characters into a given string.
+Description: Copies non-overlapping source pointer to a dest pointer (strings) by n characters.
 arguments:
-     *dest - A valid and aligned void pointer.
-     *src - ThA valid source void that the dest pointer needs to be copied to.
+     *dest - A valid void pointer.
+     *src - A valid source void pointer, not over lapping with the dest pointer.
 	*n 	 - The number of characters needs to be copied.
 return: Returns the string if it succeeded.
 */
 void *Memcpy(void *dest, void *src, size_t n);
 
 /*
-Description: Changes the string's n first characters into a given string.
+Description: Copies any source pointer to any dest pointer (strings) by n characters.
 arguments:
      *dest - A valid destination void pointer.
      *src - A valid source void pointer.

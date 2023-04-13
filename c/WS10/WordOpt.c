@@ -4,6 +4,15 @@
 #include <string.h>/*memset*/
 
 #include "WordOpt.h"
+static void InitBuffer(unsigned char* buffer, int c)
+{
+    int i = 0; 
+    
+    for(i = 0; i < WORD; ++i)
+    {
+        buffer[i] = (unsigned char)c; 
+    }
+}
 static void CopyByChar(unsigned char* str, int c, size_t *n)
 { 
     assert(NULL != str);
@@ -30,10 +39,7 @@ void *Memset(void *str, int c, size_t n)
      
     assert(NULL != str);
     
-    for(i = 0; i < WORD; ++i)
-    {
-        buffer[i] = (unsigned char)c; 
-    }
+    InitBuffer(buffer, c);
     
     temp = str;
     
@@ -45,7 +51,7 @@ void *Memset(void *str, int c, size_t n)
             temp += WORD; 
         }
                                     
-        else
+        elses
         {  
             CopyByChar(temp, c, &n);
             ++temp;            

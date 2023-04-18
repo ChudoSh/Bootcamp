@@ -6,7 +6,7 @@
 int main()
 {
 	char *str1 = "hello";
-	char str2[strlen(str1)];/*Cannot declare a string that way, C forbids defining an array size using a variable*/
+	/*char str2[strlen(str1)];*//*Cannot declare a string this way, C forbids defining an array size using a variable*/
 	char *str3 = (char*)malloc(strlen(str1) + 1);
 	/*Missing library for strlen, also here, C forbids defining an array size using a variable*/
 	
@@ -17,9 +17,9 @@ int main()
 		++str1;			
 	}
 	
-	/*strcpy(str2,str1);Missing library to use this function*/
+	/*strcpy(str2,str1);*//*Missing library to use this function*/
 	
-	if(islower(*str1))
+	if(islower(*str1))/*will not enter the if since the pointer points to the termination character*/ 
 	{
 		*str1 = toupper(*str1);
 	}

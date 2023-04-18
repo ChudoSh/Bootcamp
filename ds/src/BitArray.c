@@ -20,27 +20,30 @@ bitarr_t BitArrSetOff(bitarr_t arr, size_t pos)
 bitarr_t BitArrSet(bitarr_t arr, size_t pos, int bool_val)
 {	
 	assert(SIZE_ARR > pos);
-	return (TRUE == bool_val) ? BitArrSetOn(arr, pos) : BitArrSetOff(arr, pos);
+	assert(FALSE =< bool_val && TRUE >= bool_val);
+	
+	
+	return ((TRUE == bool_val) ? BitArrSetOn(arr, pos) : BitArrSetOff(arr, pos));
 	/*Given arr 2 and pos 2 :(0010 | ~(0001 << 1)) -> (0001 | (1101)) -> 0011*/	
 }
 
 size_t BitArrGetVal(bitarr_t arr, size_t pos)
 {
 	assert(SIZE_ARR > pos);
-	return arr & (TRUE << (pos - 1));
+	return (arr & (TRUE << (pos - 1)));
 	/*Given arr 1 and pos 2 :(0010 & (0001 << 1) -> (0001 & 0010) -> 0000*/
 }
 
 bitarr_t BitArrSetAll(bitarr_t arr)
 {
 	UNUSED(arr);
-	return ~((size_t)FALSE);
+	return (~((size_t)FALSE));
 	/*Sets 0 as size_t and flips it*/
 }
 
 bitarr_t BitArrResetAll(bitarr_t arr)
 {
-	return !BitArrSetAll(arr);
+	return (!BitArrSetAll(arr));
 	/* The opposite for SetAll*/
 }
 
@@ -65,7 +68,7 @@ size_t BitArrCountOff(bitarr_t arr)
 
 bitarr_t BitArrFlip(bitarr_t arr, size_t pos)
 {
-	return BitArrSet(arr, pos, !(BitArrGetVal(arr, pos)));
+	return (BitArrSet(arr, pos, !(BitArrGetVal(arr, pos))));
 	/*Sets the !value in the given position*/
 }
 
@@ -88,19 +91,21 @@ bitarr_t BitArrMirror(bitarr_t arr)
 		arr = ((arr & shift[i]) << (1 << i)) | ((arr & ~(shift[i])) >> (1 << i));
 		/*The Hamming Weight Algorithm*/	
 	}
-	return arr;		
+	return (arr);		
 }
 
 bitarr_t BitArrRotateLeft(bitarr_t arr, size_t shift)
 {
-	shift = shift % SIZE_ARR;/*Refet to it again */
-	return (arr << shift) | (arr >> (shift - SIZE_ARR));
+	assert(FALSE < shift);
+	
+	return ((arr << shift) | (arr >> (shift - SIZE_ARR)));
 }
 
 bitarr_t BitArrRotateRight(bitarr_t arr, size_t shift)
 {
-	shift = shift % SIZE_ARR;/*Refet to it again */
-	return (arr >> shift) | (arr << (shift - SIZE_ARR));
+	assert(FALSE < shift);
+	
+	return ((arr >> shift) | (arr << (shift - SIZE_ARR)));
 }
 
 char *BitArrToString(bitarr_t arr, char *dest)
@@ -128,7 +133,7 @@ char *BitArrToString(bitarr_t arr, char *dest)
 	
 	dest[SIZE_ARR] = '\0';
      
-    return dest;
+    return (dest);
 }
 
 size_t BitArrCountOnLUT(bitarr_t arr)
@@ -155,7 +160,7 @@ size_t BitArrCountOnLUT(bitarr_t arr)
 		arr /= SIZE_ARR;
 	}
 	
-	return count;		
+	return (count);		
 }
 
 
@@ -173,7 +178,7 @@ static unsigned char ByteMirrors_LP(unsigned char n)
 		n = n >> 1;
 	}
 	
-	return output; 	
+	return (output); 	
 	
 }
 
@@ -204,6 +209,6 @@ size_t BitArrMirrorLUT(bitarr_t arr)
 		++i;
 	}
 	
-	return output;		
+	return (output);		
 }
 

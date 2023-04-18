@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <ctype.h>
-
+#include <string.h>
 
 
 /* EXE 1*/
@@ -16,7 +16,7 @@ void TF(int num)
     {
         perror("Num smaller than 1");
         exit(0);
-    }  
+    } 
       
     for(i = 1; i <= num; ++i)
     {
@@ -39,15 +39,15 @@ void TF(int num)
 
 void ReverseString(char *str)
 {
-    char *start = NULL;
+    char *runner = NULL;
 
     assert(NULL != str);
   
-    start = str;
+    runner = str;
       
-    str = strlen(str);
+    str = str + strlen(str);
     
-    while('\0' != *start)
+    while('\0' != *runner)
     { 
         switch(isupper(*str))
         {
@@ -59,7 +59,7 @@ void ReverseString(char *str)
                 break; 
         }
         --str;
-        ++start;
+        ++runner;
     } 
     
     switch(isupper(*str))

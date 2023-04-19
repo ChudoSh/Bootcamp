@@ -170,41 +170,10 @@ size_t BitArrCountOnLUT(bitarr_t arr)
 	
 	while (CHAR_SIZE > i)
 	{
-		count += LUT[(arr & CHAR_SIZE)]; 
-		arr >>= CHAR_SIZE;
+		count += LUT[(arr % CHAR_SIZE)]; 
+		arr /= CHAR_SIZE;
 		++i;
 	}
 	
 	return (count);		
 }
-
-size_t BitArrMirrorLUT(bitarr_t arr)
-{ 
-	size_t i = 0;
-	size_t output = 0;
-	static size_t LUT[SIZE_LUT];
-	static size_t flag = 0; 
-	
-	if (0 == flag)
-	{
-		for (i = 0;(SIZE_LUT) > i; ++i)
-		{
-			LUT[i] = BitArrMirror(i);
-		}
-		
-		flag = 1;
-	}
-	
-	i = 0;
-	
-	while (CHAR_SIZE > i)
-	{
-		output = output | LUT[arr & CHAR_SIZE];
-		output = output << CHAR_SIZE;
-		arr = arr >> CHAR_SIZE;
-		++i;
-	}
-	
-	return (output);		
-}
-

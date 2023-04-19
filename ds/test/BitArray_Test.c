@@ -99,7 +99,7 @@ int main()
 	
 	if (0x8000000000000000 == BitArrMirror(1))
 	{
-		printf("10.Success for BitArrMirror\n");
+		printf("10.Success for BitArrMirror(includes LUT)\n");
 	}
 	else
 	{
@@ -136,15 +136,6 @@ int main()
 		printf("14.Fail for BitArrCountOnLUT\n");
 	}
 	
-	if (90071992547409920 == BitArrMirrorLUT(640))
-	{
-		printf("15.Success for BitArrMirrorLUT\n");
-	}
-	else
-	{
-		printf("15.Fail for BitArrMirrorLUT\n");
-	}	
-			
 	return 0;	
 }
 

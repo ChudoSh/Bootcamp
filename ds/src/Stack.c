@@ -57,7 +57,7 @@ void StackPush(stack_t *my_stack, const void *element)
 	memcpy(my_stack->sp, element, my_stack->element_size);
 	
 	my_stack->sp += my_stack->element_size;
-	my_stack->size += 1;
+	++my_stack->size;
 }
 
 /*Gets the top element of the stack*/

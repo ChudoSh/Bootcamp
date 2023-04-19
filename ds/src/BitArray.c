@@ -16,9 +16,9 @@ Status:
 #define TWO (2UL)
 #define CHAR_SIZE (__CHAR_BIT__)
 #define SIZE_ARR (sizeof(size_t) * CHAR_SIZE)
-#define SIZE_LUT (SIZE_ARR * CHAR_SIZE)
+#define SIZE_LUT (256)
 #define UNUSED(a) ((void)a)
-#define NIBBLE (CHAR_SIZE / TWO)
+#define NIBBLE (CHAR_SIZE / 2)
 #define POS_TO_INDEX(pos) (pos - 1)
 #define MASK_SIZE (6)
 
@@ -153,24 +153,26 @@ size_t BitArrCountOnLUT(bitarr_t arr)
 {
 	size_t count = 0; 
 	size_t i = 0;
-	static size_t LUT[SIZE_ARR];
+	static size_t LUT[SIZE_LUT];
 	static size_t flag = 0;
-	
 	
 	if (0 == flag)
 	{
-		for (i = 0;SIZE_ARR > i; ++i)
+		for (i = 0; SIZE_LUT > i; ++i)
 		{
 			LUT[i] = BitArrCountOn(i);
 		}
-		
+				
 		flag = 1;
 	}
 	
-	while (0 != arr)
+	i = 0;
+	
+	while (CHAR_SIZE > i)
 	{
-		count += LUT[(arr % SIZE_ARR)]; 
-		arr /= SIZE_ARR;
+		count += LUT[(arr & CHAR_SIZE)]; 
+		arr >>= CHAR_SIZE;
+		++i;
 	}
 	
 	return (count);		

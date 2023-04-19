@@ -1,6 +1,12 @@
+/*
+Dev: BarSH
+Rev: MariaP
+Status: Approved
+Date: 19.4.23
+*/
+
 #ifndef __ITOAATOI_H__
 #define __ITOAATOI_H__
-
 
 enum MACROS
 {
@@ -9,7 +15,6 @@ enum MACROS
     VAL_OF_ZERO = 48,
     MAX_BASE = 36    
 };   
-
 
 /*
 Description: Converts a given ineger into n a string, decimal base.
@@ -20,6 +25,7 @@ arguments:
    	return: Retruns the string pointer.
 */
 char *Itoa(int n, char *buffer, int base);
+
 /*
 Description: Converts a given string into an integer, decimal base.
 arguments:
@@ -31,4 +37,4 @@ int Atoi(const char *buffer);
 
 
 
-#endif
+#endif /*__ITOAATOI_H__*/

@@ -1,5 +1,11 @@
+/*
+Dev: BarSH
+Rev: MariaP
+Status: Approved
+Date: 19.4.23
+*/
+
 #include <stdio.h>
-#include <string.h>
 #include <assert.h>
 
 enum PRINT
@@ -20,8 +26,6 @@ int main()
 	
  	return 0; 	
 }
-
-
 
 void PrintLettersArray(const char *str1, const char *str2, const char *str3) 
 {
@@ -65,7 +69,6 @@ void PrintLettersArray(const char *str1, const char *str2, const char *str3)
 			printf("%c\n", (char)i);
 		}
 	}
-	
 }
 
 

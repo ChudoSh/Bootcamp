@@ -1,12 +1,13 @@
 /*
 Dev: BarSh
-Rev: 
-Status:Implemented
-Date: 17.4.23
+Rev: MariaP
+Status: Approved
+Date: 19.4.23
 */
+
 #include <stdio.h>/*printf*/
 #include <string.h>/*strcmp*/
-#include <stdlib.h>
+#include <stdlib.h> /*itoa*/
 
 #include "ItoaAtoi.h"
 
@@ -18,7 +19,6 @@ int main()
     
     int test2 = 0;
     char buffer2[1000] = "  -12.3";
-    
     
    	Itoa(test1, buffer1, 16);
     test2 = Atoi(buffer2);
@@ -40,7 +40,6 @@ int main()
 	{	
 		printf("Failed for Atoi..  %d\n",atoi("    -12.3"));
 	}	
-    
     
     return 0;
 }

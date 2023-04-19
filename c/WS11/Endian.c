@@ -1,7 +1,11 @@
-#include <assert.h>/*assert*/
-#include <stdlib.h> /*exit*/ 
+/*
+Dev: BarSH
+Rev: MariaP
+Status: Approved
+Date: 19.4.23
+*/
+
 #include <stdio.h> /*printf*/
-#include <string.h>/*memset*/
 
 #define IS_LITTLE_ENDIAN (*(unsigned short *)"\0\xff" < 0x100)
 
@@ -12,7 +16,7 @@ int main()
 	IsBigEndian();
 	printf("%d\n",IS_BIG_ENDIAN);
 	
-	return 0;
+	return (0);
 }
 
 void IsBigEndian()

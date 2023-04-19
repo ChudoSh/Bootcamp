@@ -1,25 +1,33 @@
- 
-#include <stdlib.h>
-#include <stdio.h>
+/*
+Dev: BarSH
+Rev: IdoI
+Date: 19.4.23
+Status: Approved
+*/ 
 
-#include "../include/Stack.h"
+#include <stdlib.h>	/*malloc, free*/
+#include <string.h>	/*memcpy*/
+#include <assert.h> /*assert*/
 
-/*struct Stack
+#include "Stack.h"
+
+
+struct Stack
 {
 	size_t size;
 	size_t capacity;
 	size_t element_size;
 	char *sp;
-};*/
+};
 
-
+/*Creates the stack*/
 stack_t *StackCreate(size_t capacity, size_t element_size)
 {
-	stack_t *stack = (stack_t*)(malloc(sizeof(element_size) * sizeof(capacity)));
+	stack_t *stack = (stack_t*)(malloc((element_size * capacity) + sizeof(stack_t)));
 	
 	if (NULL == stack)
 	{
-		printf("Memory allocation failed");
+		return NULL;
 	}
 	
 	stack->capacity = capacity;
@@ -27,9 +35,10 @@ stack_t *StackCreate(size_t capacity, size_t element_size)
 	stack->element_size = element_size;
 	stack->sp = (char*)stack + sizeof(stack);
 	
-	return stack;	
+	return (stack);	
 }
 
+/*Earases the stacks*/
 void StackDestroy(stack_t *my_stack)
 {
 	assert(NULL != my_stack);
@@ -38,33 +47,57 @@ void StackDestroy(stack_t *my_stack)
 	my_stack = NULL;
 }
 
+/*Adds an element to the stack*/
 void StackPush(stack_t *my_stack, const void *element)
 {
-	/*char *push = NULL;*/
-
 	assert(NULL != my_stack);
 	assert(NULL != element);
+	assert(my_stack->capacity > my_stack->size);
 	
-	/*push = my_stack->sp;
-	++push;*/
+	memcpy(my_stack->sp, element, my_stack->element_size);
 	
-	my_stack->sp = ((char*)&element);
+	my_stack->sp += my_stack->element_size;
 	my_stack->size += 1;
-	/*my_stack->sp = push;	*/
 }
 
+/*Gets the top element of the stack*/
 void *StackPeek(const stack_t *my_stack)
 {
 	assert(NULL != my_stack);	
-
-	printf("Peekaboo %p\n", my_stack->sp);
 	
+	return ((void*)((my_stack->sp) - (my_stack->element_size)));	
 }
 
-/*int StackIsEmpty(const stack_t *my_stack)
+/*Checks is the stack is empty*/
+int StackIsEmpty(const stack_t *my_stack)
+{
+	assert(NULL != my_stack);
+	
+	return (0 != my_stack->size);
+}
 
+/*Pops the stack*/
 void StackPop(stack_t *my_stack)
+{
+	assert(NULL != my_stack);
+	assert(StackIsEmpty(my_stack));
+	
+	my_stack->sp -= my_stack->element_size;
+	my_stack->size -= 1;
+}
 
+/*Reveales the stack size*/
 size_t StackSize(const stack_t *my_stack)
+{
+	assert(NULL != my_stack);
+	
+	return (my_stack->size);
+}
 
-size_t StackCapacity(const stack_t *my_stack)*/
+/*Reveales the stack capacity*/
+size_t StackCapacity(const stack_t *my_stack)
+{
+	assert(NULL != my_stack);
+	
+	return (my_stack->capacity);
+}

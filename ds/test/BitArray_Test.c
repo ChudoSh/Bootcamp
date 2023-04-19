@@ -1,6 +1,12 @@
+/*
+Dev: BarSh
+Rev: Grag 
+Date 19.4.23
+Status: 
+*/
+
 #include <stdio.h>
 #include <assert.h>
-#include <stdio.h>
 
 #include "../include/BitArray.h"
 
@@ -54,7 +60,7 @@ int main()
 		printf("5.Fail for BitArrSetAll\n");
 	}
 	
-	if (FALSE == BitArrResetAll(test))
+	if (0 == BitArrResetAll(test))
 	{
 		printf("6.Success for BitArrResetAll\n");
 	}

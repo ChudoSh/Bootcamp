@@ -1,43 +1,65 @@
+/*
+Dev: BarSh
+Rev: Grag 
+Date 19.4.23
+Status: 
+*/
+
+
 #include <stddef.h>
 #include <assert.h>
 
 #include "../include/BitArray.h"
 
+#define ONE (1UL)
+#define ZERO (0UL)
+#define TWO (2UL)
+#define CHAR_SIZE (__CHAR_BIT__)
+#define SIZE_ARR (sizeof(size_t) * CHAR_SIZE)
+#define SIZE_LUT (SIZE_ARR * CHAR_SIZE)
+#define UNUSED(a) ((void)a)
+#define NIBBLE (CHAR_SIZE / TWO)
+#define POS_TO_INDEX(pos) (pos - 1)
+#define MASK_SIZE (6)
+
 bitarr_t BitArrSetOn(bitarr_t arr, size_t pos)
 {	
 	assert(SIZE_ARR > pos);
-	return (arr | TRUE << (pos - 1));
+	
+	return (BitArrSet(arr, pos, ONE));
 	/*Given arr 1 and pos 2 :0001 | (0001 << 1) -> 0001 | 0010 -> 0011*/	 
 }
 
 bitarr_t BitArrSetOff(bitarr_t arr, size_t pos)
 {
 	assert(SIZE_ARR > pos);
-	return arr & ~(TRUE << (pos - 1));
+	
+	return (BitArrSet(arr, pos, ZERO));
 	/*Given arr 2 and pos 2 :(0010 | ~(0001 << 1)) -> (0001 | (1101)) -> 0011*/
 }
 
 bitarr_t BitArrSet(bitarr_t arr, size_t pos, int bool_val)
 {	
 	assert(SIZE_ARR > pos);
-	assert(FALSE =< bool_val && TRUE >= bool_val);
-	
-	
-	return ((TRUE == bool_val) ? BitArrSetOn(arr, pos) : BitArrSetOff(arr, pos));
-	/*Given arr 2 and pos 2 :(0010 | ~(0001 << 1)) -> (0001 | (1101)) -> 0011*/	
+	assert(2 > bool_val);
+	assert(-1 < bool_val);
+
+	return ((arr  & ~(ONE << POS_TO_INDEX(pos))) | (bool_val << POS_TO_INDEX(pos)));
+	/*Given arr 2, pos 2 and val 1 :(0010 | (0000 << 1)) -> (0001 | (1101)) -> 0011*/	
 }
 
 size_t BitArrGetVal(bitarr_t arr, size_t pos)
 {
 	assert(SIZE_ARR > pos);
-	return (arr & (TRUE << (pos - 1)));
+	
+	return (arr & (ONE << POS_TO_INDEX(pos)));
 	/*Given arr 1 and pos 2 :(0010 & (0001 << 1) -> (0001 & 0010) -> 0000*/
 }
 
 bitarr_t BitArrSetAll(bitarr_t arr)
 {
+	return (~ZERO);
 	UNUSED(arr);
-	return (~((size_t)FALSE));
 	/*Sets 0 as size_t and flips it*/
 }
 
@@ -53,7 +75,7 @@ size_t BitArrCountOn(bitarr_t arr)
 	
 	while (0 < arr)
 	{	
-		arr = arr & (arr -1); /*The Kernighan Algorithm*/
+		arr = arr & (arr - 1); /*The Kernighan Algorithm*/
 		++count;	
 	}
 	
@@ -76,7 +98,7 @@ bitarr_t BitArrFlip(bitarr_t arr, size_t pos)
 bitarr_t BitArrMirror(bitarr_t arr)
 {
 	size_t i = 0;
-	static size_t shift[6] = 
+	static size_t mask[MASK_SIZE] = 
 	{
 		0x5555555555555555,/*01010101..*/ 
 		0x3333333333333333,/*011011011..*/
@@ -86,52 +108,43 @@ bitarr_t BitArrMirror(bitarr_t arr)
 		0x00000000FFFFFFFF /*32's 1 and 32's 0*/
 	};
 	
-	for (i = 0; i < 6; ++i)
+	for (i = 0; i < MASK_SIZE; ++i)
 	{
-		arr = ((arr & shift[i]) << (1 << i)) | ((arr & ~(shift[i])) >> (1 << i));
+		arr = ((arr & mask[i]) << (ONE << i)) | ((arr & ~(mask[i])) >> (ONE << i));
 		/*The Hamming Weight Algorithm*/	
 	}
+	
 	return (arr);		
 }
 
 bitarr_t BitArrRotateLeft(bitarr_t arr, size_t shift)
 {
-	assert(FALSE < shift);
+	assert(ZERO < shift);
 	
 	return ((arr << shift) | (arr >> (shift - SIZE_ARR)));
 }
 
 bitarr_t BitArrRotateRight(bitarr_t arr, size_t shift)
 {
-	assert(FALSE < shift);
+	assert(ZERO < shift);
 	
 	return ((arr >> shift) | (arr << (shift - SIZE_ARR)));
 }
 
 char *BitArrToString(bitarr_t arr, char *dest)
 {
-	size_t i = 0;
-	size_t ch = 0;
+	int i = (SIZE_ARR);
     
     assert(NULL != dest);
     
-    for(i = 63; 0 < i; --i)
+	dest[SIZE_ARR] = '\0';
+	
+    while (0 <= i)
     {
-        ch = arr % 2; 
-    	dest[i] = '0' + ch;  
+    	--i;
+    	dest[i] = (arr & ONE) + 48;  
         arr = arr >> 1;
     }
-    
-    if (0 != (arr % 2))
-    {
-		dest[0] = '1';    
-    } 
-	else
-	{
-    	dest[0] = '0';
-	}
-	
-	dest[SIZE_ARR] = '\0';
      
     return (dest);
 }
@@ -144,42 +157,23 @@ size_t BitArrCountOnLUT(bitarr_t arr)
 	static size_t flag = 0;
 	
 	
-	if (FALSE == flag)
+	if (0 == flag)
 	{
 		for (i = 0;SIZE_ARR > i; ++i)
 		{
 			LUT[i] = BitArrCountOn(i);
 		}
 		
-		flag = TRUE;
+		flag = 1;
 	}
 	
-	while (FALSE != arr)
+	while (0 != arr)
 	{
 		count += LUT[(arr % SIZE_ARR)]; 
 		arr /= SIZE_ARR;
 	}
 	
 	return (count);		
-}
-
-
-static unsigned char ByteMirrors_LP(unsigned char n)
-{
-    unsigned int output = 0;	
-	unsigned int temp = 0; 
-	size_t i = 0;
-	
-	for(i = 0; i < 8; ++i)
-	{
-		output = output << 1; 
-		temp = n & 1; 
-		output = output | temp;
-		n = n >> 1;
-	}
-	
-	return (output); 	
-	
 }
 
 size_t BitArrMirrorLUT(bitarr_t arr)
@@ -189,23 +183,23 @@ size_t BitArrMirrorLUT(bitarr_t arr)
 	static size_t LUT[SIZE_LUT];
 	static size_t flag = 0; 
 	
-	if (FALSE == flag)
+	if (0 == flag)
 	{
 		for (i = 0;(SIZE_LUT) > i; ++i)
 		{
-			LUT[i] = ByteMirrors_LP(i);
+			LUT[i] = BitArrMirror(i);
 		}
 		
-		flag = TRUE;
+		flag = 1;
 	}
 	
 	i = 0;
 	
-	while (8 > i)
+	while (CHAR_SIZE > i)
 	{
-		*((unsigned char*)&output + i) = LUT[*((unsigned char*)&arr + (7 - i))];
-		/*We set the first BYTE in of output by the address of the last byte of
-		arr*/  
+		output = output | LUT[arr & CHAR_SIZE];
+		output = output << CHAR_SIZE;
+		arr = arr >> CHAR_SIZE;
 		++i;
 	}
 	

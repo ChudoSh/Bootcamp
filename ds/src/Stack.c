@@ -83,7 +83,7 @@ void StackPop(stack_t *my_stack)
 	assert(StackIsEmpty(my_stack));
 	
 	my_stack->sp -= my_stack->element_size;
-	my_stack->size -= 1;
+	--my_stack->size;
 }
 
 /*Reveales the stack size*/

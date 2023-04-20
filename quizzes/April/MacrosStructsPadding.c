@@ -14,9 +14,33 @@ struct s
 	char ch1;/*ch1 [] [] []*/
 	int *ptr;/*ptr ptr ptr ptr*/
 	char ch2;/*ch2 [] [] []*/
-}
+};
+
+
+
+/*typedef*/ struct /*With the typedef it wont work, we are missing struct name*/
+{
+	int num;/*num num num num*/
+	char ch1;/*ch1 [] [] []*/
+
+}s1;
+
+union u
+{
+	int num;	/*num num num num*/
+	char ch1[5];/*ch1 ch1 ch1 ch1*/
+				/*ch1 [] [] []*/
+	
+};
 
 int main()
 {
+	struct s1;
 	
+	s1.num = 5;
+	s1.ch1 = 'a'; 
+	
+	
+	printf("%d", s1.num);
+	return 0;
 }

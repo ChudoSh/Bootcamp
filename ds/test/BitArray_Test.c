@@ -2,11 +2,10 @@
 Dev: BarSh
 Rev: Grag 
 Date 19.4.23
-Status: 
+Status: Fixed
 */
 
-#include <stdio.h>
-#include <assert.h>
+#include <stdio.h> /*printf*/
 
 #include "../include/BitArray.h"
 

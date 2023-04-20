@@ -1,11 +1,13 @@
 #
 # gcc compilation aliases, c89, c99, debug mod, release mode
-alias gd='gcc -ansi -pedantic-erros -Wall -Wextra -g'
-alias gc='gcc -ansi -pedantic-erros -Wall -Wextra -DNDEBUG -03'
-alias gd9='gcc -std=c99 -pedantic-erros -Wall -Wextra -9'
-alias gc9='gcc -std=c99 -pedantic-erros -Wall -Wextra -DNDEBUG -03'
+alias gd='gcc -ansi -pedantic-errors -Wall -Wextra -g'
+alias gc='gcc -ansi -pedantic-errors -Wall -Wextra -DNDEBUG -O3'
+alias gd9='gcc -std=c99 -pedantic-errors -Wall -Wextra -9'
+alias gc9='gcc -std=c99 -pedantic-errors -Wall -Wextra -DNDEBUG -O3'
 #
 #Valgrind alias
-alias vlg='valgrind --leak-check=yes --track-origins=yes'
+alias vlg='valgrind -s --leak-check=yes --track-origins=yes'
 alias lg='git log --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=short'
+
+alias fav='cd ~/Mygit/bar.shadkhin/ds'
 

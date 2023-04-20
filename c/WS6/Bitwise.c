@@ -13,6 +13,7 @@ Status: Approved
 #define SIZE_LUT 256
 #define ONE 1
 #define NONE 0
+#define TWO 2
 #define TRUE34 34
 #define TRUE240 240
 
@@ -62,7 +63,7 @@ unsigned int AddOne(unsigned int n)
 {	
 	int Add = 1; 
 
-	while((n & Add))
+	while ((n & Add))
 	{
 		n = n ^ Add;
 		Add = Add << 1;
@@ -77,16 +78,12 @@ unsigned int AddOne(unsigned int n)
 /* EXER 4 - ALSO USED IN EXER 9 WITH LOOP*/
 unsigned int CountBit(unsigned int n)
 {
-	int count = 0; 
-	size_t i = 0;
+	size_t count = 0; 
 	
-	for(i = 0; i < SIZE_INT; ++i)
-	{
-		if(n & (1 << i))
-		{
-			++count;
-		}
-		
+	while (0 < n)
+	{	
+		n = n & (n -1);
+		++count;	
 	}
 	
 	return count; 	
@@ -97,15 +94,15 @@ void ThreeBit(unsigned int n[], size_t size)
 {
 	size_t i = 0;
 	
-	if(NULL == n)
+	if (NULL == n)
 	{	
 		perror("Invalid pointer.\n");
 		
 	} 
 	
-	while(i < size)
+	while (i < size)
 	{
-		if(3 == CountBit(*n))
+		if (3 == CountBit(*n))
 		{
 			printf("The number with exactly 3 bits is %u in the address %u\n",*n ,n[i]);
 		}
@@ -171,7 +168,7 @@ unsigned int BothTwoSix(unsigned char n)
 unsigned int EitherTwoSix(unsigned char n)
 {
 
-	return ((n & (32)) || (n & (2)));
+	return ((n & (SIZE_INT)) || (n & (TWO)));
 
 }
 
@@ -185,8 +182,8 @@ unsigned int SwapThreeFive(unsigned char n)
 	temp1 = n & 16; 
 	temp2 = n & 4;
 	n = n & (~20);
-	n = n | (temp1 >> 2);
-	n = n | (temp2 << 2);
+	n = n | (temp1 >> TWO);
+	n = n | (temp2 << TWO);
 	
 	
 	return n; 	

@@ -19,21 +19,15 @@ void TF(int num)
     } 
       
     for(i = 1; i <= num; ++i)
-    {
-           
-        if(0 == (i % 3))
+    {           
+        if(!(i % 3) ||!(i % 5))
         {
-            printf("T");            
+            printf("%c%c\n",'T' * !(i % 3),'F' * !(i % 5));
         }
-        if(0 == (i % 5))
-        {
-            printf("F"); 
-        }
-        if(0 != (i % 3) && 0 != (i % 5))
-        {
-            printf("%d",i);
-        } 
-        printf("\n");            
+        else
+        { 
+        	printf("%d\n", num);
+        }            
     }       
 }
 

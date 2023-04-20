@@ -1,10 +1,12 @@
 #Ignore_everything
 *.md
 *.out
+*.o
+*.txt
 
 #exception_rule
 !dummy.md
 !.gitignore
 !test.*
 !*/
-
+!makefile

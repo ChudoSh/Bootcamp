@@ -27,10 +27,8 @@ struct s
 
 union u
 {
-	int num;	/*num num num num*/
-	char ch1[5];/*ch1 ch1 ch1 ch1*/
-				/*ch1 [] [] []*/
-	
+	int num; /*num/ch num/ch num/ch num/ch ch [] [] []*/	
+	char ch1[5];	
 };
 
 int main()

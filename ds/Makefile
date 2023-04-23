@@ -1,42 +1,37 @@
 CC = gcc
-
 CFLAGS = -ansi -pedantic-errors -Wall -Wextra
-
 GD = -g
-
 GC = -DNDEBUG -O3
+CPPFLAGS = -I./
 
-NAMESPACE = Stack
-INCLUDE = -I./include
+NAMESPACE = D_Vector
+SRC = src
+TEST= test
+HEADER = include
+
 TARGET = $(NAMESPACE).out
-OBJ = src/$(NAMESPACE).c test/$(NAMESPACE)_Test.c
+CFILE = $(SRC)/$(NAMESPACE).c $(TEST)/$(NAMESPACE)_Test.c
 
 RELEASE_DIR = bin/release/$(NAMESPACE)_Release.out
 DEBUG_DIR = bin/debug/$(NAMESPACE)_Debug.out
 
-: $(OBJ) 
-	$(CC) $(CFLAGS) $(GD) $(INCLUDE) -o $(TARGET) $(OBJ)
+.PHONY: clean foo.c release debug all
 
-.PHONY: cleanobj cleanouts foo.c release debug all
-
-cleanobj:
-	rm $(wildcard *.o)
+clean:
+	rm $(RELEASE_DIR) $(DEBUG_DIR)
 	
-cleanouts:
-	rm $(wildcard *.out)
-	
-release: $(RELEASE_DIR)
+release:$(RELEASE_DIR)
 
 foo.c:$(TARGET)
 
-$(RELEASE_DIR): $(OBJ)
-	$(CC) $(CFLAGS) $(GC) $(INCLUDE) -o $(RELEASE_DIR) $(OBJ)
+$(RELEASE_DIR):$(CFILE)
+	$(CC) $(CFLAGS) $(GC) $(CPPFLAGS)$(HEADER) -o $(RELEASE_DIR) $(CFILE)
 
 debug: $(DEBUG_DIR)
 
-$(DEBUG_DIR): $(OBJ)
-	$(CC) $(CFLAGS) $(GD) $(INCLUDE) -o $(DEBUG_DIR) $(OBJ)
+$(DEBUG_DIR): $(CFILE)
+	$(CC) $(CFLAGS) $(GD) $(CPPFLAGS)$(HEADER) -o $(DEBUG_DIR) $(CFILE)
 	
-all:$(RELEASE_DIR) $(DEBUG_DIR)
+all:release debug
 
 	

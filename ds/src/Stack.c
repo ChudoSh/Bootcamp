@@ -38,7 +38,7 @@ stack_t *StackCreate(size_t capacity, size_t element_size)
 	return (stack);	
 }
 
-/*Earases the stacks*/
+/*Erases the stacks*/
 void StackDestroy(stack_t *my_stack)
 {
 	assert(NULL != my_stack);

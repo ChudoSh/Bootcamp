@@ -95,7 +95,7 @@ int DVectorPushBack(dvector_t *vector, const void *element)
 	return (SUCCESS);
 }
 
-/*Gets the top element of the vector*/
+/*Removes the top element of the vector*/
 int DVectorPopBack(dvector_t *vector)
 {
 	char *temp_contain = NULL;
@@ -121,7 +121,7 @@ int DVectorPopBack(dvector_t *vector)
 	return (SUCCESS);	
 }
 
-/*Gets the value at the element in the given index*/
+/*Gets the value of the element in the given index*/
 void *DVectorGetAccessToElement(const dvector_t *vector, size_t index)
 {
 	assert(NULL != vector);

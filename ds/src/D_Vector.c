@@ -72,7 +72,9 @@ int DVectorPushBack(dvector_t *vector, const void *element)
 	
 	if (vector->capacity == vector->size)
 	{
-		vector->base_ptr = (char*)realloc((void*)vector->base_ptr, vector->capacity * 2);
+		vector->capacity *= 2;
+		
+		vector->base_ptr = (char*)realloc((void*)vector->base_ptr, (vector->element_size * vector->capacity));
 		
 		if (NULL == vector->base_ptr)
 		{
@@ -80,6 +82,7 @@ int DVectorPushBack(dvector_t *vector, const void *element)
 			vector = NULL;
 			return (FAIL);
 		}
+	
 	}
 	
 	if (NULL == memcpy(vector->base_ptr + (vector->element_size * vector->size), element, vector->element_size))
@@ -98,18 +101,21 @@ int DVectorPopBack(dvector_t *vector)
 	char *temp_contain = NULL;
 	assert(NULL != vector);	
 	
+	--vector->size;
 		
-	if ((0.25 * vector->capacity) < vector->size)
+	if ((0.25 * vector->capacity) == vector->size)
 	{
-		temp_contain = (char*)realloc((void*)vector->base_ptr, vector->element_size * (vector->capacity / 2));
+		vector->capacity /= 2;
+		
+		temp_contain = (char*)realloc((void*)vector->base_ptr, vector->element_size * vector->capacity);
 		
 		if (NULL == temp_contain)
 		{
 			return (FAIL);
 		}
+	
 	}
 	
-	--vector->size;
 	vector->base_ptr = temp_contain;
 	
 	return (SUCCESS);	

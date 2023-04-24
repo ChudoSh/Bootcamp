@@ -22,12 +22,8 @@ int main()
 	dummy_t dum2 = {0};
 	dummy_t dum3 = {0};
 	dummy_t dum4 = {0};
-	/*int n = 10;
-	double d = 98.56465;*/
-/******************************************************/	
+		
 	dvector_t *vector1 = DVectorCreate(sizeof(dummy_t), 4);
-	/*dvector_t *vector2 = StackCreate(2, sizeof(n));
-	dvector_t *vector3 = StackCreate(2, sizeof(d));*/
 	
 	dum1.d = 5.5;
 	dum1.x = 1;
@@ -45,8 +41,6 @@ int main()
 	dum4.x = 1058;
 	dum4.a = '!';
 	
-	
-	
 	printf("Test for strcut dummy\n");
 	
 	if (4 ==  DVectorCapacity(vector1))
@@ -58,13 +52,12 @@ int main()
 		printf("Capacity - Fail\n");
 	}
 	
-	
 	DVectorPushBack(vector1, &dum1);
 	DVectorPushBack(vector1, &dum2);
 	DVectorPushBack(vector1, &dum3);
 	DVectorPushBack(vector1, &dum4);
 	
-	if (5.5 == ((dummy_t*)DVectorGetAccessToElement(vector1, 0))->d && 1 == ((dummy_t*)DVectorGetAccessToElement(vector1, 0))->x && 'a' == ((dummy_t*)DVectorGetAccessToElement(vector1, 0))->a)
+	if (dum1.d == ((dummy_t*)DVectorGetAccessToElement(vector1, 0))->d && dum1.x == ((dummy_t*)DVectorGetAccessToElement(vector1, 0))->x && dum1.a == ((dummy_t*)DVectorGetAccessToElement(vector1, 0))->a)
 	{
 		printf("Push & GetAccess test 1 - Success\n");
 	}
@@ -73,7 +66,7 @@ int main()
 		printf("Push & GetAccess test 1 - Fail\n");
 	}
 	
-	if (8.23 == ((dummy_t*)DVectorGetAccessToElement(vector1, 1))->d && 20 == ((dummy_t*)DVectorGetAccessToElement(vector1, 1))->x && 'z' == ((dummy_t*)DVectorGetAccessToElement(vector1, 1))->a)
+	if (dum2.d == ((dummy_t*)DVectorGetAccessToElement(vector1, 1))->d && dum2.x == ((dummy_t*)DVectorGetAccessToElement(vector1, 1))->x && dum2.a == ((dummy_t*)DVectorGetAccessToElement(vector1, 1))->a)
 	{
 		printf("Push & GetAccess test 2 - Success\n");
 	}
@@ -82,7 +75,7 @@ int main()
 		printf("Push & GetAccess test 2 - Fail\n");
 	}
 	
-	if (7.61 == ((dummy_t*)DVectorGetAccessToElement(vector1, 2))->d && 8 == ((dummy_t*)DVectorGetAccessToElement(vector1, 2))->x && 'T' == ((dummy_t*)DVectorGetAccessToElement(vector1, 2))->a)
+	if (dum3.d == ((dummy_t*)DVectorGetAccessToElement(vector1, 2))->d && dum3.x == ((dummy_t*)DVectorGetAccessToElement(vector1, 2))->x && dum3.a == ((dummy_t*)DVectorGetAccessToElement(vector1, 2))->a)
 	{
 		printf("Push & GetAccess test 3 - Success\n");
 	}
@@ -91,7 +84,7 @@ int main()
 		printf("Push & GetAccess test 3 - Fail\n");
 	}
 	
-	if (1.9999 == ((dummy_t*)DVectorGetAccessToElement(vector1, 3))->d && 1058 == ((dummy_t*)DVectorGetAccessToElement(vector1, 3))->x && '!' == ((dummy_t*)DVectorGetAccessToElement(vector1, 3))->a)
+	if (dum4.d == ((dummy_t*)DVectorGetAccessToElement(vector1, 3))->d && dum4.x == ((dummy_t*)DVectorGetAccessToElement(vector1, 3))->x && dum4.a == ((dummy_t*)DVectorGetAccessToElement(vector1, 3))->a)
 	{
 		printf("Push & GetAccess test 4 - Success\n");
 	}

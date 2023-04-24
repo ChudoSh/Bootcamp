@@ -42,7 +42,7 @@ void DVectorDestroy(dvector_t *vector);
 Description: Adds an element into the vector.
 Arguments:
 	*dvector_t - A valid dynamic vector pointer.
-	*element - A const valid void pointer element of to add.
+	*element - A const valid void pointer of an element to add.
 Return: 
 	0 in case of successful push; -1 in case of failure.
 Time complexity:	O(1)
@@ -69,7 +69,7 @@ int DVectorPopBack(dvector_t *vector);
 Description: Retrieve a value in the vector by a given index.
 Arguments:
 	*dvector_t - A const valid dynamic vector pointer.
-	*index - A size_t index to access.
+	*index - A valid index to access, index must be smaller than size.
 Return:
 	Returns a void pointer of the value.
 Time complexity:	O(1)

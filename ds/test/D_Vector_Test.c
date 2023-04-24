@@ -18,7 +18,10 @@ typedef struct dummy
 
 int main()
 {
-	dummy_t dum = {0};
+	dummy_t dum1 = {0};
+	dummy_t dum2 = {0};
+	dummy_t dum3 = {0};
+	dummy_t dum4 = {0};
 	/*int n = 10;
 	double d = 98.56465;*/
 /******************************************************/	
@@ -26,91 +29,126 @@ int main()
 	/*dvector_t *vector2 = StackCreate(2, sizeof(n));
 	dvector_t *vector3 = StackCreate(2, sizeof(d));*/
 	
-	dum.d = 5.5;
-	dum.x = 1;
-	dum.a = 'a';
+	dum1.d = 5.5;
+	dum1.x = 1;
+	dum1.a = 'a';
+	
+	dum2.d = 8.23;
+	dum2.x = 20;
+	dum2.a = 'z';
+	
+	dum3.d = 7.61;
+	dum3.x = 8;
+	dum3.a = 'T';
+	
+	dum4.d = 1.9999;
+	dum4.x = 1058;
+	dum4.a = '!';
 	
 	
 	
 	printf("Test for strcut dummy\n");
 	
-	printf("A vector was created with capacity of %lu\n", DVectorCapacity(vector1));
+	if (4 ==  DVectorCapacity(vector1))
+	{
+		printf("Capacity - Success\n");
+	}
+	else 
+	{
+		printf("Capacity - Fail\n");
+	}
 	
-	DVectorPushBack(vector1, &dum);
 	
-	printf("A value was pushed into the vector\n");
+	DVectorPushBack(vector1, &dum1);
+	DVectorPushBack(vector1, &dum2);
+	DVectorPushBack(vector1, &dum3);
+	DVectorPushBack(vector1, &dum4);
 	
-	printf("Lets see if it was pushed, 1 means not empty, 0 otherwise: %lu\n", DVectorSize(vector1));
+	if (5.5 == ((dummy_t*)DVectorGetAccessToElement(vector1, 0))->d && 1 == ((dummy_t*)DVectorGetAccessToElement(vector1, 0))->x && 'a' == ((dummy_t*)DVectorGetAccessToElement(vector1, 0))->a)
+	{
+		printf("Push & GetAccess test 1 - Success\n");
+	}
+	else 
+	{
+		printf("Push & GetAccess test 1 - Fail\n");
+	}
 	
-	printf("Great its not empty, now lets see what the value of d element in dummy: %f\n", ((dummy_t*)DVectorGetAccessToElement(vector1, 1))->d);
+	if (8.23 == ((dummy_t*)DVectorGetAccessToElement(vector1, 1))->d && 20 == ((dummy_t*)DVectorGetAccessToElement(vector1, 1))->x && 'z' == ((dummy_t*)DVectorGetAccessToElement(vector1, 1))->a)
+	{
+		printf("Push & GetAccess test 2 - Success\n");
+	}
+	else 
+	{
+		printf("Push & GetAccess test 2 - Fail\n");
+	}
 	
-	printf("Great its not empty, now lets see what the value of x element in dummy: %d\n", ((dummy_t*)DVectorGetAccessToElement(vector1, 1))->x);
+	if (7.61 == ((dummy_t*)DVectorGetAccessToElement(vector1, 2))->d && 8 == ((dummy_t*)DVectorGetAccessToElement(vector1, 2))->x && 'T' == ((dummy_t*)DVectorGetAccessToElement(vector1, 2))->a)
+	{
+		printf("Push & GetAccess test 3 - Success\n");
+	}
+	else 
+	{
+		printf("Push & GetAccess test 3 - Fail\n");
+	}
 	
-	printf("Great its not empty, now lets see what the value of a element in dummy: %c\n", ((dummy_t*)DVectorGetAccessToElement(vector1, 1))->a);
+	if (1.9999 == ((dummy_t*)DVectorGetAccessToElement(vector1, 3))->d && 1058 == ((dummy_t*)DVectorGetAccessToElement(vector1, 3))->x && '!' == ((dummy_t*)DVectorGetAccessToElement(vector1, 3))->a)
+	{
+		printf("Push & GetAccess test 4 - Success\n");
+	}
+	else 
+	{
+		printf("Push & GetAccess test 4 - Fail\n");
+	}
 	
-	/*Test here for Pop*/
+	if (4 ==  DVectorSize(vector1))
+	{
+		printf("Size test - Success\n");
+	}
+	else 
+	{
+		printf("Size test - Fail\n");
+	}
 	
-	DVectorReserve(vector1, 6);
+	DVectorPopBack(vector1);
+	DVectorPopBack(vector1);
+	DVectorPopBack(vector1);
 	
-	printf("We've increased the capcity by 4: %lu, but the size is %lu\n", DVectorCapacity(vector1),  DVectorSize(vector1));
+	if (1 == DVectorSize(vector1))
+	{
+		printf("Pop test - Success\n");
+	}
+	else 
+	{
+		printf("Pop test - Fail\n");
+	}
+	
+	DVectorReserve(vector1, 8);
+	
+	if (8 == DVectorCapacity(vector1))
+	{
+		printf("Increase test - Success\n");
+	}
+	else 
+	{
+		printf("Increase test - Fail\n");
+	}
 	
 	DVectorShrink(vector1);
 	
-	printf("And now back to 2: %lu\n", DVectorSize(vector1));
+	if (1 == DVectorCapacity(vector1))
+	{
+		printf("Shrink test - Success\n");
+	}
+	else 
+	{
+		printf("Shrink test - Fail\n");
+	}
 	
 	DVectorDestroy(vector1);
 	
-	printf("Now we freed the stack, check valgrind for errors\n\n\n\n");
-	
-	/*
-	printf("Test for int\n");
-	
-	printf("A stack was created with capacity of %lu\n", StackCapacity(my_stack2));
+	printf("Destroy test - Check Valgrind\n");
 	
 	
-	StackPush(my_stack2, &n);
-	
-	printf("A value was pushed into the stack\n");
-	
-	printf("Lets see if it was pushed, 1 means not empty, 0 otherwise: %d\n", StackIsEmpty(my_stack2));
-	
-	printf("Great its not empty, now lets see what the value is: %d\n", *(int*)StackPeek(my_stack2));
-	
-	StackPop(my_stack2);
-	
-	printf("Now we popped the stack, the size should be 0: %lu\n", StackSize(my_stack2));
-	
-	printf("For capacity test we need to see if the stack still exist, meaning capacity is bigger than 0: %lu\n", StackCapacity(my_stack2));
-	
-	StackDestroy(my_stack2);
-	
-	printf("Now we freed the stack, check valgrind for errors\n\n\n\n");
-
-	
-	printf("Test for double\n");
-	
-	
-	printf("A stack was created with capacity of %lu\n", StackCapacity(my_stack3));
-	
-	
-	StackPush(my_stack3, &d);
-	
-	printf("A value was pushed into the stack\n");
-	
-	printf("Lets see if it was pushed, 1 means not empty, 0 otherwise: %d\n", StackIsEmpty(my_stack3));
-	
-	printf("Great its not empty, now lets see what the value is: %f\n", *(double*)StackPeek(my_stack3));
-	
-	StackPop(my_stack3);
-	
-	printf("Now we popped the stack, the size should be 0: %lu\n", StackSize(my_stack3));
-	
-	printf("For capacity test we need to see if the stack still exist, meaning capacity is bigger than 0: %lu\n", StackCapacity(my_stack3));
-	
-	StackDestroy(my_stack3);
-	
-	printf("Now we freed the stack, check valgrind for errors\n");*/
-
 	return 0;
 }
 

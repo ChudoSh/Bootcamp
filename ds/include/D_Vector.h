@@ -1,8 +1,8 @@
 /*
 Dev: BarSH
-Rev: 
-Date: 23.4.23
-Status: 
+Rev: EtaiSH
+Date: 25.4.23
+Status: Fixing
 */ 
 
 #ifndef __DVECTOR_H__
@@ -16,12 +16,12 @@ typedef struct DVector dvector_t;
 /*
 Description: Creates a dynamic vector.
 Arguments:
-	*element_size - The size of the elements stored in the vector.
-	*capacity - The maximum amount of elements the vector can contain. 
+	*element_size - The size of the elements stored in the vector, must be above 0.
+	*capacity - The maximum amount of elements the vector can contain, must be above 0. 
 Return:
 	A dynamic vector of type dvector_t
 Time complexity:	O(1)
-Space complexity:	O(n)
+Space complexity:	O(n*m)
 */
 dvector_t *DVectorCreate(size_t element_size, size_t capacity);
 
@@ -69,7 +69,7 @@ int DVectorPopBack(dvector_t *vector);
 Description: Retrieve a value in the vector by a given index.
 Arguments:
 	*dvector_t - A const valid dynamic vector pointer.
-	*index - A valid index to access, index must be smaller than size.
+	*index - A valid index to access, index must be smaller than or equal to capacity.
 Return:
 	Returns a void pointer of the value.
 Time complexity:	O(1)
@@ -109,7 +109,7 @@ Arguments:
 Return:
 	Returns the maximum amounts of elements in the vector as a size_t type. 
 Time complexity:	O(1)
-Space complexity:	O(1)
+Space complexity:	O(n)
 */
 int DVectorReserve(dvector_t *vector, size_t new_capacity);
 

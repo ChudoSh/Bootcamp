@@ -1,8 +1,8 @@
 /*
 Dev: BarSH
-Rev: 
-Date: 23.4.23
-Status: 
+Rev: EtaiSH
+Date: 25.4.23
+Status: Fixing 
 */
 
 #include <stdio.h>
@@ -23,11 +23,7 @@ void GetAccessTest();
 int main()
 {
 
-	PushPopSizeCapacityTest();
-	ResizeTest();
-	GetAccessTest();
-	
-	/*dummy_t dum1 = {0};
+	dummy_t dum1 = {0};
 	dummy_t dum2 = {0};
 	dummy_t dum3 = {0};
 	dummy_t dum4 = {0};
@@ -148,8 +144,11 @@ int main()
 	
 	DVectorDestroy(vector1);
 	
-	printf("Destroy test - Check Valgrind\n");*/
+	printf("Destroy test - Check Valgrind\n");
 	
+	PushPopSizeCapacityTest();
+	ResizeTest();
+	GetAccessTest();
 	
 	return 0;
 }

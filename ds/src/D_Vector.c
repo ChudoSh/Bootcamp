@@ -1,8 +1,8 @@
 /*
 Dev: BarSH
-Rev: 
-Date: 23.4.23
-Status: 
+Rev: EtaiSH
+Date: 25.4.23
+Status: Fixing
 */ 
 
 #include <stdlib.h>	/*malloc, free*/
@@ -12,6 +12,16 @@ Status:
 
 #include "D_Vector.h"
 
+#define GROWTH_FACTOR 2
+#define SHRINK 1.25
+#define POP_CHECK 0.25
+#define EMPTY 0
+
+#define MULT_BY_ELEM_SIZE(x, v) (x * v->element_size)
+
+
+
+static int DVectorResize(dvector_t *vector , size_t new_size);
  
 enum RESULT
 {
@@ -30,13 +40,19 @@ struct DVector
 /*Creates the vector*/
 dvector_t *DVectorCreate(size_t element_size, size_t capacity)
 {
-	dvector_t *vector = (dvector_t*)malloc(sizeof(dvector_t));
-	vector->base_ptr = (char*)(malloc(element_size * capacity));
+	dvector_t *vector = NULL;
+	
+	assert(EMPTY < element_size);
+	assert(EMPTY < capacity);
+		
+	vector = (dvector_t*)malloc(sizeof(dvector_t));
 	
 	if (NULL == vector)
 	{
 		return (NULL);
 	}
+	
+	vector->base_ptr = (char*)(malloc(element_size * capacity));
 	
 	if (NULL == vector->base_ptr)
 	{
@@ -47,7 +63,7 @@ dvector_t *DVectorCreate(size_t element_size, size_t capacity)
 	}
 	
 	vector->capacity = capacity;
-	vector->size = 0;
+	vector->size = EMPTY;
 	vector->element_size = element_size;
 	
 	return (vector);	
@@ -60,37 +76,33 @@ void DVectorDestroy(dvector_t *vector)
 	
 	free(vector->base_ptr);
 	vector->base_ptr = NULL;
+	
 	free(vector);
-	vector = NULL;	
 }
 
 /*Adds an element to the vector*/
 int DVectorPushBack(dvector_t *vector, const void *element)
 {
+	
 	assert(NULL != vector);
 	assert(NULL != element);
 	
 	if (vector->capacity == vector->size)
 	{
-		vector->capacity *= 2;
+		vector->capacity *= GROWTH_FACTOR;
 		
-		vector->base_ptr = (char*)realloc((void*)vector->base_ptr, (vector->element_size * vector->capacity));
-		
-		if (NULL == vector->base_ptr)
+		if (FAIL == DVectorResize(vector,  vector->capacity))
 		{
-			free(vector);
-			vector = NULL;
 			return (FAIL);
 		}
-	
 	}
 	
-	if (NULL == memcpy(vector->base_ptr + (vector->element_size * vector->size), element, vector->element_size))
+	if (NULL == memcpy(vector->base_ptr + (MULT_BY_ELEM_SIZE(vector->size, vector)), element, vector->element_size))
 	{
 		return (FAIL);
 	}
 		
-	++vector->size;
+	++(vector->size);
 	
 	return (SUCCESS);
 }
@@ -98,25 +110,20 @@ int DVectorPushBack(dvector_t *vector, const void *element)
 /*Removes the top element of the vector*/
 int DVectorPopBack(dvector_t *vector)
 {
-	char *temp_contain = NULL;
 	assert(NULL != vector);	
+	assert(EMPTY != vector->size);
 	
-	--vector->size;
+	--(vector->size);
 		
-	if ((0.25 * vector->capacity) == vector->size)
+	if ((POP_CHECK * vector->capacity) == vector->size)
 	{
-		vector->capacity /= 2;
+		vector->capacity /= GROWTH_FACTOR;
 		
-		temp_contain = (char*)realloc((void*)vector->base_ptr, vector->element_size * vector->capacity);
-		
-		if (NULL == temp_contain)
+		if (FAIL == DVectorResize(vector, vector->capacity))
 		{
 			return (FAIL);
 		}
-	
 	}
-	
-	vector->base_ptr = temp_contain;
 	
 	return (SUCCESS);	
 }
@@ -125,30 +132,26 @@ int DVectorPopBack(dvector_t *vector)
 void *DVectorGetAccessToElement(const dvector_t *vector, size_t index)
 {
 	assert(NULL != vector);
-	assert(vector->size >= index);
+	assert(vector->capacity >= index);
 	
-	return ((void*)(vector->base_ptr + (vector->element_size * index)));
+	return ((void*)(vector->base_ptr + (MULT_BY_ELEM_SIZE(index, vector))));
 }
 
 /*Increases the vector capacity*/
 int DVectorReserve(dvector_t *vector, size_t new_capacity)
 {
-	char *temp_contain = NULL;
 	assert(NULL != vector);
 	
-	if (vector->capacity >= new_capacity)
+	if (vector->size > new_capacity)
 	{
 		return (FAIL);
 	} 
 	
-	temp_contain = (char*)realloc((void*)vector->base_ptr, new_capacity * vector->element_size);
-	
-	if (NULL == temp_contain)
+	if (FAIL == DVectorResize(vector,  new_capacity))
 	{
 		return (FAIL);
 	}
-	
-	vector->base_ptr = temp_contain;
+	 
 	vector->capacity = new_capacity;
 	
 	return (SUCCESS);
@@ -157,18 +160,19 @@ int DVectorReserve(dvector_t *vector, size_t new_capacity)
 /*Shrinks the vector capacity*/
 int DVectorShrink(dvector_t *vector)
 {
-	char *temp_contain = NULL;
 	assert(NULL != vector);
 	
-	temp_contain = (char*)realloc((void*)vector->base_ptr, (vector->element_size * vector->size * 1.25));
-	
-	if (NULL == vector->base_ptr)
+	if (vector->capacity < vector->size * SHRINK)
 	{
-		return FAIL;
+		return (FAIL);
 	}
 	
-	vector->base_ptr = temp_contain;
-	vector->capacity = vector->size * 1.25;
+	if (FAIL == DVectorResize(vector, (vector->size * SHRINK)))
+	{
+		return (FAIL);
+	}
+	
+	vector->capacity = vector->size * SHRINK;
 	
 	return (SUCCESS);
 }
@@ -187,4 +191,25 @@ size_t DVectorCapacity(const dvector_t *vector)
 	assert(NULL != vector);
 	
 	return (vector->capacity);
+}
+
+static int DVectorResize(dvector_t *vector, size_t new_size)
+{	
+	char *temp = NULL;
+	
+	assert(NULL != vector);
+	
+	if (GROWTH_FACTOR == new_size)
+	{
+		temp = (char*)realloc((void*)vector->base_ptr, (MULT_BY_ELEM_SIZE(vector->capacity, vector)));		
+	}
+	
+	else
+	{
+		temp = (char*)realloc((void*)vector->base_ptr, (MULT_BY_ELEM_SIZE(new_size, vector)));
+	}
+	
+	vector->base_ptr = temp;
+		
+	return ((NULL == vector->base_ptr) ? FAIL : SUCCESS);
 }

@@ -1,9 +1,9 @@
 /*
 Dev: BarSH
 Rev: EtaiSH
-Date: 25.4.23
-Status: Fixing
-*/ 
+Date: 26.4.23
+Status: Fixed
+*/
 
 #ifndef __DVECTOR_H__
 #define __DVECTOR_H__

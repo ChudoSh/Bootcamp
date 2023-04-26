@@ -1,14 +1,13 @@
 /*
 Dev: BarSH
 Rev: EtaiSH
-Date: 25.4.23
-Status: Fixing
+Date: 26.4.23
+Status: Fixed
 */ 
 
 #include <stdlib.h>	/*malloc, free*/
 #include <string.h>	/*memcpy*/
 #include <assert.h> /*assert*/
-#include <stdio.h> /*printf*/
 
 #include "D_Vector.h"
 

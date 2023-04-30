@@ -55,7 +55,7 @@ int DVectorPushBack(dvector_t *vector,const void *element);
 Description: Remove last element from vector. Shrinks memory by 2 if 
 			capacity is at/under 25%.
 Arguments:
-	*dvector_t - A valid dynamic vector pointer.
+	*dvector_t - A valid dynamic vector pointer, where size must be bigger than 0.
 Return: 
 	0 in case of successful pop; -1 in case of failure.
 Time complexity:	O(1)

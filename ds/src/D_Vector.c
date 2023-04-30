@@ -11,15 +11,15 @@ Status: Fixed
 
 #include "D_Vector.h"
 
-#define GROWTH_FACTOR 2
-#define SHRINK 1.25
-#define POP_CHECK 0.25
-#define EMPTY 0
+#define GROWTH_FACTOR (2)
+#define SHRINK (1.25)
+#define POP_CHECK (0.25)
+#define EMPTY (0)
 
 #define MULT_BY_ELEM_SIZE(x, v) (x * v->element_size)
 
 
-
+/*A staic function that resizes the capacity and size of the the vector*/
 static int DVectorResize(dvector_t *vector , size_t new_size);
  
 enum RESULT
@@ -77,6 +77,7 @@ void DVectorDestroy(dvector_t *vector)
 	vector->base_ptr = NULL;
 	
 	free(vector);
+	vector = NULL;
 }
 
 /*Adds an element to the vector*/
@@ -88,9 +89,7 @@ int DVectorPushBack(dvector_t *vector, const void *element)
 	
 	if (vector->capacity == vector->size)
 	{
-		vector->capacity *= GROWTH_FACTOR;
-		
-		if (FAIL == DVectorResize(vector,  vector->capacity))
+		if (FAIL == DVectorResize(vector,  (vector->capacity * GROWTH_FACTOR)))
 		{
 			return (FAIL);
 		}
@@ -116,12 +115,7 @@ int DVectorPopBack(dvector_t *vector)
 		
 	if ((POP_CHECK * vector->capacity) == vector->size)
 	{
-		vector->capacity /= GROWTH_FACTOR;
-		
-		if (FAIL == DVectorResize(vector, vector->capacity))
-		{
-			return (FAIL);
-		}
+		return (DVectorResize(vector, (vector->capacity / GROWTH_FACTOR)));
 	}
 	
 	return (SUCCESS);	
@@ -146,14 +140,7 @@ int DVectorReserve(dvector_t *vector, size_t new_capacity)
 		return (FAIL);
 	} 
 	
-	if (FAIL == DVectorResize(vector,  new_capacity))
-	{
-		return (FAIL);
-	}
-	 
-	vector->capacity = new_capacity;
-	
-	return (SUCCESS);
+	return (FAIL == DVectorResize(vector,  new_capacity));
 }
 
 /*Shrinks the vector capacity*/
@@ -161,19 +148,12 @@ int DVectorShrink(dvector_t *vector)
 {
 	assert(NULL != vector);
 	
-	if (vector->capacity < vector->size * SHRINK)
+	if (vector->capacity < (vector->size * SHRINK))
 	{
 		return (FAIL);
 	}
 	
-	if (FAIL == DVectorResize(vector, (vector->size * SHRINK)))
-	{
-		return (FAIL);
-	}
-	
-	vector->capacity = vector->size * SHRINK;
-	
-	return (SUCCESS);
+	return (FAIL == DVectorResize(vector, (vector->size * SHRINK)));
 }
 
 /*Reveales the vector size*/
@@ -209,6 +189,7 @@ static int DVectorResize(dvector_t *vector, size_t new_size)
 	}
 	
 	vector->base_ptr = temp;
+	vector->capacity = new_size;
 		
 	return ((NULL == vector->base_ptr) ? FAIL : SUCCESS);
 }

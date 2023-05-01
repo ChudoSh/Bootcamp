@@ -1,8 +1,8 @@
 /*
 Dev: BarSH
 Rev: Pleg
-Date: 
-Status: 
+Date: 1.5.23
+Status: Approved
 */ 
 #ifndef __SLIST_H__
 #define __SLIST_H__

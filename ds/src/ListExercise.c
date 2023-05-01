@@ -19,20 +19,20 @@ node_t *Flip(node_t *head)
 	temp2 = head->next->next;
 	temp3 = head->next->next->next;
 	temp1->next = head;
-	
-	while (NULL != temp3)
+	m
+	while (NULL != temp3->next)
 	{
 		temp2->next = temp1;
-		temp1 = temp3; 
-		temp3->next = temp2; 
-		temp2 = temp1->next; 
-		temp3 = temp1->next-next;	
+		temp1 = temp3;
+		temp1->next = temp2; 
+		temp2 = temp1->next;
+		temp3 = temp2->next;	
 	}
 	
 	head->next = NULL;
 	temp2->next = temp1;
 	
-	return (temp2);
+	return (temp3);
 }
 
 

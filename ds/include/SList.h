@@ -1,6 +1,6 @@
 /*
 Dev: BarSH
-Rev: 
+Rev: Pleg
 Date: 
 Status: 
 */ 
@@ -63,8 +63,8 @@ Description: Finds a node into the list
 Arguments: 
     - from : A valid iterator that points to the starting node needed to match.
     - to :  A valid iterator that points to the end node.
-    - value : A pointer to a value to compare the nodes with.
-    - matcher : A pointer to a function that is meant to match between the values.
+    - value : A const valid pointer to a value to compare the nodes with.
+    - matcher : A valid pointer to a function that is meant to match between the designated type of values.
 Return: 
 	If the value is found it return the iterator to the value, else returns 'to'.
 Time complexity: O(n).
@@ -76,7 +76,7 @@ iter_t SListFind(iter_t from, iter_t to, const void *value, is_match_t matcher);
 /*
 Description: Insert a new node to the list.
 Arguments: 
-    - where : An itertor to a position which the new node will be inserted.
+    - where : A valid itertor to a position which the new node will be inserted.
     - value : A valid pointer to a value.
 Return: 
 	The iterator to the location of the new node.
@@ -89,7 +89,7 @@ iter_t SListInsert(iter_t where, void *value);
 /*
 Description: Remove a node from the list
 Arguments: 
-    - where  An itertor to a position which node will be removed.
+    - where : A valid iterator to a position which node will be removed.
 Return: 
 	Returns the next node.
 Time complexity: O(1).
@@ -101,7 +101,7 @@ iter_t SListRemove(iter_t where);
 /*
 Description: Counts the number of nodes
 Arguments: 
-    - list : A valid list pointer.
+    - list : A const valid list pointer.
 Return: 
 	A size_t number of nodes.
 Time complexity: O(1).
@@ -114,7 +114,7 @@ size_t SListCount(const slist_t *list);
 
 Description: Gets the tail of the list.
 Arguments: 
-    - list : A valid list pointer. 
+    - list : A const valid list pointer. 
 Return: 
 	The tail node. 
 Time complexity: O(1).
@@ -145,7 +145,7 @@ Arguments:
 Return:
 	 Nothing. 
 Time complexity: O(n).
-Space complexity: O().
+Space complexity: O(1).
 */
 void SListForEach(iter_t from, iter_t to, action_t action, void *param);
 

@@ -1,7 +1,7 @@
 /*
 Dev: BarSH
 Rev: 
-Date: 
+Date: 1.5.23
 Status: 
 */ 
 
@@ -10,7 +10,6 @@ Status:
 
 #include "SList.h"
 
- 
 #define SUCCESS (1)
 
 struct Node
@@ -86,10 +85,10 @@ iter_t SListInsert(iter_t where, void *value)
 		return (NULL);
 	}
 	
-	insert->value = where->value;
-	insert->next = where->next;
+	SListSet(insert, SListGet(where));
+	insert->next = SListNext(where);
 	 
-	where->value = value;
+	SListSet(where, value);
 	where->next = insert;
 	
 	if (NULL == (insert->next))
@@ -107,9 +106,9 @@ iter_t SListRemove(iter_t where)
 
 	assert(NULL != where);
 
-	remove = where->next;
-	where->value = where->next->value;
-	where->next = where->next->next;
+	remove = SListNext(where);
+	SListSet(where, SListGet(where->next));
+	where->next = SListNext(where->next);
 	
 	if (NULL == (where->next))
 	{
@@ -124,7 +123,7 @@ iter_t SListRemove(iter_t where)
 /*Counts the number of nodes*/
 size_t SListCount(const slist_t *list)
 {
-	size_t count = -1; 
+	size_t count = 0; 
 	
 	assert(NULL != list);
 	
@@ -146,8 +145,7 @@ void SListForEach(iter_t from, iter_t to, action_t action, void *param)
 		action(SListGet(from), param);
 		from = SListNext(from);
 	}
-	
-	action(SListGet(to), param);	
+		
 }
 
 /*Finds the position of the given value*/

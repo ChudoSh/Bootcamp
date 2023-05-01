@@ -32,22 +32,77 @@ int main()
 	j = SListBegin(list);
 	
 	SListInsert(i, &x);
-	printf("%d\n", *((int*)SListGet(i)));
+	if (x == *((int*)SListGet(i)))
+	{
+		printf("Test 1 for insert successful!\n");
+	}
+	else
+	{
+		printf("Test 1 for insert failed\n");
+	}
 	i = SListNext(i);
-	SListInsert(i, &a);
-	printf("%f\n", *((float*)SListGet(i)));
-	i = SListNext(i);
-	SListInsert(i, &b);
-	printf("%f\n", *((double*)SListGet(i)));
-	i = SListNext(i);
-	SListInsert(i, &u);
-	printf("%c\n", *((char*)SListGet(i)));
 	
-	printf("%lu\n", SListCount(list));
+	SListInsert(i, &a);
+	if (a == *((float*)SListGet(i)))
+	{
+		printf("Test 2 for insert successful!\n");
+	}
+	else
+	{
+		printf("Test 2 for insert failed\n");
+	}
+	i = SListNext(i);
+	
+	SListInsert(i, &b);
+	if (b == *((double*)SListGet(i)))
+	{
+		printf("Test 3 for insert successful!\n");
+	}
+	else
+	{
+		printf("Test 3 for insert failed\n");
+	}
+	i = SListNext(i);
+	
+	SListInsert(i, &u);
+	if (u == *((char*)SListGet(i)))
+	{
+		printf("Test 4 for insert successful!\n");
+	}
+	else
+	{
+		printf("Test 4 for insert failed\n");
+	}
+
 	
 	j = SListNext(j);
 	SListSet(j, &y);
-	printf("%d\n", *((int*)SListGet(j)));
+	if (y == *((int*)SListGet(j)))
+	{
+		printf("Test for set successful!\n");
+	}
+	else
+	{
+		printf("Test for set insert failed\n");
+	}
+	
+	if (4 == SListCount(list))
+	{
+		printf("Test for count successful!\n");
+	}
+	else
+	{
+		printf("Test for set insert failed\n");
+	}
+
+	if (!SListIterIsEqual(SListBegin(list), SListFind(SListBegin(list), SListEnd(list), &y, IntMatch)))
+	{
+		printf("Test for Find successful!\n");
+	}
+	else
+	{
+		printf("Test for set Find failed\n");
+	}
 	
 	TestInsertRemoveGetSetNextCount();
 	TestIsEqualFind();

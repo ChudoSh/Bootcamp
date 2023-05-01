@@ -4,7 +4,6 @@ Rev:
 Date: 
 Status: 
 */ 
-
 #ifndef __SLIST_H__
 #define __SLIST_H__
 
@@ -30,7 +29,7 @@ typedef struct SList slist_t;
 
 typedef node_t *iter_t;
 
-typedef int(*is_match_t)(const void *, void *);
+typedef int (*is_match_t)(const void *, void *);
 
 typedef void *(*action_t)(void *, void *);
 
@@ -60,23 +59,24 @@ void SListDestroy(slist_t *list);
 
 /***********************************************************************/
 /*
-Description: Inserts a new node into the list
+Description: Finds a node into the list
 Arguments: 
     - from : A valid iterator that points to the starting node needed to match.
     - to :  A valid iterator that points to the end node.
     - value : A pointer to a value to compare the nodes with.
     - matcher : A pointer to a function that is meant to match between the values.
 Return: 
+	If the value is found it return the iterator to the value, else returns 'to'.
 Time complexity: O(n).
 Space complexity: O(1).
 */
-iter_t SListFind(iter_t from, iter_t to, const void *value, is_match_t matcher) ;
+iter_t SListFind(iter_t from, iter_t to, const void *value, is_match_t matcher);
 
 /***********************************************************************/
 /*
 Description: Insert a new node to the list.
 Arguments: 
-    - where : An itertor to the position which the new nodes will be inserted.
+    - where : An itertor to a position which the new node will be inserted.
     - value : A valid pointer to a value.
 Return: 
 	The iterator to the location of the new node.
@@ -87,118 +87,115 @@ iter_t SListInsert(iter_t where, void *value);
 
 /***********************************************************************/
 /*
-
-Description: 
+Description: Remove a node from the list
 Arguments: 
-    - 
-    - 
+    - where  An itertor to a position which node will be removed.
 Return: 
-Time complexity: O().
-Space complexity: O().
+	Returns the next node.
+Time complexity: O(1).
+Space complexity: O(1).
 */
 iter_t SListRemove(iter_t where);
 
 /***********************************************************************/
 /*
-
-Description: 
+Description: Counts the number of nodes
 Arguments: 
-    - 
-    - 
+    - list : A valid list pointer.
 Return: 
-Time complexity: O().
-Space complexity: O().
+	A size_t number of nodes.
+Time complexity: O(1).
+Space complexity: O(1).
 */
 size_t SListCount(const slist_t *list);
 
 /***********************************************************************/
 /*
 
-Description: 
+Description: Gets the tail of the list.
 Arguments: 
-    - 
-    - 
+    - list : A valid list pointer. 
 Return: 
-Time complexity: O().
-Space complexity: O().
+	The tail node. 
+Time complexity: O(1).
+Space complexity: O(1).
 */
 iter_t SListEnd(const slist_t *list);
 
 /***********************************************************************/
 /*
-
 Description: Indicates the head of the list. 
 Arguments: 
     - list : A const valid list pointer.
 Return: 
-	An iterator to the head of the list.
+	The head node.
 Time complexity: O(1).
-Space complexity: O(n).
+Space complexity: O(1).
 */
 iter_t SListBegin(const slist_t *list);
 
 /***********************************************************************/
 /*
-
-Description: 
+Description: Operates a function to each node in the list.
 Arguments: 
-    - 
-    - 
-Return: 
-Time complexity: O().
+    - to : A valid iter node to start the operation from.
+    - from : The last valid iter node to end the operation.
+    - action : A valid function pointer that conducts an operation on each node. 
+    - param : A valid pointer to an additional value. 
+Return:
+	 Nothing. 
+Time complexity: O(n).
 Space complexity: O().
 */
 void SListForEach(iter_t from, iter_t to, action_t action, void *param);
 
 /***********************************************************************/
 /*
-
-Description: 
+Description: Sets a new value in the node which the iter points to.
 Arguments: 
-    - 
-    - 
+    - position : A valid iter_t node. 
+    - value : A value to insert.
 Return: 
-Time complexity: O().
-Space complexity: O().
+	None.
+Time complexity: O(1).
+Space complexity: O(1).
 */
 void SListSet(iter_t position, void *value);
 
 /***********************************************************************/
 /*
-
-Description: 
+Description: Gets the value in the node which the iter points to.
 Arguments: 
-    - 
-    - 
+    - position : A valid iter_t node. 
 Return: 
-Time complexity: O().
-Space complexity: O().
+	The value in the node.
+Time complexity: O(1).
+Space complexity: O(1).
 */
 void *SListGet(iter_t position);
 
 /***********************************************************************/
 /*
-
-Description: 
+Description: Gets the next value in the node which the iter points to.
 Arguments: 
-    - 
-    - 
+    - position : A valid iter_t node. 
 Return: 
-Time complexity: O().
-Space complexity: O().
+	The next node.
+Time complexity: O(1).
+Space complexity: O(1).
 */
 iter_t SListNext(iter_t position);
 
 /***********************************************************************/
 /*
-
-Description: 
+Description: Checks whether 2 iter nodes are equal(point to the same location).
 Arguments: 
-    - 
-    - 
+    - iter1 : A valid iter_t node. 
+    - iter2 : A valid iter_t node.
 Return: 
-Time complexity: O().
-Space complexity: O().
+	1 if equal, else 0.
+Time complexity: O(1).
+Space complexity: O(1).
 */
 int SListIterIsEqual(iter_t iter1 , iter_t iter2);
 

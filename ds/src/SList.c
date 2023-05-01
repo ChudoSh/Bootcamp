@@ -6,18 +6,12 @@ Status:
 */ 
 
 #include <stdlib.h>	/*malloc, free*/
-#include <string.h>	/*memcpy*/
 #include <assert.h> /*assert*/
-#include <stdio.h>
 
 #include "SList.h"
 
  
-enum RESULT
-{
-	FAIL = -1, 
-	SUCCESS = 0
-};	
+#define SUCCESS (1)
 
 struct Node
 {	
@@ -31,6 +25,7 @@ struct SList
 	node_t *tail;
 };
 
+static void *Count(void *a, void *b);
 
 /*Creates a list*/
 slist_t *SListCreate(void)
@@ -47,11 +42,12 @@ slist_t *SListCreate(void)
 	dummy = (node_t*)malloc(sizeof(node_t));
 	
 	if (NULL == dummy)
-	{
+	{	
+		free(list);
 		return (NULL);
 	} 
 
-	dummy->value = &(list->tail);
+	dummy->value = list;
 	dummy->next = NULL; 
 	
 	list->head = dummy;
@@ -62,33 +58,26 @@ slist_t *SListCreate(void)
 
 /*Erases a list*/
 void SListDestroy(slist_t *list)
-{
-	iter_t temp1 = NULL; 
-	iter_t temp2 = NULL;
-	
+{	
 	assert(NULL != list);
-	
-	temp1 = list->head;
 
-	while (list->tail != temp1)
+	while (SListEnd(list) != SListBegin(list))
 	{
-		temp2 = temp1->next; 
-		free(temp1);
-		temp1 = temp2;
+		SListRemove(SListBegin(list));
 	}
 	
-	free(list->tail);
-	list->tail = NULL;
-	
+	free(SListEnd(list));
 	free(list);
 	list = NULL;
 }
 
+/*Inserts a new node*/
 iter_t SListInsert(iter_t where, void *value)
 {
-	node_t *insert = NULL;
+	iter_t insert = NULL;
 
 	assert(NULL != where);
+	assert(NULL != value);
 	
 	insert = (node_t*)malloc(sizeof(node_t));
 	
@@ -98,18 +87,91 @@ iter_t SListInsert(iter_t where, void *value)
 	}
 	
 	insert->value = where->value;
-	insert->next = where->next; 
+	insert->next = where->next;
+	 
 	where->value = value;
 	where->next = insert;
 	
 	if (NULL == (insert->next))
 	{
-		*((node_t**)(insert->value)) = insert;  
+		((slist_t *)insert->value)->tail = insert;  
 	}
 	
 	return (where);	 
 }
 
+/*Removes the node in the given iter*/
+iter_t SListRemove(iter_t where)
+{
+	iter_t remove = NULL;
+
+	assert(NULL != where);
+
+	remove = where->next;
+	where->value = where->next->value;
+	where->next = where->next->next;
+	
+	if (NULL == (where->next))
+	{
+		((slist_t *)where->value)->tail = where;  
+	}
+	
+	free(remove);
+	
+	return (where);	 
+}
+
+/*Counts the number of nodes*/
+size_t SListCount(const slist_t *list)
+{
+	size_t count = -1; 
+	
+	assert(NULL != list);
+	
+	SListForEach(SListBegin(list), SListEnd(list), Count, &count);
+		
+	return (count);
+}
+
+/*Conducts an operation on each node*/
+void SListForEach(iter_t from, iter_t to, action_t action, void *param)
+{
+	assert(NULL != from);
+	assert(NULL != to);
+	assert(NULL != param);
+	assert(NULL != action);
+	
+	while (SUCCESS != SListIterIsEqual(from, to))
+	{
+		action(SListGet(from), param);
+		from = SListNext(from);
+	}
+	
+	action(SListGet(to), param);	
+}
+
+/*Finds the position of the given value*/
+iter_t SListFind(iter_t from, iter_t to, const void *value, is_match_t matcher)
+{
+	assert(NULL != from);
+	assert(NULL != to);
+	assert(NULL != value);
+	assert(NULL != matcher);
+	
+	while (SUCCESS != SListIterIsEqual(from, to))
+	{
+		if	(SUCCESS == matcher(value, SListGet(from)))
+		{
+			return (from);
+		}
+		
+		from = SListNext(from);
+	}
+	
+	return (to);
+}
+
+/*Get the tail of the list*/
 iter_t SListEnd(const slist_t *list)
 {	
 	assert(NULL != list);
@@ -117,6 +179,7 @@ iter_t SListEnd(const slist_t *list)
 	return (list->tail);
 }
 
+/*Get the head of the list*/
 iter_t SListBegin(const slist_t *list)
 {
 	assert(NULL != list);
@@ -124,6 +187,7 @@ iter_t SListBegin(const slist_t *list)
 	return (list->head);
 }
 
+/*Set the value of the iter to the given value*/
 void SListSet(iter_t position, void *value)
 {
 	assert(NULL != position);
@@ -131,6 +195,7 @@ void SListSet(iter_t position, void *value)
 	position->value = value;
 }
 
+/*Get the value of the iter*/
 void *SListGet(iter_t position)
 {
 	assert(NULL != position);
@@ -138,6 +203,7 @@ void *SListGet(iter_t position)
 	return (position->value);
 }
 
+/*Are the iters equal?*/
 int SListIterIsEqual(iter_t iter1 , iter_t iter2)
 {
 	assert(NULL != iter1);
@@ -146,6 +212,7 @@ int SListIterIsEqual(iter_t iter1 , iter_t iter2)
 	return (iter1 == iter2);
 }
 
+/*Get the next position of thee current iter*/
 iter_t SListNext(iter_t position)
 {
 	assert(NULL != position);
@@ -153,5 +220,11 @@ iter_t SListNext(iter_t position)
 	return (position->next);
 }
 
+static void *Count(void *a, void *b)
+{
+	++(*(size_t *)b);
+	
+	return (a);
+}
 
 

@@ -6,13 +6,16 @@ CPPFLAGS = -I./
 VLG = valgrind -s --leak-check=yes --track-origins=yes
 GDB = cgdb
 
-NAMESPACE = SList
+NAMESPACE = queue
+LIBS = $(SRC)/SList.c
+
 SRC = src
-TEST= test
+TEST = test
 HEADER = include
 
+
 TARGET = $(NAMESPACE).out
-CFILE = $(SRC)/$(NAMESPACE).c $(TEST)/$(NAMESPACE)_Test.c
+CFILE = $(SRC)/$(NAMESPACE).c $(TEST)/$(NAMESPACE)_test.c $(LIBS)
 
 RELEASE_DIR = bin/release/$(NAMESPACE)_Release.out
 DEBUG_DIR = bin/debug/$(NAMESPACE)_Debug.out
@@ -39,7 +42,7 @@ $(RELEASE_DIR):$(CFILE)
 debug: $(DEBUG_DIR)
 
 $(DEBUG_DIR): $(CFILE)
-	@ $(CC) $(CFLAGS) $(GD) $(CPPFLAGS)$(HEADER) -o $(DEBUG_DIR) $(CFILE)
+	 @ $(CC) $(CFLAGS) $(GD) $(CPPFLAGS)$(HEADER) -o $(DEBUG_DIR) $(CFILE)
 	
 execute_release:
 	@ $(RELEASE_DIR) 

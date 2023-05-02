@@ -1,6 +1,6 @@
 /*
 Dev: BarSH
-Rev: Pleg
+Rev: Oleg
 Date: 1.5.23
 Status: Approved
 */ 
@@ -198,6 +198,20 @@ Time complexity: O(1).
 Space complexity: O(1).
 */
 int SListIterIsEqual(iter_t iter1 , iter_t iter2);
+
+
+/***********************************************************************/
+/*
+Description: Appends a source list to a destination list, empties the source.
+Arguments: 
+	- dest : A const valid list pointer of the destination.
+	- src : A const valid list pointer of the source.
+Return: 
+	Nothing.
+Time complexity: O(1)
+Space complexity: O(1)
+*/
+void SListAppend(slist_t *dest, slist_t *src);
 
 
 #endif /*__SLIST__*/

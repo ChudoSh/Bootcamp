@@ -11,6 +11,7 @@ Status: Approved
 #include "SList.h"
 
 #define SUCCESS (1)
+#define IS_EMPTY (0)
 
 struct Node
 {	
@@ -216,6 +217,27 @@ iter_t SListNext(iter_t position)
 	assert(NULL != position);
 	
 	return (position->next);
+}
+
+void SListAppend(slist_t *dest, slist_t *src)
+{	
+	assert(NULL != dest);
+	assert(NULL != src);
+	
+	if (IS_EMPTY == SListCount(src))
+	{
+		return;
+	}
+	
+	dest->tail->value = src->head->value;
+	dest->tail->next = src->head->next; 
+	
+	src->tail->value = dest;
+	dest->tail = src->tail;
+	
+	src->head->value = src;
+	src->head->next = NULL;
+	src->tail = src->head;
 }
 
 static void *Count(void *a, void *b)

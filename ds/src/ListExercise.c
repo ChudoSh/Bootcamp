@@ -1,43 +1,70 @@
-
-
-
-
+/*
+Dev:
+Rev:
+Status:
+Date:
+*/
+#include <stddef.h> /*NULL*/
+#include <assert.h> /*assert*/
 #include "ListExercise.h"
 
+enum RESULT
+{
+	FAIL = -1,
+	SUCCESS = 0
+};
 
-
-
+/*Flips the list, causing the head to be the tail and the other way around*/
 node_t *Flip(node_t *head)
 {
-	node_t *temp1 = NULL;
-	node_t *temp2 = NULL;
-	node_t *temp3 = NULL;
+	node_t *current = NULL;
+	node_t *follow = NULL;
 
 	assert(NULL != head);
 	
-	temp1 = head->next;
-	temp2 = head->next->next;
-	temp3 = head->next->next->next;
-	temp1->next = head;
-	m
-	while (NULL != temp3->next)
-	{
-		temp2->next = temp1;
-		temp1 = temp3;
-		temp1->next = temp2; 
-		temp2 = temp1->next;
-		temp3 = temp2->next;	
-	}
-	
+	current = head->next;
 	head->next = NULL;
-	temp2->next = temp1;
 	
-	return (temp3);
+	while (NULL != head->next)
+	{
+		follow = current->next;
+		current->next = head;
+		head = current;
+		current = head->next;
+	}
+
+	return (head); 
 }
 
-
-
+/*Confirms if a list has a loop or not*/
 int HasLoop(const node_t *head)
 {
-	size_t
+	node_t *sheep = NULL;
+	node_t *dog = NULL;
+	
+	assert(NULL != head);
+	
+	sheep = head;
+	dog = head;
+	
+	while (NULL != dog->next && NULL != sheep && NULL != dog)
+	{
+		if (sheep == dog)
+		{
+			return (SUCCESS);
+		}
+		
+		sheep = sheep->next;
+		dog = dog->next->next; 
+	}
+	
+	return (FAIL);
 }
+
+
+/*Looks for a node that is the intersection of 2 lists*/
+/*node_t *FindIntersection(node_t *head1, node_t *head2)
+{
+	assert(NULL != head);
+	
+}*/

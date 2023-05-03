@@ -1,22 +1,24 @@
 /*
-Dev:
-Rev:
-Status:
-Date:
+Dev: BarSH
+Rev: MariaP
+Status: Approved
+Date: 3.5.23
 */
+
 #include <stddef.h> /*NULL*/
 #include <assert.h> /*assert*/
+
 #include "ListExercise.h"
 
 enum RESULT
 {
-	FAIL = -1,
-	SUCCESS = 0
+	FAIL = 0,
+	SUCCESS = 1
 };
 
 /*Flips the list, causing the head to be the tail and the other way around*/
 node_t *Flip(node_t *head)
-{
+{	
 	node_t *current = NULL;
 	node_t *follow = NULL;
 
@@ -25,37 +27,37 @@ node_t *Flip(node_t *head)
 	current = head->next;
 	head->next = NULL;
 	
-	while (NULL != head->next)
+	while (NULL != current)
 	{
 		follow = current->next;
 		current->next = head;
 		head = current;
-		current = head->next;
+		current = follow;
 	}
-
+	
 	return (head); 
 }
 
 /*Confirms if a list has a loop or not*/
 int HasLoop(const node_t *head)
 {
-	node_t *sheep = NULL;
-	node_t *dog = NULL;
+	const node_t *sheep = NULL;
+	const node_t *wolf = NULL;
 	
 	assert(NULL != head);
 	
 	sheep = head;
-	dog = head;
+	wolf = head;
 	
-	while (NULL != dog->next && NULL != sheep && NULL != dog)
+	while (NULL != wolf->next && NULL != wolf)
 	{
-		if (sheep == dog)
+		sheep = sheep->next;
+		wolf = wolf->next->next;
+		 
+		if (sheep == wolf)
 		{
 			return (SUCCESS);
-		}
-		
-		sheep = sheep->next;
-		dog = dog->next->next; 
+		} 
 	}
 	
 	return (FAIL);
@@ -63,8 +65,61 @@ int HasLoop(const node_t *head)
 
 
 /*Looks for a node that is the intersection of 2 lists*/
-/*node_t *FindIntersection(node_t *head1, node_t *head2)
+node_t *FindIntersection(node_t *head1, node_t *head2)
 {
-	assert(NULL != head);
+	node_t *iter1 = NULL;
+	node_t *iter2 = NULL;
 	
-}*/
+	size_t count1 = 0;
+	size_t count2 = 0; 
+	
+	assert(NULL != head1);
+	assert(NULL != head2);
+	
+	iter1 = head1;
+	iter2 = head2;
+	
+	while (NULL != iter1->next)
+	{
+		iter1 = iter1->next;
+		++(count1);
+	}
+	
+	while (NULL != iter2->next)
+	{
+		iter2 = iter2->next;
+		++(count2);
+	}
+	
+	if (iter1->next != iter2->next)
+	{
+		return (NULL);
+	}
+	
+	iter1 = head1;
+	iter2 = head2;
+	
+	while (iter1 != iter2)
+	{
+		if (count1 > count2)
+		{
+			--(count1);
+			iter1 = iter1->next;
+		}
+		
+		else if(count1 < count2)
+		{
+			--(count2);
+			iter2 = iter2->next;
+		}
+		
+		else
+		{
+			iter1 = iter1->next; 
+			iter2 = iter2->next;
+		}
+	}
+	
+	return (iter1);		
+}
+

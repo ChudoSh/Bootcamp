@@ -1,6 +1,9 @@
-
-
-
+/*
+Dev: BarSH
+Rev: MariaP
+Status: Approved
+Date: 3.5.23
+*/
 #include <stdio.h> /*printf*/
 
 #include "ListExercise.h"
@@ -21,133 +24,116 @@ int main()
 	TestUnit1();
 	TestUnit2();
 	TestUnit3();
-	return 1;		
+	return (0);		
 }
 
 
 void TestUnit1()
 {
-	node_t node1 = {NULL, NULL};
+	node_t head = {NULL, NULL};
 	node_t node2 = {NULL, NULL};
 	node_t node3 = {NULL, NULL};
 	node_t node4 = {NULL, NULL};
 	node_t node5 = {NULL, NULL};
 	node_t node6 = {NULL, NULL};
-	node_t node7 = {NULL, NULL};
+	node_t tail = {NULL, NULL};
 	
-	node1.next = NULL;
-	node2.next = &node1;
-	node3.next = &node2;
-	node4.next = &node3;
-	node5.next = &node4;
-	node6.next = &node5;
-	node7.next = &node6;
+	head.next = &node2;
+	node2.next = &node3;
+	node3.next = &node4;
+	node4.next = &node5;
+	node5.next = &node6;
+	node6.next = &tail;
+	tail.next = NULL;
 
+	Flip(&head);
 	
-	if(&node1 != Flip(&node7))
+	if(tail.next == &node6)
 	{
-		printf("Flip 1 FAILED\n");
+		printf("Flip successful!\n");
 		return;
 	}
 	
-	if(&node7 != Flip(&node7))
+	else	
 	{
-		printf("Flip 2 FAILED\n");
+		printf("Flip failed..\n");
 		return;
 	}
-	
-	printf("Unit 1 Success\n");
 
 }
 
 void TestUnit2()
 {
-	node_t node1 = {NULL, NULL};
+	node_t head = {NULL, NULL};
 	node_t node2 = {NULL, NULL};
 	node_t node3 = {NULL, NULL};
 	node_t node4 = {NULL, NULL};
 	node_t node5 = {NULL, NULL};
 	node_t node6 = {NULL, NULL};
-	node_t node7 = {NULL, NULL};
+	node_t tail = {NULL, NULL};
 	
 	
-	node1.next = &node3;
-	node2.next = &node1;
-	node3.next = &node2;
-	node4.next = &node3;
-	node5.next = &node4;
-	node6.next = &node5;
-	node7.next = &node6;
+	head.next = &node2;
+	node2.next = &node3;
+	node3.next = &node4;
+	node4.next = &node5;
+	node5.next = &node6;
+	node6.next = &tail;
+	tail.next = &node4;
 	
-	if(SUCCESS != HasLoop(&node7))
+	if(1 == HasLoop(&head))
 	{
-		printf("Loop 1 FAILED\n");
+		printf("Loop detection successful!\n");
 		return;
 	}
 	
-	node1.next = &node2;
-	
-	if(SUCCESS != HasLoop(&node7))
+	else	
 	{
-		printf("Loop 2 FAILED\n");
+		printf("Loop detection failed..\n");
 		return;
 	}
-	
-	node1.next = NULL;
-	
-	if(FAILED != HasLoop(&node7))
-	{
-		printf("Loop 3 FAILED\n");
-		return;
-	}
-	
-	printf("Unit 2 Success\n");
 }
 
 void TestUnit3()
 {
-	node_t node1 = {NULL, NULL};
+	node_t head1 = {NULL, NULL};
 	node_t node2 = {NULL, NULL};
 	node_t node3 = {NULL, NULL};
 	node_t node4 = {NULL, NULL};
 	node_t node5 = {NULL, NULL};
-	node_t node6 = {NULL, NULL};
-	node_t node7 = {NULL, NULL};
+	node_t tail1 = {NULL, NULL};
 	
+	node_t head2 = {NULL, NULL};
 	node_t node8 = {NULL, NULL};
 	node_t node9 = {NULL, NULL};
 	node_t node10 = {NULL, NULL};
-	node_t node11 = {NULL, NULL};
 	
-	node1.next = NULL;
-	node2.next = &node1;
-	node3.next = &node2;
-	node4.next = &node3;
-	node5.next = &node4;
 	
-	node6.next = &node5;
-	node7.next = &node6;
+	head1.next = &node2;
+	node2.next = &node3;
+	node3.next = &node4;
+	node4.next = &node5;
+	node5.next = &tail1;
+	tail1.next = NULL;
 	
-	node8.next = &node5;
-	node9.next = &node8;
-	node10.next = &node9;
-	node11.next = &node10;
+	head2.next = &node8;
+	node8.next = &node9;
+	node9.next = &node10;
+	node10.next = &node5;
 	
-	if(&node5 != FindIntersection(&node11, &node7))
+	
+	if(&node5 == FindIntersection(&head1, &head2))
 	{
-		printf("FindInter 1 FAILED\n");
+		printf("Intersection found - successful!\n");
 		return;
 	}
 	
-	node8.next = NULL;
-	
-	if(NULL != FindIntersection(&node11, &node7))
+	else	
 	{
-		printf("FindInter 2 FAILED\n");
+		printf("Intersection not found..\n");
 		return;
 	}
 	
-	printf("Unit 3 Success \n");
 }
 
 

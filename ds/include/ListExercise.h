@@ -1,11 +1,9 @@
 /*
-Dev: BarSH 
-Rev:  
-status: 
-Date: 
+Dev: BarSH
+Rev: MariaP
+Status: Approved
+Date: 3.5.23
 */
-
-
 
 #ifndef __SLISTEXER_H__
 #define __SLISTEXER_H__
@@ -52,14 +50,6 @@ Space complexity:
 */
 /*Returns a pointer to a first node mutual to both slist, if any */
 node_t *FindIntersection(node_t *head1, node_t *head2);
-
-
-
-
-
-
-
-
 
 
 #endif /*__SLISTEXER_H__*/

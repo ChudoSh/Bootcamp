@@ -27,7 +27,8 @@ void MinPush(min_t *min_stack, const void* element)
 void MinPop(min_t *min_stack)
 {
 	assert(NULL != min_stack);
-	assert(StackIsEmpty(min_stack));
+	assert(StackIsEmpty(min_stack->main));
+	assert(StackIsEmpty(min_stack->min_val));
 	
 	StackPop(min_stack->main); 
 	StackPop(min_stack->min_val);

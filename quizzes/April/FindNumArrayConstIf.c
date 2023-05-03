@@ -6,35 +6,33 @@ enum RESULT
 	SUCCESS = 0
 };
 
-RESULT FimdNumArrayConstIf(int *arr, size_t size, int x)
+int FimdNumArrayConstIf(int *arr, size_t size, int x)
 {
-	while (*arr != x || 0 < size)
+	
+	while (*arr != x && 0 < size)
 	{
 		++arr;
 		--size;
 	}
 	
-	if (*arr == x)
+	if (*arr != x)
 	{
-		return (SUCCESS); 
+		return (FAIL); 
 	}
 	
-	return (FAIL); 	
+	return (SUCCESS); 	
 }
 
 int main()
 {
-	size_t i = 0;
-	char c = '\0'; 
+	int arr[8] = {1, 3, 5,6,7,8,9,10};
 	
-	for (i = 0; i < 10; ++i)
+	if (SUCCESS == FimdNumArrayConstIf(arr, 8, 1))
 	{
-		scanf("%c", &c);
-		OneMillionChars(c);
+		printf("Success!\n");
 	}
-	  
-	return 0;
-
+	
+	return (SUCCESS);
 }
 
 

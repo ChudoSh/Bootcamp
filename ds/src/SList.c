@@ -1,6 +1,6 @@
 /*
 Dev: BarSH
-Rev: Pleg
+Rev: OlegV
 Date: 1.5.23
 Status: Approved
 */
@@ -10,8 +10,15 @@ Status: Approved
 
 #include "SList.h"
 
-#define SUCCESS (1)
+#define TRUE (1)
 #define IS_EMPTY (0)
+#define UNUSED(x) ((void)x)
+
+enum RESULT 
+{
+	FAIL = -1, 
+	SUCCESS = 0
+};
 
 struct Node
 {	
@@ -25,12 +32,16 @@ struct SList
 	node_t *tail;
 };
 
-static void *Count(void *a, void *b);
+/*A count function*/
+static int Count(void *a, void *b);
+
+/*Creates a node*/
+static node_t *CreateNode();
 
 /*Creates a list*/
 slist_t *SListCreate(void)
 {
-	node_t *dummy = NULL;
+	node_t *dummy = NULL;	
 	
 	slist_t *list = (slist_t*)malloc(sizeof(slist_t));
 	
@@ -39,7 +50,7 @@ slist_t *SListCreate(void)
 		return (NULL);
 	}
 	
-	dummy = (node_t*)malloc(sizeof(node_t));
+	dummy = CreateNode();
 	
 	if (NULL == dummy)
 	{	
@@ -47,7 +58,7 @@ slist_t *SListCreate(void)
 		return (NULL);
 	} 
 
-	dummy->value = list;
+	SListSet(dummy, list);
 	dummy->next = NULL; 
 	
 	list->head = dummy;
@@ -68,7 +79,6 @@ void SListDestroy(slist_t *list)
 	
 	free(SListEnd(list));
 	free(list);
-	list = NULL;
 }
 
 /*Inserts a new node*/
@@ -77,13 +87,17 @@ iter_t SListInsert(iter_t where, void *value)
 	iter_t insert = NULL;
 
 	assert(NULL != where);
-	assert(NULL != value);
 	
-	insert = (node_t*)malloc(sizeof(node_t));
+	insert = CreateNode();
 	
 	if (NULL == insert)
-	{
-		return (NULL);
+	{	
+		while (NULL != where)
+		{
+			where = SListNext(where);
+		}
+		
+		return (where);
 	}
 	
 	SListSet(insert, SListGet(where));
@@ -134,19 +148,24 @@ size_t SListCount(const slist_t *list)
 }
 
 /*Conducts an operation on each node*/
-void SListForEach(iter_t from, iter_t to, action_t action, void *param)
+int SListForEach(iter_t from, iter_t to, action_t action, void *param)
 {
 	assert(NULL != from);
 	assert(NULL != to);
-	assert(NULL != param);
 	assert(NULL != action);
 	
-	while (SUCCESS != SListIterIsEqual(from, to))
+	while (TRUE != SListIterIsEqual(from, to))
 	{
 		action(SListGet(from), param);
 		from = SListNext(from);
 	}
-		
+	
+	if (TRUE != SListIterIsEqual(from, to))
+	{
+		return (FAIL);
+	}
+	
+	return (SUCCESS);		
 }
 
 /*Finds the position of the given value*/
@@ -154,12 +173,11 @@ iter_t SListFind(iter_t from, iter_t to, const void *value, is_match_t matcher)
 {
 	assert(NULL != from);
 	assert(NULL != to);
-	assert(NULL != value);
 	assert(NULL != matcher);
 	
-	while (SUCCESS != SListIterIsEqual(from, to))
+	while (TRUE != SListIterIsEqual(from, to))
 	{
-		if	(SUCCESS == matcher(value, SListGet(from)))
+		if	(TRUE == matcher(value, SListGet(from)))
 		{
 			return (from);
 		}
@@ -219,6 +237,7 @@ iter_t SListNext(iter_t position)
 	return (position->next);
 }
 
+/*Get the next position of thee current iter*/
 void SListAppend(slist_t *dest, slist_t *src)
 {	
 	assert(NULL != dest);
@@ -240,11 +259,28 @@ void SListAppend(slist_t *dest, slist_t *src)
 	src->tail = src->head;
 }
 
-static void *Count(void *a, void *b)
+static int Count(void *a, void *b)
 {
 	++(*(size_t *)b);
 	
-	return (a);
+	UNUSED(a);
+	
+	return (SUCCESS);		
+}
+
+static node_t *CreateNode()
+{
+	node_t *new_node = (node_t*)malloc(sizeof(node_t));
+	
+	if (NULL == new_node)
+	{		
+		return (NULL);
+	}
+	
+	SListSet(new_node, NULL);
+	new_node->next = NULL;
+	
+	return (new_node);
 }
 
 

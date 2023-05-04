@@ -31,7 +31,7 @@ typedef node_t *iter_t;
 
 typedef int (*is_match_t)(const void *, void *);
 
-typedef void *(*action_t)(void *, void *);
+typedef int (action_t)(void *, void *);
 
 /***********************************************************************/
 /*
@@ -143,11 +143,11 @@ Arguments:
     - action : A valid function pointer that conducts an operation on each node. 
     - param : A valid pointer to an additional value. 
 Return:
-	 Nothing. 
+	 0 if successful, -1 if failed. 
 Time complexity: O(n).
 Space complexity: O(1).
 */
-void SListForEach(iter_t from, iter_t to, action_t action, void *param);
+int SListForEach(iter_t from, iter_t to, action_t action, void *param);
 
 /***********************************************************************/
 /*

@@ -6,8 +6,8 @@ CPPFLAGS = -I./
 VLG = valgrind -s --leak-check=yes --track-origins=yes
 GDB = cgdb
 
-NAMESPACE = ListExercise
-LIBS = $(SRC)/SList.c
+NAMESPACE = dlist
+//LIBS = $(SRC)/.c//
 
 SRC = src
 TEST = test
@@ -15,7 +15,7 @@ HEADER = include
 
 
 TARGET = $(NAMESPACE).out
-CFILE = $(SRC)/$(NAMESPACE).c $(TEST)/$(NAMESPACE)_Test.c $(LIBS)
+CFILE = $(SRC)/$(NAMESPACE).c $(TEST)/$(NAMESPACE)_test.c $(LIBS)
 
 RELEASE_DIR = bin/release/$(NAMESPACE)_Release.out
 DEBUG_DIR = bin/debug/$(NAMESPACE)_Debug.out

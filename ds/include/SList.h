@@ -1,9 +1,10 @@
 /*
 Dev: BarSH
-Rev: Oleg
-Date: 1.5.23
-Status: Approved
-*/ 
+Rev: Michal
+Date: 4.5.23
+Status: Fixed
+*/
+
 #ifndef __SLIST_H__
 #define __SLIST_H__
 
@@ -136,7 +137,7 @@ iter_t SListBegin(const slist_t *list);
 
 /***********************************************************************/
 /*
-Description: Operates a function to each node in the list.
+Description: Operates a function on each node in the list.
 Arguments: 
     - to : A valid iter node to start the operation from.
     - from : The last valid iter node to end the operation.

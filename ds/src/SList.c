@@ -1,8 +1,8 @@
 /*
 Dev: BarSH
-Rev: OlegV
-Date: 1.5.23
-Status: Approved
+Rev: Michal
+Date: 4.5.23
+Status: Fixed
 */
 
 #include <stdlib.h>	/*malloc, free*/

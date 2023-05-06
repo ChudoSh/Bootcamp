@@ -26,94 +26,99 @@ typedef node_t *dlist_iter_t;
 
 /***********************************************************************/
 /*
-Description: 
-Arguments:
+Description: Creates a dooubly linked list. 
+Arguments: 
+	None.
 Return: 
-
-Time complexity: O().
-Space complexity: O().
+	Return a pointer to a doubly linked list. 
+Time complexity: O(1).
+Space complexity: O(n).
 */
-
 dlist_t *DListCreate(void);
 
 /***********************************************************************/
 /*
-Description: 
+Description: Eliminates a doubly linked list.
 Arguments:
+	- list : A valid pointer to doubly linked list.
 Return: 
-
-Time complexity: O().
-Space complexity: O().
+	None.
+Time complexity: O(n).
+Space complexity: O(1).
 */
-
 void DListDestroy(dlist_t *list);
 
 /***********************************************************************/
 /*
-Description: 
+Description: Counts the number of noeds in the list.
 Arguments:
+	- list : A constant pointer to a doubly linked list.
 Return: 
-
-Time complexity: O().
-Space complexity: O().
+	Returns the number of nodes in the list. 
+Time complexity: O(n).
+Space complexity: O(1).
 */
-
 size_t DListSize(const dlist_t *list);
 
 /***********************************************************************/
 /*
-Description: 
+Description: Inserts a new node into the list.
 Arguments:
+	- where : A valid node pointer in the dlist (iterator).
+	- data : A valid pointer to input data.
 Return: 
-
-Time complexity: O().
-Space complexity: O().
+	Return the location of the new node, otherwise returns the tail node.
+Time complexity: O(n).
+Space complexity: O(1).
 */
 
 dlist_iter_t DListInsert(dlist_iter_t where, void *data);
 
 /***********************************************************************/
 /*
-Description: 
+Description: Removes a node in the given position. 
 Arguments:
+	- current : A valid position node pointer. 
 Return: 
-
-Time complexity: O().
-Space complexity: O().
+	The new node of in the current position.
+Time complexity: O(1).
+Space complexity: O(1).
 */
 
 dlist_iter_t DListRemove(dlist_iter_t current);
 
 /***********************************************************************/
 /*
-Description: 
+Description: Retrieves the next node.
 Arguments:
+	- current : A valid node iterator.
 Return: 
-
-Time complexity: O().
-Space complexity: O().
+	Returns the address of the next node current points to. 
+Time complexity: O(1).
+Space complexity: O(1).
 */
 
 dlist_iter_t DListNext(dlist_iter_t current);
 
 /***********************************************************************/
 /*
-Description: 
+Description: Retrieves the previous node.
 Arguments:
+	- current : A valid node iterator.
 Return: 
-
-Time complexity: O().
-Space complexity: O().
+	Returns the address of the previous node current points to. 
+Time complexity: O(1).
+Space complexity: O(1).
 */
-
 dlist_iter_t DListPrev(dlist_iter_t current);
 
 /***********************************************************************/
 /*
-Description: 
+Description: Checks whether the list is empty.
 Arguments:
+	- list : A valid list pointer.
 Return: 
-
+	Returns a 1 if the list is empty, 0 otherwise. 
 Time complexity: O().
 Space complexity: O().
 */
@@ -122,159 +127,184 @@ int DListIsEmpty(const dlist_t *list);
 
 /***********************************************************************/
 /*
-Description: 
+Description: Finds an value in a list.
 Arguments:
+	- from : A valid iterator from which to start to look.
+	- to : A valid iterator to end the search.
+	- match_func : A valid function pointer that compares values, returns 1 if they are equal, else 0.
+	- param : A valid pointer to a value to look for.
 Return: 
-
-Time complexity: O().
-Space complexity: O().
+	Returns the node in which the value was found, else returns the 'to' iterator.
+Time complexity: O(n).
+Space complexity: O(1).
 */
 
 dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to, int (*match_func)(void *data, const void *param), const void *param) ;
 
 /***********************************************************************/
 /*
-Description: 
-Arguments:
-Return: 
-
-Time complexity: O().
-Space complexity: O().
+Description: Operates a function on each node in the list.
+Arguments: 
+    - from : A valid iter node to start the operation from.
+    - to : The last valid iter node to end the operation.
+    - action : A valid function pointer that conducts an operation on each node. returns 1 if succceeded, else 0. 
+    - action_param : A valid pointer to an additional value. 
+Return:
+	 1 if successful, 0 if failed. 
+Time complexity: O(n).
+Space complexity: O(1).
 */
 
 int DListForEach(dlist_iter_t from, dlist_iter_t to, int(*action_func)(void *data, void *param), void *action_param);
 
 /***********************************************************************/
 /*
-Description: 
-Arguments:
+Description: Sets a new value in the node which the iter points to.
+Arguments: 
+    - position : A valid iter_t node. 
+    - data : A value to insert.
 Return: 
-
-Time complexity: O().
-Space complexity: O().
+	None.
+Time complexity: O(1).
+Space complexity: O(1).
 */
 
 void DListSetData(dlist_iter_t current, void *data);
 
 /***********************************************************************/
 /*
-Description: 
-Arguments:
+Description: Gets the value in the node which the iter points to.
+Arguments: 
+    - current : A valid iter_t node. 
 Return: 
-
-Time complexity: O().
-Space complexity: O().
+	The value in the node.
+Time complexity: O(1).
+Space complexity: O(1).
 */
 
 void *DListGetData(dlist_iter_t current);
 
 /***********************************************************************/
 /*
-Description: 
-Arguments:
+Description: Checks whether 2 iter nodes are equal(point to the same location).
+Arguments: 
+    - iter1 : A valid iter_t node. 
+    - iter2 : A valid iter_t node.
 Return: 
-
-Time complexity: O().
-Space complexity: O().
+	1 if equal, else 0.
+Time complexity: O(1).
+Space complexity: O(1).
 */
 
 int DListIsEqual(dlist_iter_t iter1 , dlist_iter_t iter2);
 
 /***********************************************************************/
 /*
-Description: 
-Arguments:
+Description: Points to the node after head of the list. 
+Arguments: 
+    - list : A const valid list pointer.
 Return: 
-
-Time complexity: O().
-Space complexity: O().
+	The address after the head nodes.
+Time complexity: O(1).
+Space complexity: O(1).
 */
-
 dlist_iter_t DListBegin(const dlist_t *list);
 
 /***********************************************************************/
 /*
-Description: 
-Arguments:
+Description: Gets the tail of the list.
+Arguments: 
+    - list : A const valid list pointer. 
 Return: 
-
-Time complexity: O().
-Space complexity: O().
+	The tail node. 
+Time complexity: O(1).
+Space complexity: O(1).
 */
 
 dlist_iter_t DListEnd(const dlist_t *list);
 
 /***********************************************************************/
 /*
-Description: 
-Arguments:
+Description: Inserts a new node at the tail of the list.
+Arguments: 
+    - list : A const valid list pointer. 
+    - data : A valid data pointer. 
 Return: 
-
-Time complexity: O().
-Space complexity: O().
+	The node before the tail node if succeeded, else returns the tail node. 
+Time complexity: O(1).
+Space complexity: O(1).
 */
 
 dlist_iter_t DListPushBack(dlist_t *list, void *data);
 
 /***********************************************************************/
 /*
-Description: 
-Arguments:
+Description: Inserts a new node at the head of the list.
+Arguments: 
+    - list : A const valid list pointer.
+    - data : A valid data pointer. 
 Return: 
-
-Time complexity: O().
-Space complexity: O().
+	The node after the head node if succeeded, else returns the tail node. 
+Time complexity: O(1).
+Space complexity: O(1).
 */
 
 dlist_iter_t DListPushFront(dlist_t *list, void *data);
 
 /***********************************************************************/
 /*
-Description: 
-Arguments:
+Description: Removes the node at the head of the list.
+Arguments: 
+    - list : A const valid list pointer.
 Return: 
-
-Time complexity: O().
-Space complexity: O().
+	The node after the head node if succeeded, else returns the tail node. 
+Time complexity: O(1).
+Space complexity: O(1).
 */
 
 void *DListPopFront(dlist_t *list);
 
 /***********************************************************************/
 /*
-Description: 
-Arguments:
+Description: Removes the node at the tail of the list.
+Arguments: 
+    - list : A const valid list pointer.
 Return: 
-
-Time complexity: O().
-Space complexity: O().
+	The node before the tail node if succeeded, else returns the tail node. 
+Time complexity: O(1).
+Space complexity: O(1).
 */
 
 void *DListPopBack(dlist_t *list);
 
 /***********************************************************************/
 /*
-Description: 
-Arguments:
-Return: Iterator to the "from" node in its new location.
-
-Time complexity: O().
-Space complexity: O().
+Description: Appends from one node till another in the source list to a position in the destination list.
+Arguments: 
+	- dest : A const valid list pointer of the destination.
+	- src : A const valid list pointer of the source.
+Return: 
+	The position in the destination list.
+Time complexity: O(1)
+Space complexity: O(1)
 */
 
 dlist_iter_t DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to);
 
 /***********************************************************************/
 /*
-Description: 
-Arguments:
-Return: 
-
-Time complexity: O().
-Space complexity: O().
+Description: Looks for mulitple nodes with same value and inserts them into a given output list. 
+Arguments: 
+    - from: A valid iter node to start the operation from.
+    - to : The last valid iter node to end the operation.
+    - match_func : A valid function pointer that compares values, returns 1 if they are equal, else 0. 
+    - param : A valid pointer to an additional value. 
+    - output_list : A valid pointer to the output list. 
+Return:
+	 Returns 1 if successful, else 0. 
+Time complexity: O(n).
+Space complexity: O(1).
 */
-
-
 int DListMultiFind(dlist_iter_t from, dlist_iter_t to, int (*match_func)(void *data, const void *param), const void *param, dlist_t *output_list);
 
 #endif /* __DLIST_H__ */

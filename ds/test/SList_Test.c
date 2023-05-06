@@ -1,14 +1,13 @@
 /*
 Dev: BarSH
-Rev: Pleg
-Date: 1.5.23
-Status: Approved
+Rev: Michal
+Date: 4.5.23
+Status: Fixed
 */
 
 #include <stdio.h>
-#include <assert.h>
 
-#include "SList.h"
+#include "DList.h"
 
 void TestInsertRemoveGetSetNextCount();
 void TestIsEqualFind();
@@ -20,19 +19,19 @@ int main()
 	int x = 5; 
 	float a = 6;
 	double b = 7;
-	char u = 'A';
+	char *u = "Afasdfasd";
 	int y = 10;
 	
 	iter_t i = NULL;
 	iter_t j = NULL;
 	
-	slist_t *list = SListCreate();
+	DList_t *list = DListCreate();
 	
-	i = SListBegin(list);
-	j = SListBegin(list);
+	i = DListBegin(list);
+	j = DListBegin(list);
 	
-	SListInsert(i, &x);
-	if (x == *((int*)SListGet(i)))
+	DListInsert(i, &x);
+	if (x == *((int*)DListGet(i)))
 	{
 		printf("Test 1 for insert successful!\n");
 	}
@@ -40,10 +39,10 @@ int main()
 	{
 		printf("Test 1 for insert failed\n");
 	}
-	i = SListNext(i);
+	i = DListNext(i);
 	
-	SListInsert(i, &a);
-	if (a == *((float*)SListGet(i)))
+	DListInsert(i, &a);
+	if (a == *((float*)DListGet(i)))
 	{
 		printf("Test 2 for insert successful!\n");
 	}
@@ -51,10 +50,10 @@ int main()
 	{
 		printf("Test 2 for insert failed\n");
 	}
-	i = SListNext(i);
+	i = DListNext(i);
 	
-	SListInsert(i, &b);
-	if (b == *((double*)SListGet(i)))
+	DListInsert(i, &b);
+	if (b == *((double*)DListGet(i)))
 	{
 		printf("Test 3 for insert successful!\n");
 	}
@@ -62,10 +61,10 @@ int main()
 	{
 		printf("Test 3 for insert failed\n");
 	}
-	i = SListNext(i);
+	i = DListNext(i);
 	
-	SListInsert(i, &u);
-	if (u == *((char*)SListGet(i)))
+	DListInsert(i, &u);
+	if (u == *((char*)DListGet(i)))
 	{
 		printf("Test 4 for insert successful!\n");
 	}
@@ -75,9 +74,9 @@ int main()
 	}
 
 	
-	j = SListNext(j);
-	SListSet(j, &y);
-	if (y == *((int*)SListGet(j)))
+	j = DListNext(j);
+	DListSet(j, &y);
+	if (y == *((int*)DListGet(j)))
 	{
 		printf("Test for set successful!\n");
 	}
@@ -86,7 +85,7 @@ int main()
 		printf("Test for set insert failed\n");
 	}
 	
-	if (4 == SListCount(list))
+	if (4 == DListCount(list))
 	{
 		printf("Test for count successful!\n");
 	}
@@ -95,7 +94,7 @@ int main()
 		printf("Test for set insert failed\n");
 	}
 
-	if (!SListIterIsEqual(SListBegin(list), SListFind(SListBegin(list), SListEnd(list), &y, IntMatch)))
+	if (!DListIterIsEqual(DListBegin(list), DListFind(DListBegin(list), DListEnd(list), &y, IntMatch)))
 	{
 		printf("Test for Find successful!\n");
 	}
@@ -107,22 +106,22 @@ int main()
 	TestInsertRemoveGetSetNextCount();
 	TestIsEqualFind();
 	
-	SListDestroy(list);
+	DListDestroy(list);
 
 	return (0);
 }
 
 void TestInsertRemoveGetSetNextCount()
 {
-	slist_t *moo = SListCreate();
-	iter_t moop = SListBegin(moo);
+	DList_t *moo = DListCreate();
+	iter_t moop = DListBegin(moo);
 	int a = 5;
 	char b = 'k';
 	char *c = "abcd";
 	size_t d = 9;
 	
-	moop = SListInsert(moop, &a);
-	if(&a == SListGet(moop))
+	moop = DListInsert(moop, &a);
+	if(&a == DListGet(moop))
 	{
 		printf("line %d  insert \033[1;32msuccess\033[0m\n", __LINE__);
 	}
@@ -131,8 +130,8 @@ void TestInsertRemoveGetSetNextCount()
 		printf("line %d  insert \033[1;31mfail\033[0m\n", __LINE__);
 	}
 	
-	moop = SListInsert(moop, &b);
-	if(&b == SListGet(moop))
+	moop = DListInsert(moop, &b);
+	if(&b == DListGet(moop))
 	{
 		printf("line %d  insert \033[1;32msuccess\033[0m\n", __LINE__);
 	}
@@ -141,8 +140,8 @@ void TestInsertRemoveGetSetNextCount()
 		printf("line %d  insert \033[1;31mfail\033[0m\n", __LINE__);
 	}
 	
-	moop = SListInsert(moop, &c);
-	if(&c == SListGet(moop))
+	moop = DListInsert(moop, &c);
+	if(&c == DListGet(moop))
 	{
 		printf("line %d  insert \033[1;32msuccess\033[0m\n", __LINE__);
 	}
@@ -151,8 +150,8 @@ void TestInsertRemoveGetSetNextCount()
 		printf("line %d  insert \033[1;31mfail\033[0m\n", __LINE__);
 	}
 		
-	moop = SListInsert(moop, &d);
-	if(&d == SListGet(moop))
+	moop = DListInsert(moop, &d);
+	if(&d == DListGet(moop))
 	{
 		printf("line %d  insert \033[1;32msuccess\033[0m\n", __LINE__);
 	}
@@ -161,8 +160,8 @@ void TestInsertRemoveGetSetNextCount()
 		printf("line %d  insert \033[1;31mfail\033[0m\n", __LINE__);
 	}
 		
-	moop = SListNext(moop);
-	if(&c == SListGet(moop))
+	moop = DListNext(moop);
+	if(&c == DListGet(moop))
 	{
 		printf("line %d  next   \033[1;32msuccess\033[0m\n", __LINE__);
 	}
@@ -171,8 +170,8 @@ void TestInsertRemoveGetSetNextCount()
 		printf("line %d  next   \033[1;31mfail\033[0m\n", __LINE__);
 	}
 	
-	SListSet(moop, &a);
-	if(&a == SListGet(moop))
+	DListSet(moop, &a);
+	if(&a == DListGet(moop))
 	{
 		printf("line %d  set    \033[1;32msuccess\033[0m\n", __LINE__);
 	}
@@ -181,7 +180,7 @@ void TestInsertRemoveGetSetNextCount()
 		printf("line %d  set    \033[1;31mfail\033[0m\n", __LINE__);
 	}
 	
-	if(4 == SListCount(moo))
+	if(4 == DListCount(moo))
 	{
 		printf("line %d  count  \033[1;32msuccess\033[0m\n", __LINE__);
 	}
@@ -190,8 +189,8 @@ void TestInsertRemoveGetSetNextCount()
 		printf("line %d  count  \033[1;31mfail\033[0m\n", __LINE__);
 	}
 	
-	moop = SListRemove(moop);
-	if(&b == SListGet(moop))
+	moop = DListRemove(moop);
+	if(&b == DListGet(moop))
 	{
 		printf("line %d  remove \033[1;32msuccess\033[0m\n", __LINE__);
 	}
@@ -200,7 +199,7 @@ void TestInsertRemoveGetSetNextCount()
 		printf("line %d  remove \033[1;31mfail\033[0m\n", __LINE__);
 	}
 	
-	if(3 == SListCount(moo))
+	if(3 == DListCount(moo))
 	{
 		printf("line %d count  \033[1;32msuccess\033[0m\n", __LINE__);
 	}
@@ -209,25 +208,25 @@ void TestInsertRemoveGetSetNextCount()
 		printf("line %d count  \033[1;31mfail\033[0m\n", __LINE__);
 	}
 	
-	SListDestroy(moo);
+	DListDestroy(moo);
 }
 
 void TestIsEqualFind()
 {
-	slist_t *moo = SListCreate();
-	iter_t moop = SListBegin(moo);
+	DList_t *moo = DListCreate();
+	iter_t moop = DListBegin(moo);
 
 	int a = 5;
 	char b = 'k';
 	char *c = "abcd";
 	size_t d = 9;
 	
-	moop = SListInsert(moop, &a);
-	moop = SListInsert(SListBegin(moo), &b);
-	moop = SListInsert(SListBegin(moo), &c);	
-	moop = SListInsert(SListBegin(moo), &d);	
+	moop = DListInsert(moop, &a);
+	moop = DListInsert(DListBegin(moo), &b);
+	moop = DListInsert(DListBegin(moo), &c);	
+	moop = DListInsert(DListBegin(moo), &d);	
 	
-	if(moo == SListGet(SListEnd(moo)))
+	if(moo == DListGet(DListEnd(moo)))
 	{
 		printf("line %d tail   \033[1;32msuccess\033[0m\n", __LINE__);
 	}
@@ -236,17 +235,17 @@ void TestIsEqualFind()
 		printf("line %d tail   \033[1;31mfail\033[0m\n", __LINE__);
 	}
 	
-	if(SListIterIsEqual(moop,SListFind(SListBegin(moo), SListEnd(moo), &d, IntMatch)))
+	if(DListIterIsEqual(moop,DListFind(DListBegin(moo), DListEnd(moo), &d, IntMatch)))
 	{
 		printf("line %d find   \033[1;32msuccess\033[0m\n", __LINE__);
 	}
 	else
 	{
-		printf("line %d find   \033[1;31mfail\033[0m %d , %d\n", __LINE__, *(int *)SListGet(moop), *(int *)SListGet(SListFind(SListBegin(moo), SListEnd(moo), &a, IntMatch)));
+		printf("line %d find   \033[1;31mfail\033[0m %d , %d\n", __LINE__, *(int *)DListGet(moop), *(int *)DListGet(DListFind(DListBegin(moo), DListEnd(moo), &a, IntMatch)));
 	}
 		
 	
-	SListDestroy(moo);
+	DListDestroy(moo);
 }
 
 static int IntMatch(const void *a, void *b)

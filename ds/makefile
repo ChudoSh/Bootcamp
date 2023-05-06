@@ -7,7 +7,7 @@ VLG = valgrind -s --leak-check=yes --track-origins=yes
 GDB = cgdb
 
 NAMESPACE = dlist
-//LIBS = $(SRC)/.c//
+//LIBS = $(SRC)/.c
 
 SRC = src
 TEST = test
@@ -17,8 +17,8 @@ HEADER = include
 TARGET = $(NAMESPACE).out
 CFILE = $(SRC)/$(NAMESPACE).c $(TEST)/$(NAMESPACE)_test.c $(LIBS)
 
-RELEASE_DIR = bin/release/$(NAMESPACE)_Release.out
-DEBUG_DIR = bin/debug/$(NAMESPACE)_Debug.out
+RELEASE_DIR = bin/release/$(NAMESPACE)_release.out
+DEBUG_DIR = bin/debug/$(NAMESPACE)_debug.out
 
 .PHONY: clean execute_release execute_debug vlg gdb release debug all
 
@@ -27,7 +27,7 @@ clean:
 	
 release:$(RELEASE_DIR)
 
-execute_debug:
+run_debug:
 	@ $(DEBUG_DIR)
 
 gdb:
@@ -44,7 +44,7 @@ debug: $(DEBUG_DIR)
 $(DEBUG_DIR): $(CFILE)
 	 @ $(CC) $(CFLAGS) $(GD) $(CPPFLAGS)$(HEADER) -o $(DEBUG_DIR) $(CFILE)
 	
-execute_release:
+run_release:
 	@ $(RELEASE_DIR) 
 	
 all:release debug

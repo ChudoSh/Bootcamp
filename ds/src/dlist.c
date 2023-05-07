@@ -35,6 +35,15 @@ static int GetSize(void *a, void *b);
 /*Creates a node*/
 static node_t *CreateNode();
 
+/*Sets the next address of the current node*/
+static void DListSetNext(dlist_iter_t current, dlist_iter_t next_pos);
+
+/*Sets the previous address of the current node*/
+static void DListSetPrev(dlist_iter_t current, dlist_iter_t p_pos);
+
+/*Sets the next and previous addresses of the current node*/
+static void DListSetPosition(dlist_iter_t current, dlist_iter_t next, dlist_iter_t prev);
+
 /*Creates a list*/
 dlist_t *DListCreate(void)
 {
@@ -47,7 +56,7 @@ dlist_t *DListCreate(void)
 	DListSetData(&(list->head), list);
 	DListSetData(&(list->tail), list);
 	
-	list->head.next = &(list->tail);
+	list->head.next  = &(list->tail);
 	list->tail.previous = &(list->head);
 	
 	list->head.previous = NULL; 
@@ -89,11 +98,10 @@ dlist_iter_t DListInsert(dlist_iter_t where, void *data)
 	}
 	
 	DListSetData(insert, data);
-	insert->next = where;
-	insert->previous = DListPrev(where);
+	DListSetPosition(insert, where,DListPrev(where));
 	
-	insert->previous->next = insert;
-	insert->next->previous = insert;
+	DListSetNext(DListPrev(insert), insert);
+	DListSetPrev (DListNext(insert), insert);
 	
 	return (DListPrev(where));	 
 }
@@ -106,8 +114,8 @@ dlist_iter_t DListRemove(dlist_iter_t current)
 	assert(NULL != current);
 
 	remove = DListNext(current);
-	current->next->previous = DListPrev(current);
-	current->previous->next = DListNext(current);
+	DListSetPrev (DListNext(current), DListPrev(current));
+	DListSetNext(DListPrev(current), DListNext(current));
 
 	free(current);
 	
@@ -269,15 +277,15 @@ dlist_iter_t DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
 	assert(NULL != from);
 	assert(NULL != to);
 	
-	DListPrev(from)->next = to;
+	DListSetNext(DListPrev(from), to);
 	
 	DListPrev(to)->next = DListNext(where);
-	DListNext(where)->previous = DListPrev(to);
+	DListSetPrev(DListNext(where), DListPrev(to));
 	
-	where->next = from;
-	from->previous = where;
+	DListSetNext(where, from);
+	DListSetPrev(from, where);
 	
-	to->previous = from;
+	DListSetPrev(to, from);
 	
 	return (where);
 }
@@ -334,4 +342,25 @@ static node_t *CreateNode()
 	return (new_node);
 }
 
+static void DListSetNext(dlist_iter_t current, dlist_iter_t next_pos)
+{
+	assert(NULL != current);
+	
+	current->next = next_pos;
+}
+
+static void DListSetPrev(dlist_iter_t current, dlist_iter_t previous_pos)
+{
+	assert(NULL != current);
+	
+	current->previous = previous_pos;
+}
+
+static void DListSetPosition(dlist_iter_t current, dlist_iter_t next, dlist_iter_t prev)
+{
+	assert(NULL != current);
+	
+	DListSetPrev(current, prev);
+	DListSetNext(current, next);
+}
 

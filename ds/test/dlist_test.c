@@ -31,6 +31,7 @@ int main()
 	j = DListBegin(list);
 	
 	DListInsert(i, &x);
+	i = DListPrev(i);
 	if (x == *((int*)DListGetData(i)))
 	{
 		printf("Test 1 for DListInsert successful!\n");
@@ -131,7 +132,7 @@ int main()
 	
 	DListPopFront(list);
 	
-	if (x == *(int *)(DListGetData(DListBegin(list))))
+	if ('A' == *(char *)(DListGetData(DListBegin(list))))
 	{
 		printf("Test for PopFront successful!\n");
 	}
@@ -139,6 +140,8 @@ int main()
 	{
 		printf("Test for PopFront failed..\n");
 	}
+	
+	PrintList(list, "list");
 	
 	DListDestroy(list);
 	DListDestroy(dummy);

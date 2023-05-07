@@ -32,7 +32,7 @@ Arguments:
 Return: 
 	Return a pointer to a doubly linked list. 
 Time complexity: O(1).
-Space complexity: O(n).
+Space complexity: O(1).
 */
 dlist_t *DListCreate(void);
 
@@ -119,8 +119,8 @@ Arguments:
 	- list : A valid list pointer.
 Return: 
 	Returns a 1 if the list is empty, 0 otherwise. 
-Time complexity: O().
-Space complexity: O().
+Time complexity: O(1).
+Space complexity: O(1).
 */
 
 int DListIsEmpty(const dlist_t *list);

@@ -20,10 +20,10 @@ CFILE = $(SRC)/$(NAMESPACE).c $(TEST)/$(NAMESPACE)_test.c $(LIBS)
 RELEASE_DIR = bin/release/$(NAMESPACE)_release.out
 DEBUG_DIR = bin/debug/$(NAMESPACE)_debug.out
 
-.PHONY: clean execute_release execute_debug vlg gdb release debug all
+.PHONY: clean run_release run_debug vlg gdb release debug all
 
 clean:
-	@ rm $(RELEASE_DIR) $(DEBUG_DIR)
+	@ rm  bin/release/*.out bin/debug/*.out
 	
 release:$(RELEASE_DIR)
 

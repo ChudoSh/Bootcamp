@@ -1,24 +1,18 @@
+/*
+Dev: BarSH
+Rev: 
+Date: 5.5.23
+Status: 
+*/
+
 #ifndef __DLIST_H__
 #define __DLIST_H__
 
 #include <stddef.h> /* size_t */
 
 typedef struct Node node_t;
-/*
-{
-	void *data;
-	node_t *next;
-	node_t *previous;
-}
-*/
 
 typedef struct DList dlist_t;
-/*
-{
-	node_t head;
-	node_t tail;
-};
-*/
 
 typedef node_t *dlist_iter_t;
 

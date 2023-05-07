@@ -14,6 +14,7 @@ Status:
 
 #define TRUE (1)
 #define FALSE (0)
+#define SUCCESS (1)
 #define UNUSED(x) ((void)(x))
 
 struct Node
@@ -57,9 +58,9 @@ dlist_t *DListCreate(void)
 	DListSetData(&(list->tail), list);
 	
 	list->head.next  = &(list->tail);
-	list->tail.previous = &(list->head);
-	
 	list->head.previous = NULL; 
+	
+	list->tail.previous = &(list->head);
 	list->tail.next = NULL;
 	
 	return (list);		
@@ -109,25 +110,21 @@ dlist_iter_t DListInsert(dlist_iter_t where, void *data)
 /*Removes the node in the given iter*/
 dlist_iter_t DListRemove(dlist_iter_t current)
 {
-	dlist_iter_t remove = NULL;
+	dlist_iter_t save = NULL;
 
 	assert(NULL != current);
+	assert(NULL != DListNext(current));
 	
-	if (NULL == DListPrev(DListPrev(current)))
-	{
-		remove = DListNext(current);
-	}
-	else
-	{	
-		remove = DListPrev(current);
-	}
-	
+	save = DListNext(current);
+
+	/*Set the previous of the next to current to the previous of current*/
 	DListSetPrev(DListNext(current), DListPrev(current));
+	/*Set the next of the previous to current to the next of current*/
 	DListSetNext(DListPrev(current), DListNext(current));
 
 	free(current);
 	
-	return (remove);	 
+	return (save);	 
 }
 
 /*Counts the number of nodes*/
@@ -145,15 +142,19 @@ size_t DListSize(const dlist_t *list)
 /*Conducts an operation on each node*/
 int DListForEach(dlist_iter_t from, dlist_iter_t to, int(*action_func)(void *data, void *param), void *action_param)
 {
+	int status = 0;
+	
 	assert(NULL != from);
 	assert(NULL != to);
 	assert(NULL != action_func);
 	
 	while (from != to)
 	{
-		if (TRUE != action_func(DListGetData(from), action_param))
+		status = action_func(DListGetData(from), action_param); 
+		
+		if (SUCCESS != status)
 		{
-			return (FALSE);
+			return (status);
 		}
 		
 		from = DListNext(from);
@@ -172,6 +173,7 @@ dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to, int (*match_func)(voi
 	
 	while (from != DListNext(to))
 	{
+		
 		if	(TRUE == match_func(DListGetData(from), param))
 		{
 			return (from);
@@ -188,7 +190,7 @@ dlist_iter_t DListEnd(const dlist_t *list)
 {	
 	assert(NULL != list);
 	
-	return (&(((dlist_t *)list))->tail);
+	return (&((dlist_t *)list)->tail);
 }
 
 /*Get the head of the list*/
@@ -306,7 +308,7 @@ dlist_iter_t DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
 	DListSetNext(DListPrev(where), from);
 	DListSetPrev(from, DListPrev(where));
 	
-	DListPrev(to)->next = where;
+	DListSetNext(DListPrev(to), where);
 	DListSetPrev(where, DListPrev(to));
 	
 	DListSetNext(temp, to);
@@ -353,7 +355,7 @@ static int GetSize(void *a, void *b)
 	
 	UNUSED(a);
 	
-	return (TRUE);		
+	return (SUCCESS);		
 }
 
 /*Creates a new node*/

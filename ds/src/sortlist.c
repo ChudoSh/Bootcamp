@@ -8,26 +8,13 @@ Status:
 #include <stdlib.h>	/*malloc, free*/
 #include <assert.h> /*assert*/
 
-#include <stdio.h>
-
+#include "sortlist.h"
 #include "dlist.h"
 
 #define TRUE (1)
 #define FALSE (0)
 #define UNUSED(x) ((void)(x))
 
-struct Node
-{	
-	void *value;
-	node_t *next;
-	node_t *previous;
-};
-
-struct DList
-{
-	node_t head;
-	node_t tail;
-};
 
 /*A count function*/
 static int GetSize(void *a, void *b);
@@ -35,53 +22,52 @@ static int GetSize(void *a, void *b);
 /*Creates a node*/
 static node_t *CreateNode();
 
-/*Sets the next address of the current node to the given position*/
+/*Sets the next address of the current node*/
 static void DListSetNext(dlist_iter_t current, dlist_iter_t next_pos);
 
-/*Sets the previous address of the current node to the given position*/
+/*Sets the previous address of the current node*/
 static void DListSetPrev(dlist_iter_t current, dlist_iter_t p_pos);
 
-/*Sets the next and previous addresses of the current node to the given positions*/
+/*Sets the next and previous addresses of the current node*/
 static void DListSetPosition(dlist_iter_t current, dlist_iter_t next, dlist_iter_t prev);
 
 /*Creates a list*/
-dlist_t *DListCreate(void)
+sort_list_t *SortListCreate(compare_t);
 {
-	dlist_t *list = (dlist_t*)malloc(sizeof(dlist_t));
-	if (NULL == list)
+	sort_list_t *sort_list = (sort_list_t*)malloc(sizeof(sort_list_t));
+	if (NULL == sort_list)
 	{
 		return (NULL);
 	}
 	
-	DListSetData(&(list->head), list);
-	DListSetData(&(list->tail), list);
+	sort_list.list = DListCreate();
+	if (NULL == sort_list.list)
+	{
+		return (NULL);
+	}
 	
-	list->head.next  = &(list->tail);
-	list->tail.previous = &(list->head);
-	
-	list->head.previous = NULL; 
-	list->tail.next = NULL;
+	sort_list.compare = compare_t;
 	
 	return (list);		
 }
 
 /*Erases a list*/
-void DListDestroy(dlist_t *list)
+void SortListDestroy(sort_list_t *list)
 {	
 	assert(NULL != list);
 
-	while (TRUE != DListIsEmpty(list))
+	while (SortListEnd(list) != SortListBegin(list))
 	{
-		DListPopFront(list);
+		SortListRemove(SortListBegin(list));
 	}
 	
 	free(list);
 }
 
 /*Inserts a new node*/
-dlist_iter_t DListInsert(dlist_iter_t where, void *data)
+sort_iter_t SortListInsert(sort_list_t *list, void *data)
 {
-	dlist_iter_t insert = NULL;
+	sort_iter_t insert = NULL;
 
 	assert(NULL != where);
 	
@@ -89,21 +75,21 @@ dlist_iter_t DListInsert(dlist_iter_t where, void *data)
 	
 	if (NULL == insert)
 	{	
-		while (NULL != DListNext(where))
+		while (NULL != where)
 		{
-			where = DListNext(where);
+			where = SortListNext(where);
 		}
 		
 		return (where);
 	}
 	
 	DListSetData(insert, data);
-	DListSetPosition(insert, where, DListPrev(where));
+	DListSetPosition(insert, where,DListPrev(where));
 	
 	DListSetNext(DListPrev(insert), insert);
-	DListSetPrev(DListNext(insert), insert);
+	DListSetPrev (DListNext(insert), insert);
 	
-	return (insert);	 
+	return (where);	 
 }
 
 /*Removes the node in the given iter*/
@@ -284,7 +270,6 @@ void *DListPopFront(dlist_t *list)
 	return (data);
 }
 
-/*Checks whether the list is empty*/
 int DListIsEmpty(const dlist_t *list)
 {
 	assert(NULL != list);
@@ -292,25 +277,21 @@ int DListIsEmpty(const dlist_t *list)
 	return (DListIsEqual(DListEnd(list),DListBegin(list)));
 }
 
-/*Appends a part of given list to another*/
 dlist_iter_t DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
 {
-	dlist_iter_t temp = NULL;
-	 
 	assert(NULL != where);
 	assert(NULL != from);
 	assert(NULL != to);
 	
-	temp = DListPrev(from);
+	DListSetNext(DListPrev(from), to);
 	
-	DListSetNext(DListPrev(where), from);
-	DListSetPrev(from, DListPrev(where));
+	DListPrev(to)->next = DListNext(where);
+	DListSetPrev(DListNext(where), DListPrev(to));
 	
-	DListPrev(to)->next = where;
-	DListSetPrev(where, DListPrev(to));
+	DListSetNext(where, from);
+	DListSetPrev(from, where);
 	
-	DListSetNext(temp, to);
-	DListSetPrev(to, temp);
+	DListSetPrev(to, from);
 	
 	return (where);
 }
@@ -327,24 +308,24 @@ int DListMultiFind(dlist_iter_t from, dlist_iter_t to, int (*match_func)(void *d
 	
 	runner = from;
 	
-	while (runner != to)
+	while (from != to)
 	{
-		runner = DListFind(runner, to, match_func, param);
-		if (runner == to)
+		if (runner == DListFind(runner, to, match_func, param))
 		{
-			return (TRUE);
+			return (FALSE);
 		}
 		
-		if (DListEnd(output_list) == DListPushBack(output_list, DListGetData(runner)))
+		if (DListEnd(output_list) == DListPushFront(output_list, runner))
 		{
 			return (FALSE);
 		}
 		
 		runner = DListNext(runner);
 	}
-
+	
 	return (TRUE);
 }
+
 
 /*A count function*/
 static int GetSize(void *a, void *b)
@@ -391,7 +372,6 @@ static void DListSetPosition(dlist_iter_t current, dlist_iter_t next, dlist_iter
 {
 	assert(NULL != current);
 	
-	DListSetNext(current, next);
 	DListSetPrev(current, prev);
+	DListSetNext(current, next);
 }
-

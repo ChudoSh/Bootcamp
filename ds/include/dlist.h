@@ -1,8 +1,8 @@
 /*
 Dev: BarSH
-Rev: 
-Date: 5.5.23
-Status: 
+Rev: Eylon
+Status: Approved
+Date: 7.5.23
 */
 
 #ifndef __DLIST_H__

@@ -1,8 +1,8 @@
 /*
 Dev: BarSH
-Rev: 
-Date: 5.5.23
-Status: 
+Rev: Eylon
+Status: Approved
+Date: 7.5.23
 */
 
 #include <stdlib.h>	/*malloc, free*/
@@ -43,7 +43,8 @@ static void DListSetNext(dlist_iter_t current, dlist_iter_t next_pos);
 static void DListSetPrev(dlist_iter_t current, dlist_iter_t p_pos);
 
 /*Sets the next and previous addresses of the current node to the given positions*/
-static void DListSetPosition(dlist_iter_t current, dlist_iter_t next, dlist_iter_t prev);
+static void DListSetPosition(dlist_iter_t current, dlist_iter_t next, 
+							 dlist_iter_t prev);
 
 /*Creates a list*/
 dlist_t *DListCreate(void)
@@ -140,7 +141,8 @@ size_t DListSize(const dlist_t *list)
 }
 
 /*Conducts an operation on each node*/
-int DListForEach(dlist_iter_t from, dlist_iter_t to, int(*action_func)(void *data, void *param), void *action_param)
+int DListForEach(dlist_iter_t from, dlist_iter_t to, int(*action_func)(void *data, 
+				 void *param), void *action_param)
 {
 	int status = 0;
 	
@@ -164,25 +166,20 @@ int DListForEach(dlist_iter_t from, dlist_iter_t to, int(*action_func)(void *dat
 }
 
 /*Finds the position of the given value*/
-dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to, int (*match_func)(void *data, const void *param), const void *param)
+dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to, 
+					   int (*match_func)(void *data, const void *param), 
+					   const void *param)
 {
 	assert(NULL != from);
 	assert(NULL != to);
 	assert(NULL != match_func);
-	assert(NULL != param);
 	
-	while (from != DListNext(to))
+	while (!DListIsEqual(from, to) && !match_func(DListGetData(from), param))
 	{
-		
-		if	(TRUE == match_func(DListGetData(from), param))
-		{
-			return (from);
-		}
-		
 		from = DListNext(from);
 	}
 	
-	return (to);
+	return (from);
 }
 
 /*Get the tail of the list*/
@@ -318,7 +315,9 @@ dlist_iter_t DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
 }
 	
 
-int DListMultiFind(dlist_iter_t from, dlist_iter_t to, int (*match_func)(void *data, const void *param), const void *param, dlist_t *output_list)
+int DListMultiFind(dlist_iter_t from, dlist_iter_t to, 
+				   int (*match_func)(void *data, const void *param), 
+				   const void *param, dlist_t *output_list)
 {
 	dlist_iter_t runner = NULL;
 	
@@ -337,7 +336,8 @@ int DListMultiFind(dlist_iter_t from, dlist_iter_t to, int (*match_func)(void *d
 			return (TRUE);
 		}
 		
-		if (DListEnd(output_list) == DListPushBack(output_list, DListGetData(runner)))
+		if (DListEnd(output_list) == DListPushBack(output_list, 
+												   DListGetData(runner)))
 		{
 			return (FALSE);
 		}
@@ -389,7 +389,8 @@ static void DListSetPrev(dlist_iter_t current, dlist_iter_t previous_pos)
 	current->previous = previous_pos;
 }
 
-static void DListSetPosition(dlist_iter_t current, dlist_iter_t next, dlist_iter_t prev)
+static void DListSetPosition(dlist_iter_t current, dlist_iter_t next, 
+							 dlist_iter_t prev)
 {
 	assert(NULL != current);
 	

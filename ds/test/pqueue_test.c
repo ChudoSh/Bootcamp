@@ -5,8 +5,8 @@ Date: 17.5.23
 Status: 
 */
 
-#include <stdio.h> /*printf*/
-#include <assert.h> /*assert*/
+#include <stdio.h> /* printf */
+#include <assert.h> /* assert */
 #include <string.h> /* strcpy */
 
 #include "pqueue.h"

@@ -1,6 +1,6 @@
 /*
 Dev: BarSH
-Rev: 
+Rev:  LeonG
 Date: 17.5.23
 Status: 
 */
@@ -96,36 +96,38 @@ int PQErase(pq_t *pq, int (*is_match)(const void *, const void *), void *param);
 
 /*****************************************************************************/
 /*
-Description: Empty the queue.
+Description: Empty the pqueue.
 Arguments:
-
+	- pq : A valid pointer to a pqueue.
 Return: 
-
-Time complexity: O().
-Space complexity: O().
+	Nothing.
+Time complexity: O(n).
+Space complexity: O(1).
 */
 
 void PQClear(pq_t *pq);
 /*****************************************************************************/
 /*
-Description: Count elements in the queue. 
+Description: Count elements in the pqueue. 
 Arguments:
-
-
-Time complexity: O().
-Space complexity: O().
+	- pq : A valid pointer to a pqueue.
+Return:
+	The size of the pqueue.
+Time complexity: O(n).
+Space complexity: O(1).
 */
 
 size_t PQSize(const pq_t *pq);
 
 /*****************************************************************************/
 /*
-Description: Count elements in the queue. 
+Description: Checks if the priority is empty. 
 Arguments:
-
-
-Time complexity: O().
-Space complexity: O().
+	- pq : A valid pointer to a pqueue.
+Return: 
+	Return 0 if succeeded, -1 otherwise.	
+Time complexity: O(n).
+Space complexity: O(1).
 */
 int PQIsEmpty(const pq_t *pq);
 

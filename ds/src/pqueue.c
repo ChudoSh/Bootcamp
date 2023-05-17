@@ -1,6 +1,6 @@
 /*
 Dev: BarSH
-Rev: 
+Rev: LeonG
 Date: 17.5.23
 Status: 
 */
@@ -64,20 +64,17 @@ int PQEnqueue(pq_t *pq, void *data)
 	return (SUCCESS);
 }
 
-/*Removes the interviewed*/
+/*Removes the node with the least priority*/
 void *PQDequeue(pq_t *pq)
 {
 	void *value = NULL;
 	
 	assert(NULL != pq);
 	
-	value = SortListGetData(SortListBegin(pq->list));
-	
-	SortListPopFront(pq->list);
+	value = SortListPopFront(pq->list);
 	
 	return (value);
 }
-
 
 /*Gets the value of the most significant node*/
 void *PQPeek(const pq_t *pq)
@@ -94,8 +91,8 @@ int PQErase(pq_t *pq, int (*is_match)(const void *, const void *), void *param)
 	assert(NULL != is_match);
 		
 	if (SortListIsEqual(SortListFindIf(SortListBegin(pq->list), 
-				   SortListEnd(pq->list), (is_match_t)is_match, param), 
-				   SortListEnd(pq->list)))
+				   		SortListEnd(pq->list), (is_match_t)is_match, param), 
+				   		SortListEnd(pq->list)))
 	{
 		return (FAIL);
 	}

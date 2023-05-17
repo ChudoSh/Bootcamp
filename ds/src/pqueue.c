@@ -103,6 +103,7 @@ int PQErase(pq_t *pq, int (*is_match)(const void *, const void *), void *param)
 	return (SUCCESS);
 }
 
+/*Empties the queue*/ 
 void PQClear(pq_t *pq)
 {
 	assert(NULL != pq);
@@ -112,15 +113,8 @@ void PQClear(pq_t *pq)
 		SortListPopFront(pq->list);
 	}
 }
-/*****************************************************************************/
-/*
-Description: Count elements in the queue. 
-Arguments:
 
-
-Time complexity: O(n).
-Space complexity: O(1).
-*/
+/*Count elements in the queue*/ 
 size_t PQSize(const pq_t *pq)
 {
 	assert(NULL != pq);
@@ -128,15 +122,7 @@ size_t PQSize(const pq_t *pq)
 	return (SortListSize(pq->list));
 }
 
-/*****************************************************************************/
-/*
-Description: Count elements in the queue. 
-Arguments:
-
-
-Time complexity: O().
-Space complexity: O().
-*/
+/*Checks if the pqueue is empty*/
 int PQIsEmpty(const pq_t *pq)
 {
 	assert(NULL != pq);

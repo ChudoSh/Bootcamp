@@ -6,8 +6,8 @@ CPPFLAGS = -I./
 VLG = valgrind -s --leak-check=yes --track-origins=yes
 GDB = cgdb
 
-NAMESPACE = sortlist
-LIBS = $(SRC)/dlist.c
+NAMESPACE = pqueue
+LIBS = $(SRC)/sortlist.c $(SRC)/dlist.c
 
 SRC = src
 TEST = test
@@ -42,7 +42,7 @@ $(RELEASE_DIR):$(CFILE)
 debug: $(DEBUG_DIR)
 
 $(DEBUG_DIR): $(CFILE)
-	 @ $(CC) $(CFLAGS) $(GD) $(CPPFLAGS)$(HEADER) -o $(DEBUG_DIR) $(CFILE)
+	@ $(CC) $(CFLAGS) $(GD) $(CPPFLAGS)$(HEADER) -o $(DEBUG_DIR) $(CFILE)
 	
 run_release:
 	@ $(RELEASE_DIR) 

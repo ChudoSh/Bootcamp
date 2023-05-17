@@ -105,7 +105,7 @@ sort_iter_t SortListFind(sort_iter_t from, sort_iter_t to,
 	assert(NULL != srlist);
 	
 	#ifndef NDEBUG
-	assert(from->list == to->list);
+	assert(from.list == to.list);
 	sr_iter.list = srlist; /*Add a check whether or not they are from the same list*/
 	#endif
 	

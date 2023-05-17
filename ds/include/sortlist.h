@@ -154,7 +154,6 @@ sort_iter_t SortListNext(sort_iter_t current);
 
 /***********************************************************************/
 /*
-/*
 Description: Gets iterator's the previous node.
 Arguments:
 	- current : A sorted list iterator.

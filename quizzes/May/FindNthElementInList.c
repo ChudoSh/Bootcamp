@@ -5,7 +5,7 @@
 typedef struct node
 {
 	void *data;
-	struct node *next;
+	struct node *next;	
 }node_t;
 
 node_t *FindTheNthElementFromTheEndOfList(node_t *head, size_t index)

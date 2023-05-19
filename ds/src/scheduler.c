@@ -61,7 +61,8 @@ void SchedulerDestroy(scheduler_t *scheduler)
 }
 
 
-ilrd_uid_t SchedulerAddTask(scheduler_t *scheduler, int (*op_func_t)(void *), 
+ilrd_uid_t SchedulerAddTask(scheduler_t *scheduler, 
+							int (*op_func_t)(void *), 
 					   		void *op_param, size_t delay_in_sec, 
 					 		size_t interval_in_sec, 
 					 		void (*task_cleanup)(void *),

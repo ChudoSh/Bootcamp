@@ -14,7 +14,6 @@ Date: 19.5.23
 
 void BasicFunctionTest();
 static int FuncForTask(void *data);
-static void CleanForTask(void *data);
 static void Test(int val, const char *func, int line);
 static int FuncToStop(void *data);
 
@@ -28,23 +27,20 @@ void BasicFunctionTest()
 {
 	scheduler_t *scheduler = SchedulerCreate();
 	size_t test_count = 0;
-	char *done = "SchedulerRun \033[1;33mTask Finish\033[0m";
-	char *run = "SchedulerRun \033[1;32mSuccess\033[0m";
-	char *stop = "SchedulerRun \033[1;31mStopped\033[0m";
 	
 	ilrd_uid_t id[6] = {0};
 	
 	printf("Scheduler basic functions tests\n");
 	printf("_Line__Name____________Status_\n");
 	
-	Test(SchedulerIsEmpty(scheduler), "Create & IsEmpty", __LINE__);
+	Test(SchedulerIsEmpty(scheduler), "IsEmpty", __LINE__);
 	
-	id[0] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 10, 1, CleanForTask, done);
-	id[1] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 11, 1, CleanForTask, done);
-	id[2] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 12, 1, CleanForTask, done);
-	id[3] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 13, 1, CleanForTask, done);
-	id[4] = SchedulerAddTask(scheduler, FuncToStop, scheduler, 14, 1, CleanForTask, stop);
-	id[5] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 15, 1, CleanForTask, done);
+	id[0] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 10, 1, NULL, NULL);
+	id[1] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 11, 1, NULL, NULL);
+	id[2] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 12, 1, NULL, NULL);
+	id[3] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 13, 1, NULL, NULL);
+	id[4] = SchedulerAddTask(scheduler, FuncToStop, scheduler, 14, 1, NULL, NULL);
+	id[5] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 15, 1, NULL, NULL);
 	
 	Test(6 == SchedulerSize(scheduler), "AddTask & Size", __LINE__);
 	
@@ -56,12 +52,12 @@ void BasicFunctionTest()
 	
 	Test(4 == test_count, "Scheduler Run", __LINE__);
 	
-	id[0] = SchedulerAddTask(scheduler, FuncForTask, run, 10, 1, CleanForTask, done);
-	id[1] = SchedulerAddTask(scheduler, FuncForTask, run, 11, 1, CleanForTask, done);
-	id[2] = SchedulerAddTask(scheduler, FuncForTask, run, 12, 1, CleanForTask, done);
-	id[3] = SchedulerAddTask(scheduler, FuncForTask, run, 13, 1, CleanForTask, done);
-	id[4] = SchedulerAddTask(scheduler, FuncToStop, scheduler, 14, 1, CleanForTask, stop);
-	id[5] = SchedulerAddTask(scheduler, FuncForTask, run, 15, 1, CleanForTask, done);
+	id[0] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 10, 1, NULL, NULL);
+	id[1] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 11, 1, NULL, NULL);
+	id[2] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 12, 1, NULL, NULL);
+	id[3] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 13, 1, NULL, NULL);
+	id[4] = SchedulerAddTask(scheduler, FuncToStop, scheduler, 14, 1, NULL, NULL);
+	id[5] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 15, 1, NULL, NULL);
 	
 	SchedulerClear(scheduler);
 	
@@ -80,10 +76,6 @@ static int FuncForTask(void *data)
 {
 	++(*((size_t *)data));
 	return (1);
-}
-static void CleanForTask(void *data)
-{
-	 return;
 }
 
 static void Test(int val, const char *func, int line)

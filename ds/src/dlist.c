@@ -119,9 +119,9 @@ dlist_iter_t DListRemove(dlist_iter_t current)
 	save = DListNext(current);
 
 	/*Set the previous of the next to current to the previous of current*/
-	DListSetPrev(DListNext(current), DListPrev(current));
+	DListSetPrev(save, DListPrev(current));
 	/*Set the next of the previous to current to the next of current*/
-	DListSetNext(DListPrev(current), DListNext(current));
+	DListSetNext(DListPrev(current), save);
 
 	free(current);
 	

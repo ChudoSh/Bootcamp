@@ -33,7 +33,7 @@ ilrd_uid_t UIDCreate(void)
 	
     strcpy(new_uid.ip, GetIP());
     
-    if (-1 == new_uid.ip)
+    if (-1 == *((int *)new_uid.ip))
     {
     	return (UIDBadUID);
     }

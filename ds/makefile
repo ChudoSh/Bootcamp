@@ -6,8 +6,8 @@ CPPFLAGS = -I./
 VLG = valgrind -s --leak-check=yes --track-origins=yes
 GDB = cgdb
 
-NAMESPACE = pqueue
-LIBS = $(SRC)/sortlist.c $(SRC)/dlist.c
+NAMESPACE = scheduler
+LIBS = $(SRC)/task.c $(SRC)/pqueue.c $(SRC)/uid.c $(SRC)/sortlist.c $(SRC)/dlist.c
 
 SRC = src
 TEST = test

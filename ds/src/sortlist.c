@@ -35,6 +35,8 @@ static sort_iter_t SetDListIter(sort_iter_t sr_iter, dlist_iter_t current);
 /*A function that checks where we can insert a new node*/
 static int IsToInsert(void *data, const void *param);
 
+static sort_iter_t IterCreate(sort_list_t *list, dlist_iter_t diter);
+
 /*Creates a list*/
 sort_list_t *SortListCreate(compare_t compare)
 {
@@ -68,7 +70,7 @@ void SortListDestroy(sort_list_t *srlist)
 /*Inserts a new node to the list*/
 sort_iter_t SortListInsert(sort_list_t *srlist, void *data)
 { 	
-	sort_iter_t where = {NULL};
+	dlist_iter_t where = NULL;
 	is_to_insert_param_t param = {NULL}; 
 	
 	assert(NULL != srlist);
@@ -76,24 +78,17 @@ sort_iter_t SortListInsert(sort_list_t *srlist, void *data)
 	param.compare = srlist->compare;
 	param.data = data;
 	
-	#ifndef NDEBUG
-	where.list = srlist; 
-	#endif
-	
-	where = SortListFindIf(SortListBegin(srlist), SortListEnd(srlist),
-						   IsToInsert, &param);
-
-	DListInsert(GetDListIter(where), data);
-	
-	return (where);	 
+	where = GetDListIter(SortListFindIf(SortListBegin(srlist),
+									    SortListEnd(srlist),
+						   				IsToInsert, &param));				
+						   
+	return (IterCreate(srlist, DListInsert(where, data)));	 
 }
 
 /*Removes the node in the given iter*/
 sort_iter_t SortListRemove(sort_iter_t current)
 {
-	current = SetDListIter(current, DListRemove(GetDListIter(current)));
-	
-	return (current);	 
+	return (SetDListIter(current, DListRemove(GetDListIter(current))));	 
 }
 
 /*Finds the position of the given value*/
@@ -318,6 +313,18 @@ static int IsToInsert(void *data, const void *param)
 	const void *param_data = ((is_to_insert_param_t *)param)->data;
 		
 	return (0 <= compare(data, param_data));
+}
+
+static sort_iter_t IterCreate(sort_list_t *list, dlist_iter_t diter)
+{
+	sort_iter_t iterator = {NULL};
+
+	#ifndef NDEBUG
+	iterator.list = list;
+	#endif
+	iterator.iter = diter;
+	
+	return (iterator);
 }
 
 

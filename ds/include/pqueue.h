@@ -92,7 +92,7 @@ Return:
 Time complexity: O(n).
 Space complexity: O(1).
 */
-int PQErase(pq_t *pq, int (*is_match)(const void *, const void *), void *param);
+void *PQErase(pq_t *pq, int (*is_match)(const void *, const void *), void *param);
 
 /*****************************************************************************/
 /*

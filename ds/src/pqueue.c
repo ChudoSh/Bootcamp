@@ -68,8 +68,9 @@ int PQEnqueue(pq_t *pq, void *data)
 void *PQDequeue(pq_t *pq)
 {
 	assert(NULL != pq);
+	assert(!PQIsEmpty(pq));
 	
-	return (SortListPopFront(pq->list));
+	return (SortListPopBack(pq->list));
 }
 
 /*Gets the value of the most significant node*/
@@ -81,24 +82,27 @@ void *PQPeek(const pq_t *pq)
 }
 
 /*Erases a node in the pqueue given its element*/
-int PQErase(pq_t *pq, int (*is_match)(const void *, const void *), void *param)
+void *PQErase(pq_t *pq, int (*is_match)(const void *, const void *), void *param)
 {
-	sort_iter_t iter = {NULL}; 
+	sort_iter_t iter = {NULL};
+	void *data = NULL; 
 	
 	assert(NULL != pq);
 	assert(NULL != is_match);
+	assert(!PQIsEmpty(pq));
 	
 	iter = SortListFindIf(SortListBegin(pq->list), 
 				   		SortListEnd(pq->list), (is_match_t)is_match, param);
 	
 	if (SortListIsEqual(iter, SortListEnd(pq->list)))
 	{
-		return (FAIL);
+		return (NULL);
 	}
-				   
-	SortListRemove(iter);
 	
-	return (SUCCESS);
+	data = SortListGetData(iter);
+	iter = SortListRemove(iter);
+			  
+	return (data);
 }
 
 /*Empties the queue*/ 

@@ -14,7 +14,7 @@ typedef struct Scheduler scheduler_t;
 
 enum SCHEDULER_RUN_STATUS
 {
-	SUCCESS = 0,
+	RUN = 0,
 	ERROR = 1,
 	STOPPED = 2 
 };

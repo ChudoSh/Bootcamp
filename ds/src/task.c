@@ -7,8 +7,11 @@ Date: 18.5.23
 #include <stdlib.h> /* malloc */
 #include <time.h> /* time_t */
 #include <assert.h> /*assert*/
+#include <stdio.h> 
 
 #include "task.h"
+
+#define SUCCESS (0)
 
 struct Task 
 {
@@ -57,6 +60,11 @@ void TaskDestroy(task_t *task)
 {
 	assert(NULL != task);
 	
+	if (NULL != task->task_cleanup)
+	{
+		task->task_cleanup(task->cleanup_param);	
+	}
+	
 	free(task);
 }
 
@@ -80,23 +88,14 @@ int TaskUpdateTimeToRun(task_t *task)
 	
 	task->time_to_run += (time_t)task->interval_in_sec;
 	
-	return (REPEAT);
+	return (SUCCESS);
 }
 
 int TaskRun(task_t *task)
-{
-	int to_repeat = REPEAT; 
-	
+{ 	
 	assert(NULL != task);
 	
-	to_repeat = task->op_func(task->op_param);
-	
-	if (NULL != task->task_cleanup)
-	{
-		task->task_cleanup(task->cleanup_param);	
-	}
-	
-	return (to_repeat);
+	return (task->op_func(task->op_param));
 }
 
 int TaskIsBefore(const task_t *to_check, const task_t *check_against)

@@ -104,7 +104,7 @@ dlist_iter_t DListInsert(dlist_iter_t where, void *data)
 	
 	DListSetNext(DListPrev(insert), insert);
 	DListSetPrev(DListNext(insert), insert);
-	
+
 	return (insert);	 
 }
 
@@ -112,16 +112,16 @@ dlist_iter_t DListInsert(dlist_iter_t where, void *data)
 dlist_iter_t DListRemove(dlist_iter_t current)
 {
 	dlist_iter_t save = NULL;
-
+	
 	assert(NULL != current);
 	assert(NULL != DListNext(current));
 	
 	save = DListNext(current);
 
 	/*Set the previous of the next to current to the previous of current*/
-	DListSetPrev(save, DListPrev(current));
+	DListSetPrev(DListNext(current), DListPrev(current));
 	/*Set the next of the previous to current to the next of current*/
-	DListSetNext(DListPrev(current), save);
+	DListSetNext(DListPrev(current), DListNext(current));
 
 	free(current);
 	
@@ -251,6 +251,7 @@ dlist_iter_t DListPushBack(dlist_t *list, void *data)
 dlist_iter_t DListPushFront(dlist_t *list, void *data)
 {
 	assert(NULL != list);
+	assert(DListIsEmpty(list));
 	
 	return (DListInsert(DListBegin(list), data));
 }
@@ -261,6 +262,7 @@ void *DListPopBack(dlist_t *list)
 	void *data = NULL;
 
 	assert(NULL != list);
+	assert(!DListIsEmpty(list));
 	
 	data = DListGetData(DListPrev(DListEnd(list)));
 	
@@ -275,6 +277,7 @@ void *DListPopFront(dlist_t *list)
 	void *data = NULL;
 	
 	assert(NULL != list);
+	assert(!DListIsEmpty(list));
 	
 	data = DListGetData(DListBegin(list));
 	
@@ -288,7 +291,7 @@ int DListIsEmpty(const dlist_t *list)
 {
 	assert(NULL != list);
 	
-	return (DListIsEqual(DListEnd(list),DListBegin(list)));
+	return (DListIsEqual(DListBegin(list), DListEnd(list)));
 }
 
 /*Appends a part of given list to another*/

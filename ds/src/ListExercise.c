@@ -91,7 +91,7 @@ node_t *FindIntersection(node_t *head1, node_t *head2)
 		++(count2);
 	}
 	
-	if (iter1->next != iter2->next)
+	if (iter1 != iter2)
 	{
 		return (NULL);
 	}

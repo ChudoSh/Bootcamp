@@ -4,6 +4,7 @@ Rev: EtaiSH
 Status: Test impl.
 Date: 24.5.23
 */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,24 +33,29 @@ static void VSATest()
 	
 	largest_chunk = VSAGetLargestChunkAvailable(vsa);
 	
-	Test(384 == largest_chunk, "Init & Largest", __LINE__);
+	Test(368 == largest_chunk, "Init & Largest", __LINE__);
 	
 	check = (size_t *)(VSAAlloc(vsa, 50));
 
 	largest_chunk = VSAGetLargestChunkAvailable(vsa);
 	
-	Test(312 == largest_chunk, "Alloc", __LINE__);
+	Test(296 == largest_chunk, "Alloc", __LINE__);
 
 	check2 = (size_t *)(VSAAlloc(vsa, 50));
 
 	largest_chunk = VSAGetLargestChunkAvailable(vsa);
 	
 	VSAFree(check);
-	VSAFree(check2);
 	
 	largest_chunk = VSAGetLargestChunkAvailable(vsa);
 	
-	Test(384 == largest_chunk, "Free", __LINE__);
+	Test(224 == largest_chunk, "Dfrag", __LINE__);
+	
+	VSAFree(check2);
+	
+	largest_chunk = VSAGetLargestChunkAvailable(vsa);
+
+	Test(368 == largest_chunk, "Free", __LINE__);
 
 	free(test);
 
@@ -76,5 +82,4 @@ static void Test(int val, const char *func, int line)
 	
 	printf("%s\n", str2);
 }
-
 

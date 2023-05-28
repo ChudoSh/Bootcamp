@@ -7,10 +7,11 @@ Date: 24.5.23
 
 #include <assert.h>/*assert*/
 #include <stdlib.h>/*size_t*/
+#include <stdio.h>
 
 #include "vsa.h"
 
-static void *DefragBlock(vsa_t *vsa, long num_of_bytes);
+static void *DefragBlock(vsa_t *vsa, size_t num_of_bytes);
 static long Absolute(long num_of_bytes);
 static size_t AlignBlock(size_t block_size);
 static char *GetNextVSA(char *current);
@@ -37,7 +38,7 @@ typedef struct BlockHeader
 #define VSA_SIZE (sizeof(vsa_t))
 #define DEAD_BEEF (0xDEADBEEF)
 #define WORD (sizeof(size_t))
-#define END (0)
+#define DEAD_POOL (0)
 
 /*Initiates the managing strcut*/
 vsa_t *VSAInit(void *allocated_memory, size_t allocated_size)
@@ -46,15 +47,16 @@ vsa_t *VSAInit(void *allocated_memory, size_t allocated_size)
 	vsa_t *tail = NULL;
 
 	assert(NULL != allocated_memory);
-	assert(0 < allocated_size);
+	assert(2 * VSA_SIZE < allocated_size);
+	assert(0 == (size_t)allocated_memory % WORD);
 	
 	allocated_size = AlignBlock(allocated_size);
 	
 	head = (vsa_t *)allocated_memory;
-	SetVSAChunk(head, (allocated_size - VSA_SIZE));
+	SetVSAChunk(head, (allocated_size - 2 * VSA_SIZE));
 	
 	tail = (vsa_t *)GetNextVSA((char *)head);
-	SetVSAChunk(tail, END);
+	SetVSAChunk(tail, DEAD_POOL);
 	
 	#ifndef NDEBUG
 	head->magic_num = DEAD_BEEF;
@@ -77,7 +79,7 @@ void *VSAAlloc(vsa_t *vsa, size_t num_of_bytes)
 	
 	num_of_bytes = AlignBlock(num_of_bytes);
 	
-	current_vsa = (vsa_t *)DefragBlock(vsa, (long)num_of_bytes);
+	current_vsa = (vsa_t *)DefragBlock(vsa, num_of_bytes);
 	if (NULL == current_vsa)
 	{
 		return (NULL);
@@ -104,8 +106,7 @@ void *VSAAlloc(vsa_t *vsa, size_t num_of_bytes)
 	#endif 
 	
 	new_block = (char *)current_vsa + VSA_SIZE;
-	
-	
+
 	return (new_block);
 }
 
@@ -139,10 +140,12 @@ size_t VSAGetLargestChunkAvailable(vsa_t *vsa)
 	
 	assert(NULL != vsa);
 	
+	DefragBlock(vsa, 0x0FFFFFFFFFFFFFFF);
+	
 	runner = (char *)vsa;
 	current = vsa->size_of_chunk;
 	
-	while (END != current) 
+	while (DEAD_POOL != current) 
 	{	
 		if (current > max)
 		{
@@ -152,9 +155,7 @@ size_t VSAGetLargestChunkAvailable(vsa_t *vsa)
 		runner = GetNextVSA(runner);
 		current = GetVSAChunk((vsa_t *)runner);				
 	}
-	
-	max = *((size_t *)DefragBlock(vsa, max));
-	
+
 	return (max);	
 }
 
@@ -169,7 +170,9 @@ static size_t AlignBlock(size_t block_size)
 	return (block_size);
 }
 
-static void *DefragBlock(vsa_t *vsa, long num_of_bytes)
+
+
+static void *DefragBlock(vsa_t *vsa, size_t num_of_bytes)
 {
 	vsa_t *to_save = NULL;
 	vsa_t *to_free = NULL;
@@ -181,11 +184,13 @@ static void *DefragBlock(vsa_t *vsa, long num_of_bytes)
 	to_save = vsa;
 	to_free = vsa;
 	
-	while (END != GetVSAChunk(to_free) && num_of_bytes > GetVSAChunk(to_save))
+	while (DEAD_POOL != GetVSAChunk(to_free) && 
+		   (long)num_of_bytes > GetVSAChunk(to_save))
 	{
-		if (TRUE == is_positive)
+		if (TRUE == is_positive && 0 < GetVSAChunk(to_free))
 		{
 			SetVSAChunk(to_save, (GetVSAChunk(to_save) + GetVSAChunk(to_free)));
+			to_free = to_save;
 		}
 		
 		if (0 < GetVSAChunk(to_free) && TRUE != is_positive)
@@ -202,7 +207,7 @@ static void *DefragBlock(vsa_t *vsa, long num_of_bytes)
 		to_free = (vsa_t *)GetNextVSA((char *)to_free);	
 	}
 	
-	if (GetVSAChunk(to_save) >= num_of_bytes)
+	if (GetVSAChunk(to_save) >= (long)num_of_bytes)
 	{
 		defrager = (char *)to_save;
 	}

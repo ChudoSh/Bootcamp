@@ -40,7 +40,7 @@ fsa_t *FSAInit(void *ptr_to_memory, size_t allocated_size, size_t block_size)
 	
 	while (block_size < (allocated_size - WORD))
 	{	
-		*(size_t *)runner = i * block_size + fsa->next_available;
+		*(size_t *)runner = i * block_size + WORD;
 		runner += block_size;
 		allocated_size -= block_size;
 		++(i);
@@ -94,7 +94,7 @@ size_t FSACountFree(const fsa_t *fsa)
 	runner = (char *)fsa;
 	offset = fsa->next_available;
 	
-	while (0 != offset)
+	while (DRY_POOL != offset)
 	{	
 		runner = (char *)fsa + offset;
 		offset = *(size_t *)runner;

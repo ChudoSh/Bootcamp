@@ -46,8 +46,5 @@ int ReturnMaxOccurence(size_t *LUT)
 		}
 	}
 	
-	return count; 		
-	
-	
-	
+	return count; 			
 }

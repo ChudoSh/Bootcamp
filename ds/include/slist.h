@@ -105,7 +105,7 @@ Arguments:
     - list : A const valid list pointer.
 Return: 
 	A size_t number of nodes.
-Time complexity: O(1).
+Time complexity: O(n).
 Space complexity: O(1).
 */
 size_t SListCount(const slist_t *list);

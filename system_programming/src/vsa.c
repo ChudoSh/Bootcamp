@@ -90,7 +90,7 @@ void *VSAAlloc(vsa_t *vsa, size_t num_of_bytes)
 		new_block = (char *)current_vsa;
 		return (new_block);
 	}
-	/*We need to save the previous values of the buggest free chunk to 
+	/*We need to save the previous values of the biggest free chunk to 
 	  update the new vsa*/
 	new_vsa = current_vsa;
 	save_size = GetVSAChunk(current_vsa) - VSA_SIZE - num_of_bytes;
@@ -169,9 +169,6 @@ static size_t AlignBlock(size_t block_size)
 	
 	return (block_size);
 }
-
-
-
 static void *DefragBlock(vsa_t *vsa, size_t num_of_bytes)
 {
 	vsa_t *to_save = NULL;
@@ -207,10 +204,7 @@ static void *DefragBlock(vsa_t *vsa, size_t num_of_bytes)
 		to_free = (vsa_t *)GetNextVSA((char *)to_free);	
 	}
 	
-	if (GetVSAChunk(to_save) >= (long)num_of_bytes)
-	{
-		defrager = (char *)to_save;
-	}
+	defrager = (char *)to_save;
 	
 	return (defrager);
 }
@@ -238,5 +232,6 @@ static void SetVSAChunk(vsa_t *current, long num_of_bytes)
 	
 	current->size_of_chunk = num_of_bytes;
 }
+
 
 

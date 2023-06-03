@@ -8,7 +8,7 @@ Status: Fixed
 #include <stdlib.h>	/*malloc, free*/
 #include <assert.h> /*assert*/
 
-#include "SList.h"
+#include "slist.h"
 
 #define TRUE (1)
 #define IS_EMPTY (0)

@@ -8,7 +8,7 @@ Status: Fixed
 #include <stddef.h>
 #include <assert.h>
 
-#include "../include/BitArray.h"
+#include "bitarray.h"
 
 #define ONE (1UL)
 #define ZERO (0UL)

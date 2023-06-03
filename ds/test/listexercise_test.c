@@ -6,7 +6,7 @@ Date: 3.5.23
 */
 #include <stdio.h> /*printf*/
 
-#include "ListExercise.h"
+#include "listexercise.h"
 
 void TestUnit2();
 void TestUnit1();

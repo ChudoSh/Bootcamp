@@ -5,16 +5,13 @@ Status: Approved
 Date: 3.5.23
 */
 
-#ifndef __SLISTEXER_H__
-#define __SLISTEXER_H__
+#ifndef __SLISTEXERCISE_H__
+#define __SLISTEXERCISE_H__
 
 typedef struct node
 {
-
 	void *data;
 	struct node *next;
-
-
 }node_t;
 
 

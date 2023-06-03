@@ -16,14 +16,14 @@ void StackDestroy(stack_t *my_stack);
 void StackPush(stack_t *my_stack, const void *element);
 void *StackPeek(const stack_t *my_stack);
 void StackPop(stack_t *my_stack);
-
 int IsBalancedParanthesses(char *str, size_t size);
+int StackIsEmpty(const stack_t *my_stack);
 
 int main()
 {
-	char *str = "{}[[[]]]";
+	char *str = "[[]";	
 	
-	if (1  == IsBalancedParanthesses(str, sizeof(str)))
+	if (0  == IsBalancedParanthesses(str, sizeof(str)))
 	{
 		printf("Success\n");
 	}
@@ -31,12 +31,14 @@ int main()
 	{
 		printf("fail\n");
 	}
+
 	
 	return (0);
 }
 
 int IsBalancedParanthesses(char *str, size_t size)
 {
+	char LUT[256] = {0};
 	stack_t *stack = NULL; 
 	
 	assert(NULL != str);
@@ -45,62 +47,55 @@ int IsBalancedParanthesses(char *str, size_t size)
 	
 	while ('\0' != *str)
 	{
-		switch (*str)
+		if ('(' == *str || '{' == *str || '[' == *str)
 		{
-			case ('('):			
-				StackPush(stack, &(*str));
-				break;
-				
-			case ('{'):			
-				StackPush(stack, &(*str));
-				break;
-				
-			case ('['):			
-				StackPush(stack, &(*str));
-				break;
-				
+			StackPush(stack, &(*str));
+		}
+		
+		switch (*str)
+		{	
 			case (')'):			
 				if (*((char*)StackPeek(stack)) != '(')
 				{
 					return (0);
 				}
-				else
-				{
-					StackPop(stack);
-					break;
-				};
+				StackPop(stack);
+				break;
 				
 			case ('}'):
 				if (*((char*)StackPeek(stack)) != '{')
 				{
 					return (0);
 				}
-				else
-				{
-					StackPop(stack);
-					break;
-				};
+				StackPop(stack);
+				break;
 				
 			case (']'):
 				if (*((char*)StackPeek(stack)) != '[')
 				{
 					return (0);
 				}
-				else
-				{
-					StackPop(stack);
-					break;
-				};
+				StackPop(stack);
+				break;
 				
 			default:
-				break;		 
+				break;	 
 		}	
 		++(str);	
 	}
 	
-	StackDestroy(stack);
+	if (StackIsEmpty(stack))
+	{
+		StackDestroy(stack);
+		return  (1);
+	}
+	else
+	{
+		StackDestroy(stack);
+		return  (0);
+	}
 	
-	return (1);		
+			
 }
 
 stack_t *StackCreate(size_t capacity, size_t element_size)

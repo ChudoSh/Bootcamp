@@ -9,7 +9,7 @@ Status: Approved
 #include <string.h>	/*memcpy*/
 #include <assert.h> /*assert*/
 
-#include "Stack.h"
+#include "stack.h"
 
 
 struct Stack

@@ -7,7 +7,7 @@ Status: Fixed
 
 #include <stdio.h> /*printf*/
 
-#include "../include/BitArray.h"
+#include "bitarray.h"
 
 int main()
 {

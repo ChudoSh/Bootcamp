@@ -63,7 +63,7 @@ unsigned int AddOne(unsigned int n)
 {	
 	int Add = 1; 
 
-	while ((n & Add))
+	while (n & Add)
 	{
 		n = n ^ Add;
 		Add = Add << 1;

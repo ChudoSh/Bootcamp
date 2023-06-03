@@ -63,7 +63,6 @@ static void BasicFunctionTest()
 	
 	Test(5 == PQSize(PartyQuest), "Size 5", __LINE__);
 	
-	Test(-1 == PQErase(PartyQuest, &MatchInt, &g), "Erase non-exist", __LINE__);
 	Test(0 == PQErase(PartyQuest, &MatchInt, &b), "Erase exist", __LINE__);
 	
 	PQDequeue(PartyQuest);

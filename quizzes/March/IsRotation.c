@@ -10,7 +10,7 @@ int main()
     char *y = "123412";
   
     
-    if(IsRotation(x,y) == 0)
+    if(IsRotation(x,y) == 1)
     {
         printf("Good Job!\n");
     }
@@ -34,7 +34,7 @@ int IsRotation(char *str1, char *str2)
     
 	if(strlen(str1) != strlen(str2))
 	{
-		return -1; 	
+		return 0; 	
 	}
     
     p1 = str1 + strlen(str1) - 1;
@@ -61,10 +61,10 @@ int IsRotation(char *str1, char *str2)
         
         if (2 == count)
         {   
-        	return -1;
+        	return 0;
         }
     }  
-    return 0;	
+    return 1;	
 }
 
 

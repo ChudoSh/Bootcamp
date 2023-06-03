@@ -9,7 +9,7 @@ Status: Fixed
 #include <string.h>	/*memcpy*/
 #include <assert.h> /*assert*/
 
-#include "D_Vector.h"
+#include "dvector.h"
 
 #define GROWTH_FACTOR (2)
 #define SHRINK (1.25)

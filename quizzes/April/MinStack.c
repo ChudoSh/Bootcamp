@@ -19,8 +19,10 @@ void MinPush(min_t *min_stack, const void* element)
 	{
 		StackPush(min_stack->min_val, element);
 	}
-	
-	StackPush(min_stack->min_val, StackPeek(min_stack->min_val));
+	else
+	{
+		StackPush(min_stack->min_val, StackPeek(min_stack->min_val));
+	}
 	StackPush(min_stack->main);	
 }
 

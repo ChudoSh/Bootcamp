@@ -1,0 +1,22 @@
+{
+    "C_Cpp.errorSquiggles": "disabled",
+    "files.associations": {
+        "sort.h": "c",
+        "array": "c",
+        "string_view": "c",
+        "initializer_list": "c",
+        "utility": "c",
+        "*.tcc": "c",
+        "string": "c",
+        "unordered_map": "c",
+        "memory": "c",
+        "ostream": "c",
+        "streambuf": "c",
+        "functional": "c",
+        "tuple": "c",
+        "stdlib.h": "c",
+        "random": "c",
+        "deque": "c",
+        "vector": "c"
+    }
+}

@@ -1,7 +1,7 @@
 #include <stddef.h> /*NULL*/
 #include <assert.h> /*assert*/
+#include <stdio.h>
 
-#include "ListExercise.h"
 
 typedef struct node
 {
@@ -10,19 +10,45 @@ typedef struct node
 }node_t;
 
 
-int IsSListLooped(const node_t *head);
-node_t UnLoop(node_t *head);
+int IsSListLooped(node_t *head);
+void UnLoop(node_t *looped, node_t *head);
 
 int main()
 {
+	node_t head = {NULL, NULL};
+	node_t node2 = {NULL, NULL};
+	node_t node3 = {NULL, NULL};
+	node_t node4 = {NULL, NULL};
+	node_t node5 = {NULL, NULL};
+	node_t node6 = {NULL, NULL};
+	node_t tail = {NULL, NULL};
 	
-
+	
+	head.next = &node2;
+	node2.next = &node3;
+	node3.next = &node4;
+	node4.next = &node5;
+	node5.next = &node6;
+	node6.next = &tail;
+	tail.next = &node4;
+	
+	if(1 == IsSListLooped(&head) && NULL == tail.next)
+	{
+		printf("Loop detection and removal successful!\n");
+	}
+	
+	else	
+	{
+		printf("Loop detection failed..\n");
+	}
+	
+	return (0);
 }
 
-node_t * IsSListLooped(const node_t *head)
+int IsSListLooped(node_t *head)
 {
-	const node_t *fast_iter = NULL;
-	const node_t *slow_iter = NULL;
+	node_t *fast_iter = NULL;
+	node_t *slow_iter = NULL;
 	
 	assert(NULL != head);
 	
@@ -36,44 +62,53 @@ node_t * IsSListLooped(const node_t *head)
 		 
 		if (fast_iter == slow_iter)
 		{
-			break;
+			UnLoop(fast_iter, head);
+			return (1);
 		} 
 	}
 	
-	fast_iter = head;
-	
-	while (slow_iter == fast_iter)
-	{
-		slow_iter = slow_iter->next;
-		fast_iter = fast_iter->next;
-	}
-	
-	slow_iter->next = NULL;
-	s
-	return (head);
+	return (0);
 }
 
-node_t *UnLoop(const node_t *head)
+void UnLoop(node_t *looped, node_t *head)
 {
-	const node_t *sheep = NULL;
-	const node_t *wolf = NULL;
+	node_t *iter1 = NULL;
+	node_t *iter2 = NULL;
+	size_t k = 1;
+	size_t i = 0;
 	
 	assert(NULL != head);
+	assert(NULL != looped);
 	
-	sheep = head;
-	wolf = head;
-		
-	while (NULL != wolf->next && NULL != wolf)
-	{
-		sheep = sheep->next;
-		wolf = wolf->next->next;
-		 
-		if (sheep == wolf)
-		{
-			return (TRUE);
-		} 
-	}
+	iter1 = looped; 
+	iter2 = looped;
 	
-	return (head);
+    while (iter1->next != iter2) 
+    {
+        iter1 = iter1->next;
+        ++(k);
+    }
+ 
+    /*Fix one pointer to head*/
+    iter1 = head;
+  	/*And the other pointer to k nodes after head*/
+    iter2 = head;
+   
+    for (i = 0; i < k; ++i)
+    {
+        iter2 = iter2->next;
+    }
+ 
+    /*Move both pointers at the same pace,
+      they will meet at loop starting node */
+    while (iter2 != iter1)
+    {
+        iter1 = iter1->next;
+        iter2 = iter2->next;
+    }
+ 
+    /*Set the next node of the loop ending node
+      to fix the loop */
+    iter2->next = NULL;
 }
 

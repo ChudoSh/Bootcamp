@@ -48,6 +48,7 @@ int QIsEmpty(const queue_t *queue)
 	assert(NULL != queue);
 		
 	return (SListBegin(queue) == SListEnd(queue));
+}
 
 /*Return the amount of elements in the queue*/
 size_t QSize(const queue_t *queue)

@@ -22,6 +22,12 @@ enum MACRO
 	ONE = 1
 };
 
+enum BOOLEAN
+{
+	FALSE = 0, 
+	TRUE = 1
+};
+
 
 struct CBuff
 {

@@ -4,6 +4,8 @@
 #include <string.h>/*memset*/
 
 #include "WordOpt.h"
+
+
 static void InitBuffer(unsigned char* buffer, int c)
 {
     size_t i = 0; 

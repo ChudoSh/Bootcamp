@@ -13,9 +13,13 @@ Date: 24.5.23
 
 static void Test(int val, const char *func, int line);
 static void VSATest();
+void VSATest2();
+void VSATest1();
 
 int main()
 {
+	VSATest2();
+	VSATest1();
 	VSATest();
 	return (0);
 }
@@ -28,7 +32,7 @@ static void VSATest()
 	size_t *test = (size_t *)malloc(400);
 	vsa_t *vsa = VSAInit(test, 400);
 	
-	printf("FSA basic functions tests\n");
+	printf("VSA basic functions tests\n");
 	printf("_Line__Name____________Status_\n");
 	
 	largest_chunk = VSAGetLargestChunkAvailable(vsa);
@@ -82,4 +86,65 @@ static void Test(int val, const char *func, int line)
 	
 	printf("%s\n", str2);
 }
+void VSATest1()
+{
+	void *meep = malloc(56);
+	vsa_t *bloop = VSAInit(meep, 56);
+	
+	Test(24 == VSAGetLargestChunkAvailable(bloop), "Empty lrgst", __LINE__);
+	
+	VSAAlloc(bloop, 8);
+	
+	Test(0 == VSAGetLargestChunkAvailable(bloop), "Lrgst available", __LINE__);
+	free(meep);
+}
+
+void VSATest2()
+{
+	void *meep = malloc(256);
+	vsa_t *bloop = VSAInit(meep, 256);
+	
+	size_t largest_chunk = 0;
+	
+	char *b = NULL;
+	char *c = NULL;
+	char *d = NULL;
+	
+	Test(224 == VSAGetLargestChunkAvailable(bloop), "Empty lrgst", __LINE__);
+	
+	VSAAlloc(bloop, 8);
+	
+	Test(200 == VSAGetLargestChunkAvailable(bloop), "Lrgst available", __LINE__);
+	printf("%lu\n", VSAGetLargestChunkAvailable(bloop));
+	
+	b = VSAAlloc(bloop, 8);
+	Test(176 == VSAGetLargestChunkAvailable(bloop), "Lrgst available", __LINE__);
+	
+	c = VSAAlloc(bloop, 8);
+	d = VSAAlloc(bloop, 8);
+	
+	Test(128 == VSAGetLargestChunkAvailable(bloop), "Lrgst available", __LINE__);
+	
+	VSAFree(d);
+	
+	Test(152 == VSAGetLargestChunkAvailable(bloop), "Free", __LINE__);
+	
+	d = VSAAlloc(bloop, 8);
+	VSAFree(b);
+	VSAFree(c);
+	
+	Test(128 == VSAGetLargestChunkAvailable(bloop), "Free", __LINE__);
+	
+	VSAAlloc(bloop, 8);
+	VSAAlloc(bloop, 8);
+	VSAAlloc(bloop, 8);
+	largest_chunk = VSAGetLargestChunkAvailable(bloop);
+	printf("%lu\n",largest_chunk);
+	
+	Test(56 == VSAGetLargestChunkAvailable(bloop), "Allocate more", __LINE__);
+	VSAAlloc(bloop, 8);
+	
+	free(meep);
+}
+
 

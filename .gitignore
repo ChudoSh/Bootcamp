@@ -3,6 +3,8 @@
 *.out
 *.o
 *.txt
+simulations
+.*.d
 
 #exception_rule
 !dummy.md
@@ -10,3 +12,4 @@
 !test.*
 !*/
 !makefile
+

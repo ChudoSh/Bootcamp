@@ -9,7 +9,7 @@ Status: Approved
 #define __QUEUE_H__
 
 #include <stddef.h> /* size_t, NULL */
-#include "SList.h" /*slist_t*/
+#include "slist.h" /*slist_t*/
 
 typedef slist_t queue_t;
 

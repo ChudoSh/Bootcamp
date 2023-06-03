@@ -22,20 +22,20 @@ int Atoi(const char *buffer)
 	   
     while (' ' == *buffer && '\0' != *buffer)
     {
-		++buffer;
+		++(buffer);
     }
    
 	if ('-' == *buffer)
 	{
-		++buffer;
+		++(buffer);
 	    flag = -1;
     } 
 	 		
     while (isdigit(*buffer))
     {
-		result *= DECIMAL_BASE;
-		result += *buffer - VAL_OF_ZERO;
-		++buffer; 
+		result *= 10;
+		result += *buffer - 48;
+		++(buffer); 
     }
     
     result *= flag;
@@ -66,7 +66,7 @@ char *Itoa(int n, char *buffer, int base)
 	{
 		*runner = LUT[(n % base)];
 		n /= base;
-		++runner;
+		++(runner);
 	}
 
 	*runner = '\0';
@@ -87,8 +87,8 @@ static void ReverseString(char *dest, size_t size)
 		tmp = *start;
 		*start = *end;
 		*end = tmp;
-		++start;
-		--end;
+		++(start);
+		--(end);
 	}
 }
 

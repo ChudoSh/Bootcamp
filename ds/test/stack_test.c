@@ -7,7 +7,7 @@ Status: Approved
 
 #include <stdio.h>
 
-#include "Stack.h"
+#include "stack.h"
 
 typedef struct dummy
 {

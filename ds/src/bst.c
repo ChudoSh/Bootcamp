@@ -117,10 +117,10 @@ bst_iter_t BSTInsert(bst_t *tree, void *data)
     }
 
     iter = GetFirst(tree);
-    SetData(insert, data);
     direction = GetCompared(tree, iter, data); 
 
-    while (FOUND != GetCompared(tree, iter, data) && (!IsLeaf(iter)))   
+    while (FOUND != GetCompared(tree, iter, data) && 
+           NULL != GetChild(iter, direction))   
     {
         iter = GetChild(iter, direction); 
         direction = GetCompared(tree, iter, data);     
@@ -215,9 +215,7 @@ bst_iter_t BSTNext(bst_iter_t current)
     }
 
     else 
-    {    
-        next = GetParent(next);
-
+    {   
         while (next != GetChild(GetParent(next), LEFT) && 
                NULL != GetParent(GetParent(next)))
         { 
@@ -254,14 +252,14 @@ bst_iter_t BSTPrev(bst_iter_t current)
     }
 
     else 
-    {    
-        prev = GetParent(prev);
-
+    {        
         while (prev != GetChild(GetParent(prev), RIGHT) && 
                NULL != GetParent(GetParent(prev)))
         {
             prev = GetParent(prev);
         } 
+
+        prev = GetParent(prev);
     }
 
     return (prev);
@@ -324,7 +322,8 @@ int BSTIsEmpty(const bst_t *tree)
 /*Looks for a particular leaf*/
 bst_iter_t BSTFind(bst_t *tree, const void *param)
 {   
-    bst_iter_t iter = NULL; 
+    bst_iter_t iter = NULL;
+    int direction = FOUND;  
 
     assert(NULL != tree);
     if(BSTIsEmpty(tree))
@@ -333,10 +332,13 @@ bst_iter_t BSTFind(bst_t *tree, const void *param)
     }
 
     iter = GetFirst(tree);
+    direction = GetCompared(tree, iter, (void *)param);
 
-    while (!IsLeaf(iter) && FOUND != GetCompared(tree, iter, (void *)param))
+    while (NULL != GetChild(iter, direction) && 
+           FOUND != GetCompared(tree, iter, (void *)param))
 	{
-        iter = GetChild(iter, GetCompared(tree, iter, (void *)param));      
+        iter = GetChild(iter, direction); 
+        direction = GetCompared(tree, iter, (void *)param);    
 	}
 
     if (FOUND == GetCompared(tree, iter, (void *)param))
@@ -367,7 +369,7 @@ int BSTForEach(bst_iter_t from, bst_iter_t to,
 		from = BSTNext(from);
 	}
 	
-	return (TRUE);
+	return (status);
 }
 
 /*Checks if two monkeys are equal*/

@@ -5,6 +5,7 @@
 *.txt
 simulations
 .*.d
+.vscode
 
 #exception_rule
 !dummy.md

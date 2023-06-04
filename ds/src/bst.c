@@ -7,12 +7,15 @@ Status:
 
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "bst.h"
 
 #define IS_EMPTY (0)
 #define FOUND (-1)
 #define UNUSED(x) ((void)(x))
+#define NO_CHILD (-1)
+
 
 enum BOOLEAN
 {
@@ -48,8 +51,10 @@ static void SetParent(bst_iter_t current, bst_iter_t parent);
 static bst_iter_t GetRoot(const bst_t *tree);
 static bst_iter_t GetFirst(const bst_t *tree);
 static void SetData(bst_iter_t current, void * data);
-static bst_iter_t CreateLeaf();
+static bst_iter_t CreateLeaf(void *data);
 static int GetCompared(const bst_t *tree,  bst_iter_t where, void *param);
+static int IsLeaf(const bst_iter_t where);
+static int WhichChild(bst_iter_t where);
 
 
 /*Plants the tree*/
@@ -65,11 +70,10 @@ bst_t *BSTCreate(int (*compare_func)(const void *a, const void *b))
         return (NULL);
     } 
     
-    SetParent(GetRoot(tree), NULL);
-    SetChild(GetRoot(tree), NULL, RIGHT);
-    SetChild(GetRoot(tree), NULL, LEFT);
-    SetData(GetRoot(tree), NULL);
-
+    tree->root_stub.value = NULL;
+    tree->root_stub.parent = NULL;
+    tree->root_stub.children[LEFT] = NULL;
+    tree->root_stub.children[RIGHT] = NULL;
     tree->compare_func = compare_func;
 
     return (tree);
@@ -80,7 +84,7 @@ void BSTDestroy(bst_t *tree)
 {
     assert(NULL != tree);
 
-    while (NULL != GetFirst(tree) && BSTBegin(tree) == BSTEnd(tree))
+    while (!BSTIsEmpty(tree))
     {
         BSTRemove(BSTBegin(tree));        
     }
@@ -91,16 +95,13 @@ void BSTDestroy(bst_t *tree)
 /*Grows a new leaf*/
 bst_iter_t BSTInsert(bst_t *tree, void *data)
 {
+    bst_iter_t iter = NULL; 
     bst_iter_t insert = NULL;
     int direction = 0;  
 
     assert(NULL != tree);
-    if (BSTEnd(tree) == BSTFind(tree, data))
-    {
-        return (NULL);
-    }
 
-    insert = CreateLeaf();
+    insert = CreateLeaf(data);
     if (NULL == insert)
     {
         return (NULL);
@@ -115,54 +116,83 @@ bst_iter_t BSTInsert(bst_t *tree, void *data)
         return (insert);
     }
 
-    insert = GetFirst(tree);
+    iter = GetFirst(tree);
+    SetData(insert, data);
+    direction = GetCompared(tree, iter, data); 
 
-    while (NULL != GetChild(insert, RIGHT) && NULL != GetChild(insert, LEFT))
+    while (FOUND != GetCompared(tree, iter, data) && (!IsLeaf(iter)))   
     {
-        direction = GetCompared(tree, insert, data);
-        insert = GetChild(insert, direction);
+        iter = GetChild(iter, direction); 
+        direction = GetCompared(tree, iter, data);     
     }
 
-    insert 
+    SetParent(insert, iter);
+    SetChild(iter, insert, direction);
 
     return (insert);
 }
 
 /*Cuts a leaf*/
 void BSTRemove(bst_iter_t current)
-{
-    assert(NULL != current);
-    assert(NULL != GetParent(current));
+{ 
+    bst_iter_t next = NULL; 
+    bst_iter_t parent = NULL;
+    int child_current = NO_CHILD;
+    int child_parent = NO_CHILD;
 
-    if (NULL ==  GetChild(current, LEFT) && NULL ==  GetChild(current, RIGHT))
+    assert(NULL != current);
+
+    parent = GetParent(current);
+
+    if (current == GetChild(parent, LEFT))
     {
-        if (GetChild(GetParent(current), LEFT) == current)
+        child_parent = LEFT; 
+    }
+    else
+    {
+       child_parent = RIGHT; 
+    }
+
+    /*When no children*/
+    if (IsLeaf(current))
+    {
+        if (child_parent == LEFT)
         {
-            SetChild(GetParent(current), NULL, LEFT);
+            SetChild(parent, NULL, LEFT);  
         }
         
         else
         {
-            SetChild(GetParent(current), NULL, RIGHT);
-        }
-
-        free(current);
-        return;      
+            SetChild(parent, NULL, RIGHT);
+        } 
     }
     
-    else if
+    else if (NULL == GetChild(current, RIGHT) || 
+             NULL == GetChild(current, LEFT))
     {
-        SetParent(BSTPrev(current), GetParent(current));
-        SetChild(GetParent(BSTPrev(current)), NULL, RIGHT);
+        child_current = WhichChild(current);
 
-        SetChild(BSTPrev(current), GetChild(current, RIGHT), RIGHT);
-        SetChild(BSTPrev(current), GetChild(current, LEFT), LEFT);
-
-        SetParent(GetChild(current, RIGHT) ,BSTPrev(current));
-        SetParent(GetChild(current, LEFT) ,BSTPrev(current));  
+        /*When there is one child*/
+        SetChild(parent, GetChild(current, child_current), child_parent);
+        SetParent(GetChild(current, child_current), parent);          
     }
 
-    free(current);     
+    /*When there are two kids*/
+    else
+    {
+        next = BSTNext(current);
+
+        SetParent(next, parent);
+        SetChild(parent, NULL, RIGHT);
+
+        SetChild(next, GetChild(current, RIGHT), RIGHT);
+        SetChild(next, GetChild(current, LEFT), LEFT);
+
+        SetParent(GetChild(current, RIGHT) ,next);
+        SetParent(GetChild(current, LEFT) ,next);
+    }
+    
+    free(current);   
 }
 
 /*Moves the monkey to the a higher branch*/
@@ -171,31 +201,30 @@ bst_iter_t BSTNext(bst_iter_t current)
     bst_iter_t next = NULL; 
 
     assert(NULL != current);
-    assert(NULL != current->parent);
 
     next = current;
 
-    if (NULL == GetChild(next, RIGHT) && NULL == GetChild(next, LEFT))
+    if (NULL != GetChild(next, RIGHT))
     {
-        while (next != GetChild(GetParent(next), LEFT) 
-               && NULL != GetParent(next))
+        next = GetChild(next, RIGHT);
+
+        while (NULL != GetChild(next, LEFT))
         {
-            next = GetParent(next);
+            next = GetChild(next, LEFT);       
         }       
     }
 
     else 
     {    
-        while (NULL !=  GetChild(next, LEFT) && NULL != GetChild(next, RIGHT))
-        { 
-            if (NULL == GetChild(next, LEFT))
-            {
-                next = GetChild(next, RIGHT);
-            }
+        next = GetParent(next);
 
-            next = GetChild(next, LEFT);
+        while (next != GetChild(GetParent(next), LEFT) && 
+               NULL != GetParent(GetParent(next)))
+        { 
+            next = GetParent(next);
         } 
 
+        next = GetParent(next);
     }
 
     return (next);
@@ -207,29 +236,31 @@ bst_iter_t BSTPrev(bst_iter_t current)
     bst_iter_t prev = NULL; 
 
     assert(NULL != current);
-    assert(NULL != GetParent(current));
 
-    prev = current; 
-
-    if (NULL == GetChild(prev, RIGHT) && NULL == GetChild(prev, LEFT))
+    prev = current;
+    if (NULL == GetParent(GetParent(prev)))
     {
-        while (prev != GetChild(GetParent(prev), RIGHT) 
-               && NULL != GetParent(prev))
-        {
-            prev = GetParent(prev);
-        }       
+        return (prev);
+    }
+     
+    if (NULL != GetChild(prev, LEFT))
+    {
+        prev = GetChild(prev, LEFT);
+
+        while (NULL != GetChild(prev, RIGHT))
+        { 
+            prev = GetChild(prev, RIGHT);       
+        }  
     }
 
     else 
     {    
-        while (NULL != GetChild(prev, LEFT) && NULL != GetChild(prev, RIGHT))
-        { 
-            if (NULL == GetChild(prev, RIGHT))
-            {
-                prev = GetChild(prev, LEFT);
-            }
+        prev = GetParent(prev);
 
-            prev = GetChild(prev, RIGHT);
+        while (prev != GetChild(GetParent(prev), RIGHT) && 
+               NULL != GetParent(GetParent(prev)))
+        {
+            prev = GetParent(prev);
         } 
     }
 
@@ -264,9 +295,9 @@ bst_iter_t BSTBegin(const bst_t *tree)
 
     assert(NULL != tree);
 
-    begin = GetFirst(tree);
+    begin = GetRoot(tree);
 
-    while (NULL != begin && NULL != GetChild(begin, LEFT))
+    while (NULL != GetChild(begin, LEFT))
     {
         begin = GetChild(begin, LEFT);
     }
@@ -277,8 +308,6 @@ bst_iter_t BSTBegin(const bst_t *tree)
 /*Gets the chunkiest leaf*/
 bst_iter_t BSTEnd(const bst_t *tree)
 {
-    bst_iter_t end = NULL;
-
     assert(NULL != tree);
 
     return (GetRoot(tree));
@@ -298,10 +327,14 @@ bst_iter_t BSTFind(bst_t *tree, const void *param)
     bst_iter_t iter = NULL; 
 
     assert(NULL != tree);
+    if(BSTIsEmpty(tree))
+    {
+        return (BSTEnd(tree));
+    }
 
     iter = GetFirst(tree);
 
-    while (NULL != iter && FOUND != GetCompared(tree, iter, (void *)param))
+    while (!IsLeaf(iter) && FOUND != GetCompared(tree, iter, (void *)param))
 	{
         iter = GetChild(iter, GetCompared(tree, iter, (void *)param));      
 	}
@@ -322,7 +355,7 @@ int BSTForEach(bst_iter_t from, bst_iter_t to,
     
 	assert(NULL != call_back);
 	
-	while (from != to && NULL != from)
+	while (from != to)
 	{
 		status = call_back(BSTGetData(from), param); 
 		
@@ -349,7 +382,7 @@ int BSTIsSameIter(const bst_iter_t iter1, const bst_iter_t iter2)
 
 
 /**********************static functions****************************/
-static bst_iter_t CreateLeaf()
+static bst_iter_t CreateLeaf(void *data)
 {  
     bst_iter_t new_leaf = (bst_iter_t)(malloc(sizeof(bst_node_t)));
     if (NULL == new_leaf)
@@ -360,10 +393,9 @@ static bst_iter_t CreateLeaf()
     SetParent(new_leaf, NULL);
     SetChild(new_leaf, NULL, RIGHT);
     SetChild(new_leaf, NULL, LEFT);
-    SetData(new_leaf, NULL);
+    SetData(new_leaf, data);
 
     return (new_leaf);
-
 }
 
 static int GetSize(void *a, void *b)
@@ -385,7 +417,7 @@ static bst_iter_t GetParent(bst_iter_t current)
     return (current->parent);    
 }
 
-static void SetChild(bst_iter_t current, bst_iter_t to_set,  int child)
+static void SetChild(bst_iter_t current, bst_iter_t to_set, int child)
 {
     current->children[child] = to_set;   
 }
@@ -419,7 +451,6 @@ static int GetCompared(const bst_t *tree,  bst_iter_t where, void *param)
     int status = 0; 
 
     assert(NULL != tree);
-    assert(NULL != where);
     
     status = tree->compare_func(BSTGetData(where), param);
 
@@ -434,6 +465,28 @@ static int GetCompared(const bst_t *tree,  bst_iter_t where, void *param)
     }
 
     return (FOUND);
+}
+
+static int IsLeaf(const bst_iter_t where)
+{
+    return (NULL == GetChild(where, RIGHT) && NULL == GetChild(where, LEFT));
+}
+
+static int WhichChild(bst_iter_t where)
+{ 
+    assert(NULL != where);
+
+    if (NULL != GetChild(where, LEFT))
+    {
+        return (LEFT);
+    }
+
+    else if (NULL != GetChild(where, RIGHT))
+    {
+        return (RIGHT);
+    }
+
+    return (NO_CHILD);
 }
 
 

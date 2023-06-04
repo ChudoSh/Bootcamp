@@ -28,18 +28,55 @@ int main()
 
 void TestTree()
 {
+    int a = 1;
+    int b = 2;
+    int c = 3;
+
+    bst_iter_t iter1 = NULL; 
+    bst_iter_t iter2 = NULL;
+    bst_iter_t iter3 = NULL;
+    bst_iter_t iter4 = NULL;
+
     bst_t *tree = BSTCreate(MatchInt);
 
-    Test(BSTIsEmpty(tree), "IsEmpty & Size",__LINE__);
+    Test(BSTIsEmpty(tree), "IsEmpty",__LINE__);
+
+    BSTInsert(tree, &a);
+    BSTInsert(tree, &b);
+    BSTInsert(tree, &c);
+
+    Test(1 == *(int *)BSTGetData(BSTBegin(tree)), "Insert",__LINE__);
+
+    iter1 = BSTBegin(tree);
+    iter2 = BSTBegin(tree);
+
+    Test(BSTIsSameIter(iter1, iter2), "IsSameIter",__LINE__);
+
+    iter1 = BSTNext(iter1);
+    iter1 = BSTNext(iter1);
+    Test(3 == *(int *)BSTGetData(iter1), "Next",__LINE__);
+
+    iter1 = BSTPrev(iter1);
+
+    Test(2 == *(int *)BSTGetData(iter1), "Prev",__LINE__);
+
+    iter3 = BSTFind(tree, &b);
+
+    Test(2 == *(int *)BSTGetData(iter3), "Find",__LINE__);
+
+    BSTRemove(iter3);
+
+    iter4 = BSTFind(tree, &b);
+
+    Test(BSTEnd(tree) == iter4, "Remove",__LINE__);
+
+    Test(2 == BSTSize(tree), "Size",__LINE__);
 
     BSTDestroy(tree);
 }
 
 static int MatchInt(const void *a, const void *b)
 {
-	assert(NULL != a);
-	assert(NULL != b);
-	
 	return (*(int *)a - *(int *)b);	
 }
 

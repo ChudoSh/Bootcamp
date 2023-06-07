@@ -6,8 +6,8 @@ CPPFLAGS = -I./
 VLG = valgrind -s --leak-check=yes --track-origins=yes
 GDB = cgdb
 
-NAMESPACE = bst
-//LIBS = $(SRC)/$(NAMESPACE).c 
+NAMESPACE = calculator
+LIBS = $(SRC)/stack.c $(SRC)/parser.c 
 
 SRC = src
 TEST = test

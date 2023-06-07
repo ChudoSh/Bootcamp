@@ -38,7 +38,7 @@ void StackDestroy(stack_t *my_stack);
 /*
 Description: Adds an element to the stack.
 Arguments:
-	*my_stack: A valid pointer to a stack to be deleted.
+	*my_stack: A valid pointer to a stack.
 	*element: A valid pointer to a constant element.
 Return value: 
 	No return value.

@@ -48,7 +48,7 @@ void StackDestroy(stack_t *my_stack)
 }
 
 /*Adds an element to the stack*/
-void StackPush(stack_t *my_stack, const void *element)
+void StackPushBack(stack_t *my_stack, const void *element)
 {
 	assert(NULL != my_stack);
 	assert(NULL != element);

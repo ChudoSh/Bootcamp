@@ -11,11 +11,13 @@ Date:
 
 #include "parser.h"
 
-int Parse(char *charecter)
+int Parse(char *expression, char **buffer)
 {
+    double num = 0; 
+
     assert(NULL != str);
     assert(NULL != ops);
     assert(NULL != nums);
 
-    
+    num = strtod(expression, buffer);
 }

@@ -3,6 +3,6 @@
 
 #include "calculator.h"
 
-void Parse(char *ops);
+int Parse(char *ops);
 
 #endif /* __PARSER_H__ */

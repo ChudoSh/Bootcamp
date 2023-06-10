@@ -6,8 +6,8 @@ CPPFLAGS = -I./
 VLG = valgrind -s --leak-check=yes --track-origins=yes
 GDB = cgdb
 
-NAMESPACE = calculator
-LIBS = $(SRC)/stack.c $(SRC)/parser.c 
+NAMESPACE = recursion
+LIBS = $(SRC)/stack.c
 
 SRC = src
 TEST = test
@@ -42,7 +42,7 @@ $(RELEASE_DIR):$(CFILE)
 debug: $(DEBUG_DIR)
 
 $(DEBUG_DIR): $(CFILE)
-	@ $(CC) $(CFLAGS) $(GD) $(CPPFLAGS)$(HEADER) -o $(DEBUG_DIR) $(CFILE)
+	@ $(CC) $(CFLAGS) $(GD) $(CPPFLAGS)$(HEADER) -o $(DEBUG_DIR) $(CFILE) -lm
 	
 run_release:
 	@ $(RELEASE_DIR) 

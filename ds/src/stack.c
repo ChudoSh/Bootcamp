@@ -23,18 +23,22 @@ struct Stack
 /*Creates the stack*/
 stack_t *StackCreate(size_t capacity, size_t element_size)
 {
-	stack_t *stack = (stack_t*)(malloc((element_size * capacity) + sizeof(stack_t)));
-	
+	stack_t *stack = NULL;
+
+	assert(0 < capacity);
+	assert(0 < element_size);
+
+	stack = (stack_t*)(malloc((element_size * capacity) + sizeof(stack_t)));
 	if (NULL == stack)
 	{
-		return NULL;
+		return (NULL);
 	}
 	
 	stack->capacity = capacity;
 	stack->size = 0;
 	stack->element_size = element_size;
-	stack->sp = (char*)stack + sizeof(stack);
-	
+	stack->sp = (char*)(stack + 1);
+
 	return (stack);	
 }
 
@@ -48,16 +52,27 @@ void StackDestroy(stack_t *my_stack)
 }
 
 /*Adds an element to the stack*/
-void StackPushBack(stack_t *my_stack, const void *element)
+void StackPush(stack_t *my_stack, const void *element)
 {
 	assert(NULL != my_stack);
 	assert(NULL != element);
-	assert(my_stack->capacity > my_stack->size);
+	assert(my_stack->size != my_stack->capacity);
 	
 	memcpy(my_stack->sp, element, my_stack->element_size);
-	
+
 	my_stack->sp += my_stack->element_size;
-	++my_stack->size;
+	++(my_stack->size);	
+
+}
+
+/*Pops the stack*/
+void StackPop(stack_t *my_stack)
+{
+	assert(NULL != my_stack);
+	assert(!StackIsEmpty(my_stack));
+	
+	my_stack->sp -= my_stack->element_size;
+	--(my_stack->size);
 }
 
 /*Gets the top element of the stack*/
@@ -73,17 +88,7 @@ int StackIsEmpty(const stack_t *my_stack)
 {
 	assert(NULL != my_stack);
 	
-	return (0 != my_stack->size);
-}
-
-/*Pops the stack*/
-void StackPop(stack_t *my_stack)
-{
-	assert(NULL != my_stack);
-	assert(StackIsEmpty(my_stack));
-	
-	my_stack->sp -= my_stack->element_size;
-	--my_stack->size;
+	return (0 == my_stack->size);
 }
 
 /*Reveales the stack size*/

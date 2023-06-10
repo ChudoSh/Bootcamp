@@ -9,6 +9,9 @@
         "string_view": "c",
         "initializer_list": "c",
         "functional": "c",
-        "stack.h": "c"
+        "stack.h": "c",
+        "typeinfo": "c",
+        "stdlib.h": "c",
+        "recursion.h": "c"
     }
 }

@@ -45,7 +45,7 @@ Return value:
 Complexity: 
 	Time 0(1) / Space 0(1).
 */
-void StackPushBack(stack_t *my_stack, const void *element);
+void StackPush(stack_t *my_stack, const void *element);
 
 /*
 Description: Removes an element from the stack.

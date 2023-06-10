@@ -23,9 +23,9 @@ int main()
 static void TestPlusMinus()
 {
     double result = 0; 
-    char *expresssion = "3+5-4";
+    const char *expresssion = "3+5-4";
 
-    Calculator(expresssion, result);
+    Calculator(expresssion, &result);
 
     Test(4 == result, "Plus & Minus", __LINE__);
 }

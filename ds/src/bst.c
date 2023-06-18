@@ -122,6 +122,7 @@ bst_iter_t BSTInsert(bst_t *tree, void *data)
 
     if (FOUND == GetCompared(tree, iter, data))
     {
+        free(insert);
         return (GetRoot(tree));
     }
 
@@ -149,6 +150,7 @@ void BSTRemove(bst_iter_t current)
     {
         child_parent = LEFT; 
     }
+    
     else
     {
        child_parent = RIGHT; 

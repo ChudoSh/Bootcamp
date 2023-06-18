@@ -52,34 +52,37 @@ int IsBalancedParanthesses(char *str, size_t size)
 			StackPush(stack, &(*str));
 		}
 		
-		switch (*str)
-		{	
-			case (')'):			
-				if (*((char*)StackPeek(stack)) != '(')
-				{
-					return (0);
-				}
-				StackPop(stack);
-				break;
-				
-			case ('}'):
-				if (*((char*)StackPeek(stack)) != '{')
-				{
-					return (0);
-				}
-				StackPop(stack);
-				break;
-				
-			case (']'):
-				if (*((char*)StackPeek(stack)) != '[')
-				{
-					return (0);
-				}
-				StackPop(stack);
-				break;
-				
-			default:
-				break;	 
+		else
+		{
+			switch (*str)
+			{	
+				case (')'):			
+					if (*((char*)StackPeek(stack)) != '(')
+					{
+						return (0);
+					}
+					StackPop(stack);
+					break;
+					
+				case ('}'):
+					if (*((char*)StackPeek(stack)) != '{')
+					{
+						return (0);
+					}
+					StackPop(stack);
+					break;
+					
+				case (']'):
+					if (*((char*)StackPeek(stack)) != '[')
+					{
+						return (0);
+					}
+					StackPop(stack);
+					break;
+					
+				default:
+					break;	 
+			}
 		}	
 		++(str);	
 	}

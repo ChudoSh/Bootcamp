@@ -179,6 +179,33 @@ static void CountingTest()
     printf("Counting \033[1;32msuccess\033[0m!\n\n");
 }
 
+static void TestBinarySearch()
+{   
+    size_t i = 0; 
+    int arr[5000] = {0};
+    clock_t start = 0;
+    clock_t end = 0;
+
+    for (i = 0; i < 5000; ++i)
+    {
+        arr[i] = rand() % 100 + 1;
+    }
+
+    start = clock();
+    printf("start of counting sort = %ld\n", start);
+    CountingSort(arr, 5000);
+    end = clock();
+    printf("end of counting sort = %ld\n", end);
+
+    if (!IsSorted(arr, 5000))
+    {
+        printf("Counting \033[1;31mfail\033[0m\n\n");
+        return;
+    }
+
+    printf("Counting \033[1;32msuccess\033[0m!\n\n");
+}
+
 static void RadixTest()
 {   
     size_t i = 0; 

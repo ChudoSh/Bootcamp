@@ -70,8 +70,7 @@ Return:
 Time complexity: O(n).
 Space complexity: O(1).
 */
-size_t Strcmp(char *dest, char *src);
-
+int Strcmp(char *dest, char *src);
 
 /***********************************************************************/
 /*
@@ -98,6 +97,19 @@ Time complexity: O(n).
 Space complexity: O(1).
 */
 char *Strcat(char *dest, char *src);
+
+/***********************************************************************/
+/*
+Description: Looks for a string in another string.
+Arguments: 
+	haystack : A valid string.
+	needle : A valid string.
+Return: 
+	The start of the found string, NULL otherwisre. 
+Time complexity: O(n).
+Space complexity: O(1).
+*/
+char *Strstr(char *haystack, char *needle);
 
 
 #endif /*__RECURSION_H__*/

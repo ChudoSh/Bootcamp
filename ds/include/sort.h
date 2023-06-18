@@ -77,5 +77,34 @@ Space compelxity : O(1)
 */
 int RadixSort(int *arr, size_t size);
 
+/***********************************************************************/
+/*
+Description: Conducts an iterative binary sort. 
+Arghuments:
+    - arr : A valid pointer to an int array.
+    - find : A valid pointer to an int array. 
+    - size : The size of the array. value to find
+Return: 
+    The position, if failed returns Fail. 
+Time Complexity: O(log(n))
+Space compelxity : O(1)
+*/
+int IterBinarySort(int *arr, int find, size_t size);
+
+
+/***********************************************************************/
+/*
+Description: Conducts an iterative binary sort. 
+Arghuments:
+    - arr : A valid pointer to an int array.
+    - find : A valid pointer to an int array. 
+    - size : The size of the array. value to find
+Return: 
+    The position, if failed returns Fail. 
+Time Complexity: O(log(n))
+Space compelxity : O(1)
+*/
+int RecBinarySort(int *arr, int find, size_t size);
+
 
 #endif /*__SORT_H__*/

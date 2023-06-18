@@ -15,6 +15,7 @@ static void RecStrlen();
 static void RecStrcmp();
 static void RecStrcpy();
 static void RecStrcat();
+static void RecStrstr();
 
 int main()
 {
@@ -25,6 +26,7 @@ int main()
 	RecStrcmp();
 	RecStrcpy();
 	RecStrcat();
+	RecStrstr();
 	
    	return (0); 
 }
@@ -82,7 +84,8 @@ static void TestSortStack()
 
 	StackDestroy(stack);
 
-    printf("Stack Sort Sucess!\n");
+	printf(" %d    ", __LINE__);
+    printf("Stack Sort      \033[1;32msuccess\033[0m\n");
     
 }
 
@@ -137,4 +140,14 @@ static void RecStrcat()
 	Strcat(dest, "shalom");
 
 	Test(0 == Strcmp(dest, "bokertovshalom"), "Strcat", __LINE__);
+}
+
+static void RecStrstr()
+{
+	char dest[15] = {'b','o','k','e','r','t','o','v'};
+	char *src = NULL;
+
+	src = Strstr(dest, "shalom");
+
+	Test(0 == Strcmp(src, "shalom"), "Strstr", __LINE__);
 }

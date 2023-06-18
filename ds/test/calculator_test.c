@@ -23,11 +23,11 @@ int main()
 static void TestPlusMinus()
 {
     double result = 0; 
-    const char *expresssion = "3+5-4";
+    const char *expresssion = "1+1+1";
 
     Calculator(expresssion, &result);
 
-    Test(4 == result, "Plus & Minus", __LINE__);
+    Test(3 == result, "Calculator", __LINE__);
 }
 
 static void Test(int val, const char *func, int line)

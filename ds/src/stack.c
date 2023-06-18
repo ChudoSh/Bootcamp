@@ -37,7 +37,7 @@ stack_t *StackCreate(size_t capacity, size_t element_size)
 	stack->capacity = capacity;
 	stack->size = 0;
 	stack->element_size = element_size;
-	stack->sp = (char*)(stack + 1);
+	stack->sp = (char *)(stack + 1);
 
 	return (stack);	
 }

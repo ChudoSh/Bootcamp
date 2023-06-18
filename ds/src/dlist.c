@@ -12,10 +12,20 @@ Date: 7.5.23
 
 #include "dlist.h"
 
-#define TRUE (1)
-#define FALSE (0)
-#define SUCCESS (1)
 #define UNUSED(x) ((void)(x))
+
+
+enum BOOL
+{
+	FALSE, 
+	TRUE
+};
+
+enum STATUS
+{
+	FAIL = -1, 
+	SUCCESS = 0 
+};
 
 struct Node
 {	
@@ -29,6 +39,8 @@ struct DList
 	node_t head;
 	node_t tail;
 };
+
+
 
 /*A count function*/
 static int GetSize(void *a, void *b);
@@ -88,7 +100,6 @@ dlist_iter_t DListInsert(dlist_iter_t where, void *data)
 	assert(NULL != where);
 	
 	insert = CreateNode();
-	
 	if (NULL == insert)
 	{	
 		while (NULL != DListNext(where))
@@ -98,12 +109,17 @@ dlist_iter_t DListInsert(dlist_iter_t where, void *data)
 		
 		return (where);
 	}
-	
+
+	if (NULL == DListPrev(where))
+	{
+		where = DListNext(where);
+	}
+
 	DListSetData(insert, data);
 	DListSetPosition(insert, where, DListPrev(where));
 	
 	DListSetNext(DListPrev(insert), insert);
-	DListSetPrev(DListNext(insert), insert);
+	DListSetPrev(where, insert);
 
 	return (insert);	 
 }
@@ -119,9 +135,9 @@ dlist_iter_t DListRemove(dlist_iter_t current)
 	save = DListNext(current);
 
 	/*Set the previous of the next to current to the previous of current*/
-	DListSetPrev(DListNext(current), DListPrev(current));
+	DListSetPrev(save, DListPrev(current));
 	/*Set the next of the previous to current to the next of current*/
-	DListSetNext(DListPrev(current), DListNext(current));
+	DListSetNext(DListPrev(current), save);
 
 	free(current);
 	
@@ -162,7 +178,7 @@ int DListForEach(dlist_iter_t from, dlist_iter_t to, int(*action_func)(void *dat
 		from = DListNext(from);
 	}
 	
-	return (TRUE);		
+	return (SUCCESS);		
 }
 
 /*Finds the position of the given value*/
@@ -317,7 +333,7 @@ dlist_iter_t DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
 	return (where);
 }
 	
-
+/*Searches for several values*/
 int DListMultiFind(dlist_iter_t from, dlist_iter_t to, 
 				   int (*match_func)(void *data, const void *param), 
 				   const void *param, dlist_t *output_list)
@@ -350,6 +366,9 @@ int DListMultiFind(dlist_iter_t from, dlist_iter_t to,
 
 	return (TRUE);
 }
+
+
+/*==========================Static Fucntions==================================*/
 
 /*A count function*/
 static int GetSize(void *a, void *b)

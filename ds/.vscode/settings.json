@@ -12,6 +12,14 @@
         "stack.h": "c",
         "typeinfo": "c",
         "stdlib.h": "c",
-        "recursion.h": "c"
+        "recursion.h": "c",
+        "stddef.h": "c",
+        "random": "c",
+        "memory": "c",
+        "system_error": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "assert.h": "c"
     }
 }

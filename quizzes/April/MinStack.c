@@ -23,7 +23,7 @@ void MinPush(min_t *min_stack, const void* element)
 	{
 		StackPush(min_stack->min_val, StackPeek(min_stack->min_val));
 	}
-	StackPush(min_stack->main);	
+	StackPush(min_stack->main, element);	
 }
 
 void MinPop(min_t *min_stack)

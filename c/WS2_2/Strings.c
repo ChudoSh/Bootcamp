@@ -192,9 +192,8 @@ char *StrStr(const char *haystack, const char *needle)
 		}
 		++haystack; 		
 	}
-	
 	 
-	return NULL; 	
+	return (NULL); 	
 }
 
 

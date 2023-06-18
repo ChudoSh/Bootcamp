@@ -13,7 +13,6 @@ Status: Approved
 #define COUNT_SIZE (101)
 #define RADIX_SIZE (10)
 
-
 enum BOOLEAN
 {
     FALSE = 0, 
@@ -135,7 +134,7 @@ int CountingSort(int *arr, size_t size)
        arr[i] = output_array[i];       
     }
 
-     free(output_array);
+    free(output_array);
     
     return (SUCCESS);       
 }
@@ -159,7 +158,78 @@ int RadixSort(int *arr, size_t size)
     }
 
     return (SUCCESS);
+}
 
+
+int IterBinarySort(int *arr, int find, size_t size)
+{
+    int index  = 0;
+    int start = 0; 
+    int end = 0;
+ 
+    assert(NULL != arr);
+    assert(0 < size);
+
+    end = size;
+
+    while (start <= find)
+    {
+        index = start + (end - start)/2;
+
+        if (arr[index] == find)
+        {
+            return (index); 
+        }
+        else if (arr[index] < find)
+        {
+            start = index +1;
+        }
+        else
+        {
+            end = index - 1; 
+        }  
+    }
+
+    return (SUCCESS);
+}
+
+int RecBinarySort(int *arr, int find, size_t size)
+{
+    int index  = 0;
+    int start = 0;
+    int end = 0;
+ 
+    assert(NULL != arr);
+    assert(0 < size);
+
+    end = size;
+    index = start + (end - start)/2;
+
+    if (arr[index] == find)
+    {
+        return (index); 
+    }
+
+    else if (index == end && arr[index] != find)
+    {
+        return (FAIL);
+    }
+
+    else if (index == 0 && arr[index] != find)
+    {
+        return (FAIL);
+    }
+
+    if (arr[index] < find)
+    {
+        ++(arr);
+    }
+    else
+    {
+       --(size); 
+    } 
+
+    return RecBinarySort(arr, find, size); 
 }
 
 /******************************static functions********************************/

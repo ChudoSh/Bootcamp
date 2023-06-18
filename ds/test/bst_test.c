@@ -128,7 +128,7 @@ static void Test(int val, const char *func, int line)
 	sprintf(temp, " %s               ", func);
 	strncpy(&str2[6], temp, strlen(temp));
 	
-	if(val)
+	if (val)
 	{
 		strcpy(&str2[23], "\033[1;32msuccess\033[0m");
 	}

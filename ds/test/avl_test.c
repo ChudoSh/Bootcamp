@@ -1,8 +1,8 @@
 /*
-Developer:The person who wrote this
-Reviewer:The person who reviewed this
-status:hopefully approved by:
-date: .6.23
+Developer:BarSH
+Reviewer:MariaP
+status: Approved
+date: 18/06/23
 */
 
 #include <stdlib.h>

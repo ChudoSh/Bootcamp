@@ -1,14 +1,13 @@
 /*
 Developer:BarSH
 Reviewer:MariaP
-status:
+status: Approved
 date: 18/06/23
 */
 #ifndef __AVL_H__
 #define __AVL_H__
 
 #include <stddef.h> /* size_t */
-#include <stdio.h>
 
 
 enum traverse_type

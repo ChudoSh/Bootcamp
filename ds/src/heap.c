@@ -1,8 +1,8 @@
 /*
 Dev: BarSH
-Rev: 
-Date: .6.23
-Status: 
+Rev: ShlomiA
+Date: 20.6.23
+Status: Approved
 */
 
 #include <assert.h>/*assert*/
@@ -22,17 +22,11 @@ enum STATUS
     SUCCESS = 0
 };
 
-enum BOOL
-{   
-    FALSE = 0, 
-    TRUE = 1
-};
-
 enum HEAP_MAGIC_NUMS
 {   
     ROOT_INDEX = 0,
     ONE_ELEM_IN_HEAP = 1, 
-    INIT_CAP = 3
+    INIT_CAP = 8
 };
 
 struct HEAP 
@@ -43,7 +37,7 @@ struct HEAP
 
 
 static dvector_t *GetVector(const heap_t *heap);
-static int HeapifyUp(heap_t *heap);
+static int HeapifyUp(heap_t *heap, size_t index);
 static void HeapifyDown(heap_t *heap, size_t index);
 static int GetCompared(const heap_t *heap, size_t to_check, size_t check_against);
 static size_t GetRight(size_t index);
@@ -104,7 +98,7 @@ int HeapPush(heap_t *heap, const void *data)
         return (FAIL);
     }
 
-    return (HeapifyUp(heap), END_INDEX(heap));
+    return (HeapifyUp(heap, END_INDEX(heap)));
 }
 
 /*Pops the heap*/
@@ -170,45 +164,36 @@ void *HeapRemove(heap_t *heap, void *data, int(*is_match)(const void *, const vo
     }
 
     removed = *((void **)GetData(heap ,index));
+
     if (FAIL == Swap(heap, index, END_INDEX(heap)))
     {
         return (NULL);
     }
+
     DVectorPopBack(GetVector(heap));
     HeapifyDown(heap, index);
 
     return (removed);
-   
 }
+
+
 /*========Static funcs=========*/
 /*Crucial funcs*/
-static int HeapifyUp(heap_t *heap)
+static int HeapifyUp(heap_t *heap, size_t index)
 {     
-    size_t index = 0; 
-    int status = SUCCESS;
-
     assert(NULL != heap);
 
-    index = END_INDEX(heap);
-
-    while (0 != GetParent(index) && 
-           SUCCESS == GetCompared(heap, index, GetParent(index)) &&
-           SUCCESS == status)
-    {    
-        status = Swap(heap, index, GetParent(index));      
-        index = GetParent(index);    
-    }
-
-
-    if (SUCCESS == GetCompared(heap, index, GetParent(index)))
+    if (0 == index ||  SUCCESS != GetCompared(heap, index, GetParent(index)))
     {
-        if (FAIL == Swap(heap, index, GetParent(index)))
-        {
-            return (FAIL);
-        }
+        return (SUCCESS);
     }
 
-    return (SUCCESS);   
+    if (FAIL == Swap(heap, index, GetParent(index)))
+    {
+        return (FAIL);
+    }
+    
+    return (HeapifyUp(heap, GetParent(index)));   
 }
 
 static void HeapifyDown(heap_t *heap, size_t index)
@@ -218,7 +203,7 @@ static void HeapifyDown(heap_t *heap, size_t index)
     assert(NULL != heap);
    
     if (GetLeft(index) < HeapSize(heap) && 
-        SUCCESS ==  GetCompared(heap, GetLeft(index), index))
+        SUCCESS == GetCompared(heap, GetLeft(index), index))
     {
         index = GetLeft(index);
     }

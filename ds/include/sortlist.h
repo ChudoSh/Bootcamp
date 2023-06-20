@@ -64,7 +64,6 @@ Return:
 Time complexity: O(n).
 Space complexity: O(1).
 */
-
 sort_iter_t SortListInsert(sort_list_t *list, void *data);
 
 /***********************************************************************/
@@ -109,7 +108,6 @@ Return:
 Time complexity: O(n).
 Space complexity: O(1).
 */
-
 int SortListForEach(sort_iter_t from, sort_iter_t to, 
 					action_t action, void *action_param);
 
@@ -123,7 +121,6 @@ Return:
 Time complexity: O(n).
 Space complexity: O(1).
 */
-
 size_t SortListSize(const sort_list_t *list);
 
 /***********************************************************************/
@@ -136,7 +133,6 @@ Return:
 Time complexity: O(1).
 Space complexity: O(1).
 */
-
 int SortListIsEmpty(sort_list_t *list);
 
 /***********************************************************************/

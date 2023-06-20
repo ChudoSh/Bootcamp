@@ -50,7 +50,7 @@ static void TestInsertSize()
     { 
        HeapPush(heap, &arr[i]);
     } 
-
+    
     AutomatedTest(6 == HeapSize(heap), "Insert & Size", __LINE__);
     AutomatedTest(7 == *(int *)HeapPeek(heap), "Peek", __LINE__);
 
@@ -69,7 +69,6 @@ static void TestPop()
     } 
 
     HeapPop(heap);
-
     AutomatedTest(5 == HeapSize(heap) && 8 == *(int *)HeapPeek(heap), "Pop", __LINE__);
    
     HeapDestroy(heap);

@@ -130,4 +130,5 @@ Space complexity: O(1).
 */
 int PQIsEmpty(const pq_t *pq);
 
+
 #endif /* __PQUEUE_H__ */

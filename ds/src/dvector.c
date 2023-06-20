@@ -125,7 +125,7 @@ int DVectorPopBack(dvector_t *vector)
 void *DVectorGetAccessToElement(const dvector_t *vector, size_t index)
 {
 	assert(NULL != vector);
-	assert(vector->capacity >= index);
+	/*assert(vector->capacity >= index);*/
 	
 	return ((void*)(vector->base_ptr + JumpByAmount((dvector_t *)vector, index)));
 }

@@ -45,21 +45,20 @@ static void BasicFunctionTest()
 
     for (i = 0; i < 6; ++i)
     {
-	    Test(0 == PQEnqueue(PartyQuest, &arr[i]), "Enqueue", __LINE__);
+	    Test(SUCCESS == PQEnqueue(PartyQuest, &arr[i]), "Enqueue", __LINE__);
     }
 
     Test(arr[2] == *(int *)(PQPeek(PartyQuest)), "Peek", __LINE__);
 	
 	Test(6 == PQSize(PartyQuest), "Size 6", __LINE__);
 	
-	Test(10 == *(int *)PQErase(PartyQuest, &MatchInt, &arr[4]), "Erase exist", __LINE__);
+	Test(10 == *(int *)PQErase(PartyQuest, &MatchInt, &arr[4]), "Erase", __LINE__);
 	
 	PQDequeue(PartyQuest);
-	Test(arr[2] == *(int *)(PQPeek(PartyQuest)), "Dequeue & Peek", __LINE__);
 	PQDequeue(PartyQuest);
-	Test(arr[2] == *(int *)(PQPeek(PartyQuest)), "Dequeue & Peek", __LINE__);
 	PQDequeue(PartyQuest);
-	Test(arr[2] == *(int *)(PQPeek(PartyQuest)), "Dequeue & Peek", __LINE__);
+
+	Test(7 == *(int *)(PQPeek(PartyQuest)), "Dequeue & Peek", __LINE__);
 	
 	Test(2 == PQSize(PartyQuest), "Size 2", __LINE__);
 

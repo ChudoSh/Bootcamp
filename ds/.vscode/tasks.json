@@ -10,7 +10,6 @@
                 "-I",
                 "${fileDirname}/../include",
                 "${file}",
-                "${fileDirname}/../src/heap_q.c",
                 "${fileDirname}/../src/heap.c",
                 "${fileDirname}/../src/dvector.c",
                 "-o",

@@ -11,18 +11,21 @@ Date: 19.5.23
 #include <stdio.h>
 
 
-#include "scheduler.h"
-
-
-#define ENQ_FAIL (-1)
-#define FAIL (-1)
-#define SUCCESS (0)
+#include "scheduler_heap.h"
 
 
 enum BOOLEAN/*change the name*/
 {
 	FALSE = 0,
 	TRUE = 1
+};
+
+enum STATUS/*change the name*/
+{
+    ENQ_FAIL = -1,
+    FAIL = -1,
+	SUCCESS = 0
+	
 };
 
 struct Scheduler
@@ -146,7 +149,7 @@ int SchedulerRun(scheduler_t *scheduler)
 			scheduler->current_occupied = TRUE;
 		}
 		 
-		while(sleep(TaskGetTimeToRun(scheduler->current_task) - time(NULL)));
+		/*while(sleep(TaskGetTimeToRun(scheduler->current_task) - time(NULL)));*/
 		 
 		if(!(scheduler->current_occupied))
 		{
@@ -233,8 +236,8 @@ static int Compare_Time(const void *task1, const void *task2)
 	assert(NULL != task1);
 	assert(NULL != task2);
 	
-	return (TaskGetTimeToRun((task_t *)task2) - 
-			TaskGetTimeToRun((task_t *)task1));
+	return (TaskGetTimeToRun((task_t *)task1) - 
+			TaskGetTimeToRun((task_t *)task2));
 }
 
 static int IsMatchUID(const void *task, const void *uid)

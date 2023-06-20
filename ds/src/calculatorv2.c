@@ -5,7 +5,6 @@ Rev:
 Status: 
 Date: 
 */
-
 #include <assert.h>/*assert*/
 #include <stdlib.h>/*malloc*/
 #include <math.h> /*pow*/
@@ -35,20 +34,26 @@ typedef enum STATES_FLAG
     NUM_STATES
 }state_flag_t;
 
+typedef enum OP_STATE
+{ 
+    OP_ADD,
+    OP_COLLAPES,
+    OP_PARENTH_CLOSE,
+    NUM_OF_OP_STATES = 3
+}op_state_t;
+
 typedef enum PRECEDENCE
 { 
-    INIT = -1,
+    DUMMY = -99,
+    COLLAPSE_ALL = -1,
     ADDITION = 1,
     SUBTRACTION = 1,
     MULITPLICATION = 2,
     DIVISION = 2,
     POWER = 3,
     OPEN_BRACETS = 4,
-    CLOSE_BRACETS = 5
+    CLOSE_BRACETS = 5 
 }precedence_t;
-
-state_flag_t current_state = WAITING_FOR_NUM;
-calculator_status_t status = SUCCESS;
 
 typedef struct ParsingStacks
 {
@@ -88,18 +93,20 @@ static calc_con_t *CreateContainer(const char *expression);
 static void DestroyContainer(calc_con_t *container);
 stack_t *GetNumStack(calc_con_t *container);
 stack_t *GetOpStack(calc_con_t *container);
+static char PeekOperator(calc_con_t *container);
 
 
 /*========Arithmetics======*/
 static void Addition(double *dest, double *to_add);
 static void Subtraction(double *dest, double *to_add);
-static void Multiplication(double *dest, double *to_add);
+/*static void Multiplication(double *dest, double *to_add);
 static void Division(double *dest, double *to_add);
 static int ComparePrecendence(precedence_t before, precedence_t after);
-/*static void Power(double *dest, double *to_add);*/
+static void Power(double *dest, double *to_add);*/
+static int IsPrecendence(precedence_t current, arith_op_t *handler);
 
 /*========States======*/
-static void ExecuteOperation(state_t *hanlder, calc_con_t *container, char **buffer);
+static void ExecuteOperation(state_t *handler, calc_con_t *container, char **buffer, double *result);
 static state_flag_t WaitingForNum(calc_con_t *container, char **buffer, double *result);
 static state_flag_t WaitingForOp(calc_con_t *container, char **buffer, double *result);
 static calculator_status_t Evaluate(calc_con_t *container);
@@ -117,7 +124,7 @@ static void InitLUT();
 calculator_status_t Calculator(const char *expression, double *result)
 {
     calc_con_t *container = NULL;
-    
+     
     assert(NULL != expression);
     assert(NULL != result);
 
@@ -145,23 +152,17 @@ static calculator_status_t InitCalculate(calc_con_t *container,
     calculator_status_t current_status = SUCCESS;
     
     assert(NULL != expression);
-
-    buffer = (char *)malloc(strlen(expression) + 1);
-    if (NULL == buffer)
-    {
-        return (MEMORY_ALLOC_ERR);
-    }
     
     current_state = WAITING_FOR_NUM;
     buffer = (char *)expression;
 
-    while (ERROR != current_state && '\0' != *buffer && FINISH != current_state)/*assume for now parse returns the proper value*/
+    while (ERROR != current_state && '\0' != *buffer)/*assume for now parse returns the proper value*/
     {
         handler = &(stateLUT[(int)(*buffer)][current_state]);
-        ExecuteOperation(handler, container, &buffer);
+        current_status = ExecuteOperation(handler, container, &buffer, result);
     }
 
-    return (Finish(container ,result));
+    return (current_status);
 }
 
 static state_flag_t WaitingForNum(calc_con_t *container, char **buffer, 
@@ -188,25 +189,20 @@ static state_flag_t WaitingForOp(calc_con_t *container, char **buffer,
     double *num_before = NULL;
     double *num_after = NULL;
     double evaluation = 0; 
-    precedence_t to_check = INIT;
+    precedence_t to_check = 0;
     arith_op_t *handler = NULL;
 
     assert(NULL != container);
 
     op = **buffer;
+    to_check = arith_opsLUT[(int)op].precedence;
+    handler = &arith_opsLUT[(int)PeekOperator(container)];
 
-    num_after = StackPeek(GetNumStack(container));
-    StackPop(GetNumStack(container));
-
-    op = *(char *)StackPeek(GetOpStack(container));
-    StackPop(GetOpStack(container));
-
-    handler = &arith_opsLUT[op];
-    to_check = 
-        arith_opsLUT[*(int *)(StackPeek(GetNumStack(container)))].precedence;
-
-    while('#' != op)
+    while(IsPrecendence(to_check, handler) && '#' != to_check)
     {
+        num_after = StackPeek(GetNumStack(container));
+        StackPop(GetNumStack(container));
+
         num_before = StackPeek(GetNumStack(container));
         StackPop(GetNumStack(container));
 
@@ -214,16 +210,16 @@ static state_flag_t WaitingForOp(calc_con_t *container, char **buffer,
 
         handler->operation(num_before, num_after);
         evaluation = *num_before + *num_after;
-        StackPush(GetNumStack(container), &evaluation);
 
-        num_after = StackPeek(GetNumStack(container));
-        StackPop(GetNumStack(container));
+        StackPush(GetNumStack(container), &evaluation);
 
         op = *(char *)StackPeek(GetOpStack(container));
         StackPop(GetOpStack(container));
     }
-    
-    *result = evaluation;
+
+    *result += evaluation;
+
+    StackPush(GetNumStack(container), &evaluation);
 
     StackPush(GetOpStack(container), &op);
 
@@ -232,13 +228,13 @@ static state_flag_t WaitingForOp(calc_con_t *container, char **buffer,
    return (WAITING_FOR_NUM);
 }
 
-static state_flag_t Error(calc_con_t *container, char **buffer)
+static state_flag_t Error(calc_con_t *container, char **buffer, double *result)
 {
     printf("in error");
     return (ERROR);
 }
 
-static calculator_status_t Finish(calc_con_t *container, double *result)
+/*static calculator_status_t Finish(calc_con_t *container, double *result)
 {   
     char op = '\0';
     double *num_before = NULL;
@@ -278,9 +274,9 @@ static calculator_status_t Finish(calc_con_t *container, double *result)
     *result = evaluation;
 
     return (SUCCESS);
-}
+}*/
 
-static calculator_status_t Evaluate(calc_con_t *container)
+/*static calculator_status_t Evaluate(calc_con_t *container)
 {   
     char op = '\0';
     double *num_before = NULL;
@@ -289,8 +285,8 @@ static calculator_status_t Evaluate(calc_con_t *container)
     precedence_t to_check = INIT;
     arith_op_t *handler = NULL;
 
-    /*num_after = StackPeek(GetNumStack(container));
-    StackPop(GetNumStack(container));*/
+    num_after = StackPeek(GetNumStack(container));
+    StackPop(GetNumStack(container));
 
     op = *(char *)StackPeek(GetOpStack(container));
     to_check = 
@@ -303,8 +299,8 @@ static calculator_status_t Evaluate(calc_con_t *container)
     {
         StackPop(GetOpStack(container));
 
-        /*op = *(char *)StackPeek(GetOpStack(container));
-        StackPop(GetOpStack(container));*/
+        op = *(char *)StackPeek(GetOpStack(container));
+        StackPop(GetOpStack(container));
         num_before = StackPeek(GetNumStack(container));
         StackPop(GetNumStack(container));
 
@@ -321,17 +317,17 @@ static calculator_status_t Evaluate(calc_con_t *container)
         arith_opsLUT[*(int *)(StackPeek(GetOpStack(container)))].precedence;
     }
 
-    /*num_before = StackPeek(GetNumStack(container));
+    num_before = StackPeek(GetNumStack(container));
     handler = &arith_opsLUT[(int)op];
 
     handler->operation(num_before, num_after);
     evaluation = *num_before + *num_after;
     StackPush(GetNumStack(container), &evaluation);
 
-    StackPop(GetNumStack(container));*/
+    StackPop(GetNumStack(container));
 
     return (SUCCESS);
-}
+}*/
 
 static calc_con_t *CreateContainer(const char *expression)
 {
@@ -403,145 +399,148 @@ static void Division(double *dest, double *to_divide)
     {
         status = MATH_ERR;
         current_state = ERROR;
-        return (0);
+        return;
     }
 
     (*dest) / (*to_divide);
 }
+
 /*static void Power(double *dest, double *to_raise)
 {
     (pow((*dest), (*to_raise)));
 }*/
 
 static void ExecuteOperation(state_t *handler, calc_con_t *container, 
-                             char **buffer)
+                             char **buffer, double *result)
 {
     assert(NULL != handler);
     assert(NULL != container);
     assert(NULL != buffer);
 
-    handler->next_state = handler->state(container, buffer);
+    handler->next_state = handler->state(container, buffer, result);
     current_state = handler->next_state;
 }
 
 static void InitLUT()
 {
-    /*int i = 0; 
-    char init[21] = {'0', '1', '2', '3', '4', '5', '6','7','8','9','+','-',
-                      '*','/','^','(','[','{',')',']','}'};*/
     static int flag = FALSE;
 
     if (!flag)
     {
-    stateLUT['0'][WAITING_FOR_NUM].state = WaitingForNum;
-    stateLUT['0'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
-    stateLUT['1'][WAITING_FOR_NUM].state = WaitingForNum;
-    stateLUT['1'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
-    stateLUT['2'][WAITING_FOR_NUM].state = WaitingForNum;
-    stateLUT['2'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
-    stateLUT['3'][WAITING_FOR_NUM].state = WaitingForNum;
-    stateLUT['3'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
-    stateLUT['4'][WAITING_FOR_NUM].state = WaitingForNum;
-    stateLUT['4'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
-    stateLUT['5'][WAITING_FOR_NUM].state = WaitingForNum;
-    stateLUT['5'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
-    stateLUT['6'][WAITING_FOR_NUM].state = WaitingForNum;
-    stateLUT['6'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
-    stateLUT['7'][WAITING_FOR_NUM].state = WaitingForNum;
-    stateLUT['7'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
-    stateLUT['8'][WAITING_FOR_NUM].state = WaitingForNum;
-    stateLUT['8'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP; 
-    stateLUT['9'][WAITING_FOR_NUM].state = WaitingForNum;
-    stateLUT['9'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
-    stateLUT['+'][WAITING_FOR_NUM].next_state = ERROR;
-    stateLUT['+'][WAITING_FOR_NUM].state = Error;
-    stateLUT['-'][WAITING_FOR_NUM].next_state = ERROR;
-    stateLUT['-'][WAITING_FOR_NUM].state = Error;
-    stateLUT['*'][WAITING_FOR_NUM].next_state = ERROR;
-    stateLUT['*'][WAITING_FOR_NUM].state = Error;
-    stateLUT['/'][WAITING_FOR_NUM].next_state = ERROR; 
-    stateLUT['/'][WAITING_FOR_NUM].state = Error;
-    stateLUT['^'][WAITING_FOR_NUM].next_state = ERROR;
-    stateLUT['^'][WAITING_FOR_NUM].state = Error;
-    stateLUT['^'][WAITING_FOR_NUM].next_state = ERROR;
-    stateLUT['('][WAITING_FOR_NUM].state = WaitingForNum;
-    stateLUT['('][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
-    stateLUT['['][WAITING_FOR_NUM].state = WaitingForNum;
-    stateLUT['['][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
-    stateLUT['{'][WAITING_FOR_NUM].state = WaitingForNum;
-    stateLUT['{'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP; 
-    stateLUT[')'][WAITING_FOR_NUM].state = Error;
-    stateLUT[')'][WAITING_FOR_NUM].next_state = ERROR;
-    stateLUT[']'][WAITING_FOR_NUM].state = Error;
-    stateLUT[']'][WAITING_FOR_NUM].next_state = ERROR;
-    stateLUT['}'][WAITING_FOR_NUM].state = Error;
-    stateLUT['}'][WAITING_FOR_NUM].next_state = ERROR;   
+        stateLUT['0'][WAITING_FOR_NUM].state = WaitingForNum;
+        stateLUT['0'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
+        stateLUT['1'][WAITING_FOR_NUM].state = WaitingForNum;
+        stateLUT['1'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
+        stateLUT['2'][WAITING_FOR_NUM].state = WaitingForNum;
+        stateLUT['2'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
+        stateLUT['3'][WAITING_FOR_NUM].state = WaitingForNum;
+        stateLUT['3'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
+        stateLUT['4'][WAITING_FOR_NUM].state = WaitingForNum;
+        stateLUT['4'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
+        stateLUT['5'][WAITING_FOR_NUM].state = WaitingForNum;
+        stateLUT['5'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
+        stateLUT['6'][WAITING_FOR_NUM].state = WaitingForNum;
+        stateLUT['6'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
+        stateLUT['7'][WAITING_FOR_NUM].state = WaitingForNum;
+        stateLUT['7'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
+        stateLUT['8'][WAITING_FOR_NUM].state = WaitingForNum;
+        stateLUT['8'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP; 
+        stateLUT['9'][WAITING_FOR_NUM].state = WaitingForNum;
+        stateLUT['9'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
+        stateLUT['+'][WAITING_FOR_NUM].next_state = ERROR;
+        stateLUT['+'][WAITING_FOR_NUM].state = Error;
+        stateLUT['-'][WAITING_FOR_NUM].next_state = ERROR;
+        stateLUT['-'][WAITING_FOR_NUM].state = Error;
+        /*stateLUT['*'][WAITING_FOR_NUM].next_state = ERROR;
+        stateLUT['*'][WAITING_FOR_NUM].state = Error;
+        stateLUT['/'][WAITING_FOR_NUM].next_state = ERROR; 
+        stateLUT['/'][WAITING_FOR_NUM].state = Error;
+        stateLUT['^'][WAITING_FOR_NUM].next_state = ERROR;
+        stateLUT['^'][WAITING_FOR_NUM].state = Error;
+        stateLUT['^'][WAITING_FOR_NUM].next_state = ERROR;
+        stateLUT['('][WAITING_FOR_NUM].state = WaitingForNum;
+        stateLUT['('][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
+        stateLUT['['][WAITING_FOR_NUM].state = WaitingForNum;
+        stateLUT['['][WAITING_FOR_NUM].next_state = WAITING_FOR_OP;
+        stateLUT['{'][WAITING_FOR_NUM].state = WaitingForNum;
+        stateLUT['{'][WAITING_FOR_NUM].next_state = WAITING_FOR_OP; 
+        stateLUT[')'][WAITING_FOR_NUM].state = Error;
+        stateLUT[')'][WAITING_FOR_NUM].next_state = ERROR;
+        stateLUT[']'][WAITING_FOR_NUM].state = Error;
+        stateLUT[']'][WAITING_FOR_NUM].next_state = ERROR;
+        stateLUT['}'][WAITING_FOR_NUM].state = Error;
+        stateLUT['}'][WAITING_FOR_NUM].next_state = ERROR;*/   
 
-    stateLUT['0'][WAITING_FOR_OP].state = Error;
-    stateLUT['0'][WAITING_FOR_OP].next_state = ERROR;
-    stateLUT['1'][WAITING_FOR_OP].state = Error;
-    stateLUT['1'][WAITING_FOR_OP].next_state = ERROR;
-    stateLUT['2'][WAITING_FOR_OP].state = Error;
-    stateLUT['2'][WAITING_FOR_OP].next_state = ERROR;
-    stateLUT['3'][WAITING_FOR_OP].state = Error;
-    stateLUT['3'][WAITING_FOR_OP].next_state = ERROR;
-    stateLUT['4'][WAITING_FOR_OP].state = Error;
-    stateLUT['4'][WAITING_FOR_OP].next_state = ERROR;
-    stateLUT['5'][WAITING_FOR_OP].state = Error;
-    stateLUT['5'][WAITING_FOR_OP].next_state = ERROR;
-    stateLUT['6'][WAITING_FOR_OP].state = Error;
-    stateLUT['6'][WAITING_FOR_OP].next_state = ERROR;
-    stateLUT['7'][WAITING_FOR_OP].state = Error;
-    stateLUT['7'][WAITING_FOR_OP].next_state = ERROR;
-    stateLUT['8'][WAITING_FOR_OP].state = Error;
-    stateLUT['8'][WAITING_FOR_OP].next_state = ERROR; 
-    stateLUT['9'][WAITING_FOR_OP].state = Error;
-    stateLUT['9'][WAITING_FOR_OP].next_state = ERROR;
-    stateLUT['+'][WAITING_FOR_OP].next_state = WAITING_FOR_NUM;
-    stateLUT['+'][WAITING_FOR_OP].state = WaitingForOp;
-    stateLUT['-'][WAITING_FOR_OP].next_state = WAITING_FOR_NUM;
-    stateLUT['-'][WAITING_FOR_OP].state = WaitingForOp;
-    stateLUT['*'][WAITING_FOR_OP].next_state = WAITING_FOR_NUM;
-    stateLUT['*'][WAITING_FOR_OP].state = WaitingForOp;
-    stateLUT['/'][WAITING_FOR_OP].next_state = WAITING_FOR_NUM; 
-    stateLUT['/'][WAITING_FOR_OP].state = WaitingForOp;
-    stateLUT['^'][WAITING_FOR_OP].next_state = WAITING_FOR_NUM;
-    stateLUT['^'][WAITING_FOR_OP].state = WaitingForOp;
-    stateLUT['^'][WAITING_FOR_OP].next_state = ERROR;
-    stateLUT['('][WAITING_FOR_OP].state = Error;
-    stateLUT['('][WAITING_FOR_OP].next_state = ERROR;
-    stateLUT['['][WAITING_FOR_OP].state = Error;
-    stateLUT['['][WAITING_FOR_OP].next_state = ERROR;
-    stateLUT['{'][WAITING_FOR_OP].state = Error;
-    stateLUT['{'][WAITING_FOR_OP].next_state = ERROR; 
-    stateLUT[')'][WAITING_FOR_OP].state = WaitingForOp;
-    stateLUT[')'][WAITING_FOR_OP].next_state = WAITING_FOR_NUM;
-    stateLUT[']'][WAITING_FOR_OP].state = WaitingForOp;
-    stateLUT[']'][WAITING_FOR_OP].next_state = WAITING_FOR_NUM;
-    stateLUT['}'][WAITING_FOR_OP].state = WaitingForOp;
-    stateLUT['}'][WAITING_FOR_OP].next_state = WAITING_FOR_NUM; 
+        stateLUT['0'][WAITING_FOR_OP].state = Error;
+        stateLUT['0'][WAITING_FOR_OP].next_state = ERROR;
+        stateLUT['1'][WAITING_FOR_OP].state = Error;
+        stateLUT['1'][WAITING_FOR_OP].next_state = ERROR;
+        stateLUT['2'][WAITING_FOR_OP].state = Error;
+        stateLUT['2'][WAITING_FOR_OP].next_state = ERROR;
+        stateLUT['3'][WAITING_FOR_OP].state = Error;
+        stateLUT['3'][WAITING_FOR_OP].next_state = ERROR;
+        stateLUT['4'][WAITING_FOR_OP].state = Error;
+        stateLUT['4'][WAITING_FOR_OP].next_state = ERROR;
+        stateLUT['5'][WAITING_FOR_OP].state = Error;
+        stateLUT['5'][WAITING_FOR_OP].next_state = ERROR;
+        stateLUT['6'][WAITING_FOR_OP].state = Error;
+        stateLUT['6'][WAITING_FOR_OP].next_state = ERROR;
+        stateLUT['7'][WAITING_FOR_OP].state = Error;
+        stateLUT['7'][WAITING_FOR_OP].next_state = ERROR;
+        stateLUT['8'][WAITING_FOR_OP].state = Error;
+        stateLUT['8'][WAITING_FOR_OP].next_state = ERROR; 
+        stateLUT['9'][WAITING_FOR_OP].state = Error;
+        stateLUT['9'][WAITING_FOR_OP].next_state = ERROR;
+        stateLUT['+'][WAITING_FOR_OP].next_state = WAITING_FOR_NUM;
+        stateLUT['+'][WAITING_FOR_OP].state = WaitingForOp;
+        stateLUT['-'][WAITING_FOR_OP].next_state = WAITING_FOR_NUM;
+        stateLUT['-'][WAITING_FOR_OP].state = WaitingForOp;
+        /*stateLUT['*'][WAITING_FOR_OP].next_state = WAITING_FOR_NUM;
+        stateLUT['*'][WAITING_FOR_OP].state = WaitingForOp;
+        stateLUT['/'][WAITING_FOR_OP].next_state = WAITING_FOR_NUM; 
+        stateLUT['/'][WAITING_FOR_OP].state = WaitingForOp;
+        stateLUT['^'][WAITING_FOR_OP].next_state = WAITING_FOR_NUM;
+        stateLUT['^'][WAITING_FOR_OP].state = WaitingForOp;
+        stateLUT['^'][WAITING_FOR_OP].next_state = ERROR;
+        stateLUT['('][WAITING_FOR_OP].state = Error;
+        stateLUT['('][WAITING_FOR_OP].next_state = ERROR;
+        stateLUT['['][WAITING_FOR_OP].state = Error;
+        stateLUT['['][WAITING_FOR_OP].next_state = ERROR;
+        stateLUT['{'][WAITING_FOR_OP].state = Error;
+        stateLUT['{'][WAITING_FOR_OP].next_state = ERROR; 
+        stateLUT[')'][WAITING_FOR_OP].state = WaitingForOp;
+        stateLUT[')'][WAITING_FOR_OP].next_state = WAITING_FOR_NUM;
+        stateLUT[']'][WAITING_FOR_OP].state = WaitingForOp;
+        stateLUT[']'][WAITING_FOR_OP].next_state = WAITING_FOR_NUM;
+        stateLUT['}'][WAITING_FOR_OP].state = WaitingForOp;
+        stateLUT['}'][WAITING_FOR_OP].next_state = WAITING_FOR_NUM; */
 
-    arith_opsLUT['+'].operation = Addition;
-    arith_opsLUT['+'].precedence = ADDITION;
-    arith_opsLUT['-'].operation = Subtraction;
-    arith_opsLUT['-'].precedence = SUBTRACTION;
-    arith_opsLUT['*'].operation = Multiplication;
-    arith_opsLUT['*'].precedence = MULITPLICATION;
-    arith_opsLUT['/'].operation = Division;
-    arith_opsLUT['/'].precedence = DIVISION;
+        arith_opsLUT['+'].operation = Addition;
+        arith_opsLUT['+'].precedence = ADDITION;
+        arith_opsLUT['-'].operation = Subtraction;
+        arith_opsLUT['-'].precedence = SUBTRACTION;
+        /*arith_opsLUT['*'].operation = Multiplication;
+        arith_opsLUT['*'].precedence = MULITPLICATION;
+        arith_opsLUT['/'].operation = Division;
+        arith_opsLUT['/'].precedence = DIVISION;*/
 
-    stateLUT['#'][WAITING_FOR_NUM].state = DummyFunc;
-    stateLUT['#'][WAITING_FOR_OP].next_state = FINISH;
-    arith_opsLUT['#'].operation = Addition;
-    arith_opsLUT['#'].precedence = FINISH;
+        stateLUT['#'][WAITING_FOR_NUM].state = Error;
+        stateLUT['#'][WAITING_FOR_OP].next_state = ERROR;
+        arith_opsLUT['#'].operation = Error;
+        arith_opsLUT['#'].precedence = DUMMY;
 
-    flag = TRUE;
+        stateLUT['\0'][WAITING_FOR_NUM].state = Error;
+        stateLUT['\0'][WAITING_FOR_OP].next_state = FINISH;
+        arith_opsLUT['\0'].operation = Addition;
+        arith_opsLUT['\0'].precedence = COLLAPSE_ALL;
+
+        flag = TRUE;
     }
 }
 
-static int ComparePrecendence(precedence_t before, precedence_t after)
+static int IsPrecendence(precedence_t current, arith_op_t *handler)
 {
-    return (before - after);
+    return (0 < (current - handler->precedence));
 }
 
 static state_flag_t DummyFunc(calc_con_t *container, char **buffer)
@@ -550,6 +549,15 @@ static state_flag_t DummyFunc(calc_con_t *container, char **buffer)
     (void)(buffer);
 
     return (FINISH);
+}
+
+static char PeekOperator(calc_con_t *container)
+{
+    char operator = '\0';
+
+    operator = *(char *)StackPeek(GetOpStack(container));
+
+    return (operator);
 }
 
 

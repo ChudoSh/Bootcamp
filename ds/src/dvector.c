@@ -21,6 +21,7 @@ Status: Fixed
 
 /*A staic function that resizes the capacity and size of the the vector*/
 static int DVectorResize(dvector_t *vector , size_t new_size);
+static size_t JumpByAmount(dvector_t *vector, size_t amount);
  
 enum RESULT
 {
@@ -45,14 +46,12 @@ dvector_t *DVectorCreate(size_t element_size, size_t capacity)
 	assert(EMPTY < capacity);
 		
 	vector = (dvector_t*)malloc(sizeof(dvector_t));
-	
 	if (NULL == vector)
 	{
 		return (NULL);
 	}
 	
 	vector->base_ptr = (char*)(malloc(element_size * capacity));
-	
 	if (NULL == vector->base_ptr)
 	{
 		free(vector);
@@ -89,13 +88,14 @@ int DVectorPushBack(dvector_t *vector, const void *element)
 	
 	if (vector->capacity == vector->size)
 	{
-		if (FAIL == DVectorResize(vector,  (vector->capacity * GROWTH_FACTOR)))
+		if (FAIL == DVectorResize(vector, (vector->capacity * GROWTH_FACTOR)))
 		{
 			return (FAIL);
 		}
 	}
 	
-	if (NULL == memcpy(vector->base_ptr + (MULT_BY_ELEM_SIZE(vector->size, vector)), element, vector->element_size))
+	if (NULL == memcpy(vector->base_ptr + JumpByAmount(vector, vector->size), element, 
+					   vector->element_size))
 	{
 		return (FAIL);
 	}
@@ -127,7 +127,7 @@ void *DVectorGetAccessToElement(const dvector_t *vector, size_t index)
 	assert(NULL != vector);
 	assert(vector->capacity >= index);
 	
-	return ((void*)(vector->base_ptr + (MULT_BY_ELEM_SIZE(index, vector))));
+	return ((void*)(vector->base_ptr + JumpByAmount((dvector_t *)vector, index)));
 }
 
 /*Increases the vector capacity*/
@@ -180,16 +180,21 @@ static int DVectorResize(dvector_t *vector, size_t new_size)
 	
 	if (GROWTH_FACTOR == new_size)
 	{
-		temp = (char*)realloc((void*)vector->base_ptr, (MULT_BY_ELEM_SIZE(vector->capacity, vector)));		
+		temp = (char*)realloc((void*)vector->base_ptr, JumpByAmount(vector, vector->capacity));		
 	}
 	
 	else
 	{
-		temp = (char*)realloc((void*)vector->base_ptr, (MULT_BY_ELEM_SIZE(new_size, vector)));
+		temp = (char*)realloc((void*)vector->base_ptr, JumpByAmount(vector, new_size));
 	}
 	
 	vector->base_ptr = temp;
 	vector->capacity = new_size;
 		
 	return ((NULL == vector->base_ptr) ? FAIL : SUCCESS);
+}
+
+static size_t JumpByAmount(dvector_t *vector, size_t amount)
+{	
+	return (amount * vector->element_size);
 }

@@ -1,8 +1,8 @@
 /*
 Dev: BarSH
-Rev: EylonE
-Date: 30.5.23
-Status: Approved
+Rev: YonathanZ
+Date: 18.6.23
+Status: Binary search, Merge & Quick Sort -
 */
 
 #include <stdlib.h> /*rand*/
@@ -17,6 +17,13 @@ static void SelectionTest();
 static void InsertionTest();
 static void CountingTest();
 static void RadixTest();
+static void MergeTest();
+static void QuickTest();
+
+
+static void TestIterBinarySearch();
+static void TestRecBinarySearch();
+
 static int IsSorted(int *arr, size_t size);
 static int Compare(const void *x, const void *y);
 
@@ -28,10 +35,15 @@ int main()
     InsertionTest();
     CountingTest();
     RadixTest();
+    MergeTest();
+    QuickTest();
+    
+    TestIterBinarySearch();
+    TestRecBinarySearch();
 
     return (0);
 }
-
+ /*===========Test===============*/
 static void BubbleTest()
 {
     int i = 0;
@@ -179,33 +191,6 @@ static void CountingTest()
     printf("Counting \033[1;32msuccess\033[0m!\n\n");
 }
 
-static void TestBinarySearch()
-{   
-    size_t i = 0; 
-    int arr[5000] = {0};
-    clock_t start = 0;
-    clock_t end = 0;
-
-    for (i = 0; i < 5000; ++i)
-    {
-        arr[i] = rand() % 100 + 1;
-    }
-
-    start = clock();
-    printf("start of counting sort = %ld\n", start);
-    CountingSort(arr, 5000);
-    end = clock();
-    printf("end of counting sort = %ld\n", end);
-
-    if (!IsSorted(arr, 5000))
-    {
-        printf("Counting \033[1;31mfail\033[0m\n\n");
-        return;
-    }
-
-    printf("Counting \033[1;32msuccess\033[0m!\n\n");
-}
-
 static void RadixTest()
 {   
     size_t i = 0; 
@@ -231,10 +216,62 @@ static void RadixTest()
     }
 
     printf("radix \033[1;32msuccess\033[0m!\n\n");
-
-
 }
 
+static void MergeTest()
+{   
+    size_t i = 0; 
+    int arr[10] = {0};
+    clock_t start = 0;
+    clock_t end = 0;
+
+    for (i = 0; i < 10; ++i)
+    {
+        arr[i] = rand() % 100 + 1;
+    }
+
+    start = clock();
+    printf("start of merge sort = %ld\n", start);
+    MergeSort(arr, 10);
+    end = clock();
+    printf("end of merge sort = %ld\n", end);
+
+    if (!IsSorted(arr, 10))
+    {
+        printf("merge \033[1;31mfail\033[0m\n\n");
+        return;
+    }
+
+    printf("merge \033[1;32msuccess\033[0m!\n\n");
+}
+
+static void QuickTest()
+{   
+    size_t i = 0; 
+    int arr[5000] = {0};
+    clock_t start = 0;
+    clock_t end = 0;
+
+    for (i = 0; i < 5000; ++i)
+    {
+        arr[i] = rand() % 100 + 1;
+    }
+
+    start = clock();
+    printf("start of quick sort = %ld\n", start);
+    QuickSort(arr, 5000, sizeof(int), Compare);
+    end = clock();
+    printf("end of quick sort = %ld\n", end);
+
+    if (!IsSorted(arr, 5000))
+    {
+        printf("quick \033[1;31mfail\033[0m\n\n");
+        return;
+    }
+
+    printf("quick \033[1;32msuccess\033[0m!\n\n");
+}
+/*=============Static funcs==============*/
 static int IsSorted(int *arr, size_t size)
 {
     size_t i = 0;
@@ -252,4 +289,49 @@ static int IsSorted(int *arr, size_t size)
 static int Compare(const void *x, const void *y)
 {
     return (*(int *)x - *(int *)y);
+}
+
+/*==================Searches=================*/
+static void TestIterBinarySearch()
+{   
+    size_t i = 0; 
+    int arr[5000] = {0};
+    clock_t start = 0;
+    clock_t end = 0;
+
+    for (i = 0; i < 5000; ++i)
+    {
+        arr[i] = rand() % 100 + 1;
+    }
+
+    start = clock();
+    printf("start of iterative binary search = %ld\n", start);
+    IterBinarySearch(arr, 50, 5000);
+    end = clock();
+    printf("end of iterative binary search = %ld\n", end);
+
+
+    printf("IterBinary Search \033[1;32msuccess\033[0m!\n\n");
+}
+
+static void TestRecBinarySearch()
+{   
+    size_t i = 0; 
+    int arr[5000] = {0};
+    clock_t start = 0;
+    clock_t end = 0;
+
+    for (i = 0; i < 5000; ++i)
+    {
+        arr[i] = rand() % 100 + 1;
+    }
+
+    start = clock();
+    printf("start of recursive binary search = %ld\n", start);
+    RecBinarySearch(arr, 50, 5000);
+    end = clock();
+    printf("end of recursive binary search = %ld\n", end);
+
+
+    printf("RecBinarySort \033[1;32msuccess\033[0m!\n\n");
 }

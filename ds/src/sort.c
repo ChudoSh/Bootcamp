@@ -1,12 +1,13 @@
 /*
 Dev: BarSH
-Rev: EylonE
-Date: 30.5.23
-Status: Approved
+Rev: YonathanZ
+Date: 18.6.23
+Status: Binary search, Merge & Quick Sort -
 */
 
 #include <assert.h>/*assert*/
 #include <stdlib.h> /*malloc*/
+#include <string.h> /*memcpy*/
 
 #include "sort.h"
 
@@ -28,6 +29,10 @@ enum STATUS
 static void Swap(int* a, int* b);
 static int GetMaxDigit(int* arr, size_t size);
 static int CountingRadix(int *arr, size_t size, int digit);
+static void *Pivoter(void *base, size_t nmemb, size_t *div_point, size_t size,
+           int (*compar)(const void *, const void *));
+static void GenericSwap(void *data1, void *data2, size_t element_size);
+
 
 void BubbleSort(int *arr, size_t size)
 {
@@ -160,8 +165,115 @@ int RadixSort(int *arr, size_t size)
     return (SUCCESS);
 }
 
+int MergeSort(int *arr_to_sort, size_t num_elements)
+{
+    int *arr1 = NULL;
+    int *arr2 = NULL;
+    size_t num1 = num_elements / 2;
+    size_t num2 = (num_elements / 2) + (num_elements % 2);
+    size_t i = 0;
+    size_t j = 0;
+    size_t k = 0;
 
-int IterBinarySort(int *arr, int find, size_t size)
+    if (num_elements <= 1)
+    {
+        return (SUCCESS);
+    }
+
+    arr1 = malloc((num1 * sizeof(int)));
+    if (NULL == arr1)
+    {
+        return (FAIL);
+    }
+
+    arr2 = malloc((num2 * sizeof(int)));
+    if (NULL == arr2)
+    {
+        free(arr1);
+        return (FAIL);
+    }
+
+    memcpy(arr1, arr_to_sort, sizeof(int) * num1);
+    memcpy(arr2, arr_to_sort + num1, sizeof(int) * num2);
+
+    MergeSort(arr1, num1);
+    MergeSort(arr2, num2);
+
+    i = 0;
+
+    while((j < num1) && (i < num2))
+	{
+		if(arr2[i] >= arr1[j])
+		{
+			arr_to_sort[k] = arr1[j];
+			++(j);
+		}
+		else if(arr2[i] <= arr1[j])
+		{
+			arr_to_sort[k] = arr2[i];
+			++(i);
+		}
+
+        ++(k);
+	}
+
+    while(j < num1)
+	{
+		arr_to_sort[k] = arr1[j];
+		++(k);
+		++(j);
+	}
+
+	while(i < num2)
+	{
+		arr_to_sort[k] = arr2[i];
+		++(k);
+		++(i);
+	}
+
+    free(arr1);
+    free(arr2);
+
+    return (SUCCESS);
+
+       
+}
+
+void QuickSort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *))
+{
+	char *pivot = 0;
+	char *Begin = NULL;
+	size_t div_point = 1;
+
+	assert(NULL != base);
+	assert(NULL != compar);
+
+	pivot = (char *)base;
+	Begin = (char *)base + size;
+
+	if (1 >= nmemb)
+	{
+		return;
+	}
+
+	if (2 == nmemb)
+	{
+		if (compar(Begin, pivot) <= 0 )
+		{
+			GenericSwap(pivot, Begin, sizeof(int));
+		}
+        
+		return;
+	}
+
+	Begin = Pivoter(base, nmemb, &div_point, size, compar);
+
+	QuickSort((void *)base, div_point, size, compar);
+	QuickSort((void *)(Begin + size), nmemb - div_point - 1, size, compar);
+}
+
+/*===========Searches==============*/
+int IterBinarySearch(int *arr, int find, size_t size)
 {
     int index  = 0;
     int start = 0; 
@@ -182,7 +294,7 @@ int IterBinarySort(int *arr, int find, size_t size)
         }
         else if (arr[index] < find)
         {
-            start = index +1;
+            start = index + 1;
         }
         else
         {
@@ -193,7 +305,7 @@ int IterBinarySort(int *arr, int find, size_t size)
     return (SUCCESS);
 }
 
-int RecBinarySort(int *arr, int find, size_t size)
+int RecBinarySearch(int *arr, int find, size_t size)
 {
     int index  = 0;
     int start = 0;
@@ -210,12 +322,8 @@ int RecBinarySort(int *arr, int find, size_t size)
         return (index); 
     }
 
-    else if (index == end && arr[index] != find)
-    {
-        return (FAIL);
-    }
-
-    else if (index == 0 && arr[index] != find)
+    else if ((index == end && arr[index] != find) || 
+             (index == 0 && arr[index] != find))
     {
         return (FAIL);
     }
@@ -229,8 +337,11 @@ int RecBinarySort(int *arr, int find, size_t size)
        --(size); 
     } 
 
-    return RecBinarySort(arr, find, size); 
+    return (RecBinarySearch(arr, find, size)); 
 }
+
+
+
 
 /******************************static functions********************************/
 static void Swap(int* a, int* b)
@@ -303,4 +414,60 @@ static int CountingRadix(int *arr, size_t size, int digit)
     return (0);       
 }
 
+static void *Pivoter(void *base, size_t nmemb, size_t *div_point, size_t size,
+           int (*compar)(const void *, const void *))
+{
+    char *pivot = NULL;
+	char *Begin = NULL;
+	char *End = NULL;
+    
+	assert(NULL != base);
+	assert(NULL != compar);
 
+	*div_point = 1;
+
+	pivot = (char *)base;
+	Begin = (char *)base + size;
+	End = (char *)base + size * (nmemb - 1);
+
+    while (Begin != End)
+	{
+		if (compar(pivot, Begin) <= 0 )
+		{
+			GenericSwap(Begin, End, size);
+			End -= size;
+		}
+		else
+		{
+			Begin += size;
+			++(*div_point);
+		}
+	}
+
+    if (compar(pivot, Begin) <= 0 )
+	{
+		Begin -= size;
+		--(*div_point);
+	}
+
+	GenericSwap(pivot, Begin, size);
+
+    return (Begin);
+}
+
+
+static void GenericSwap(void *data1, void *data2, size_t element_size)
+{
+    size_t i = 0;
+    char temp;
+
+    assert(NULL != data1);
+    assert(NULL != data2);;
+
+    for(i=0; i<element_size; ++i)
+    {
+        temp = *(((char *)data1)+ i);
+        *(((char *)data1)+ i) = *(((char *)data2)+ i);
+        *(((char *)data2)+ i) = temp;
+    }
+}

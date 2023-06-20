@@ -20,6 +20,10 @@
         "tuple": "c",
         "type_traits": "c",
         "utility": "c",
-        "assert.h": "c"
+        "assert.h": "c",
+        "heap.h": "c",
+        "numbers": "c",
+        "string.h": "c",
+        "heap_q.h": "c"
     }
 }

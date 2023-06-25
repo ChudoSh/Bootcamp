@@ -36,7 +36,6 @@ enum CHILDREN
     LEFT, 
     RIGHT,
     NUM_OF_CHILDREN,
-    CREATE,
     BLOCKED
 };
 
@@ -48,7 +47,8 @@ enum MASKS
 
 enum MAGIC
 {
-    ONE = 1,
+    ZERO = 0U,
+    ONE = 1U,
     CHAR_SIZE = 8,
     INT_SIZE = 32
 };
@@ -77,9 +77,10 @@ static void StringToBit(bitarr_t *bit_arr,
                             const unsigned char ip[BYTES_IN_IP]);
 
 static void CountOccupiedNodes(trie_node_t *root, size_t *count);
-/*static trie_node_t *NextAvaialableNode(trie_node_t *root, size_t distance);*/ 
-static trie_node_t *SetNewIP(trie_node_t *root, 
-                                       bitarr_t *requested_ip, size_t distance);
+static int SetRequestedIP(trie_node_t *root, bitarr_t *requested_ip, 
+                                    size_t distance);
+static int SetAvailableIP(trie_node_t *root, bitarr_t *new_ip, 
+                          size_t distance);
 static dhcp_status_t FindAndFreeNode(trie_node_t *root, bitarr_t ip_to_find,
                                      size_t shift);
 
@@ -91,20 +92,23 @@ static void SetChild(trie_node_t *current, trie_node_t *to_set, int child);
 static void SetOccupied(trie_node_t *node); 
 static void SetFree(trie_node_t *node);
 static int IsLeaf(trie_node_t *node);
-static int GetPath(trie_node_t *root);
+static int GetPath(bitarr_t ip, size_t shit);
+static void SetOccupiedTrie(trie_node_t *node);
 
 static trie_node_t *GetTrie(const dhcp_t *dhcp);
 static size_t GetSubnetSize(const dhcp_t *dhcp);
 static bitarr_t GetSubnetIp(dhcp_t *dhcp);
 static int IsOccupied(trie_node_t *node);
-/*static int IsValidIP(dhcp_t *dhcp, unsigned char requested_ip[BYTES_IN_IP]);*/
-                                   
 
+static void PrintAVLHelper(trie_node_t *node, int indent);
+                                   
+/******************************************************************************/
 /*Creates DHCP*/
 dhcp_t *DHCPCreate(const unsigned char subnet_ip[BYTES_IN_IP], 
                    size_t subnet_size_in_bits)
 {
     dhcp_t *dhcp = NULL;
+    bitarr_t bitmask = ~0U; 
 
     assert(subnet_size_in_bits <= 32);
 
@@ -115,8 +119,9 @@ dhcp_t *DHCPCreate(const unsigned char subnet_ip[BYTES_IN_IP],
     }
 
     dhcp->size_subnet_ip = subnet_size_in_bits;
+
     StringToBit(&(dhcp->subnet_ip), subnet_ip);
-    dhcp->subnet_ip >>= (INT_SIZE - GetSubnetSize(dhcp));
+    dhcp->subnet_ip |= (bitmask << (INT_SIZE - subnet_size_in_bits));
    
     dhcp = InitDHCP(dhcp);
     if (NULL == dhcp)
@@ -142,43 +147,32 @@ dhcp_status_t DHCPAllocIP(dhcp_t *dhcp, const unsigned char request_ip[BYTES_IN_
                           unsigned char container_ip[BYTES_IN_IP])
 {
     size_t size_of_ip = 0;
-    bitarr_t bitmask = ~0;
-    bitarr_t runner = 0;  
+    bitarr_t bitmask = ~ZERO;
+    bitarr_t runner = 0; 
+    int status = 0; 
 
     assert(NULL != dhcp);
     assert(NULL != container_ip);
     assert(0 != DHCPCountFree(dhcp));
-    /*assert(IsValidIP(dhcp, (unsigned char *)request_ip));*/
     
     size_of_ip = (INT_SIZE - GetSubnetSize(dhcp));
-    bitmask >>= (GetSubnetSize(dhcp));
+    StringToBit(&runner, request_ip);
+    runner &= (bitmask >> GetSubnetSize(dhcp));
 
-    if (NULL == request_ip)
+    status = SetRequestedIP(GetTrie(dhcp), &runner, size_of_ip);
+    if (BLOCKED == status)
     {
-        if (NULL ==  SetNewIP(GetTrie(dhcp), 0, size_of_ip))
-        {
-            return (DHCP_FAILURE);
-        }
+        runner = 0; 
+        status = SetAvailableIP(GetTrie(dhcp), &runner, size_of_ip);
     }
 
-    else
+    if (FAIL == status)
     {
-        StringToBit(&runner , request_ip);
-        runner &= bitmask;
-
-        if (NULL == SetNewIP(GetTrie(dhcp), &runner, size_of_ip))
-        {
-            return (DHCP_FAILURE);
-        }
-
-        container_ip[0] = request_ip[0];
-        container_ip[1] = request_ip[1];
-        container_ip[2] = request_ip[2];
-        container_ip[3] = request_ip[3];
+        return (DHCP_FAILURE);
     }
 
+    BitToString(runner, container_ip);
     
-
     return (DHCP_SUCCESS);
 }
 
@@ -187,13 +181,17 @@ dhcp_status_t DHCPFreeIP(dhcp_t *dhcp,
                          const unsigned char ip_to_free[BYTES_IN_IP])
 {
     bitarr_t find = 0; 
+    bitarr_t bitmask = ~ZERO;
+    size_t size_of_ip = 0;
 
     assert(NULL != dhcp);
     assert(NULL != ip_to_free);
 
     StringToBit(&find, ip_to_free);
+    find &= (bitmask >> GetSubnetSize(dhcp));
+    size_of_ip = (INT_SIZE - GetSubnetSize(dhcp));
 
-    return (FindAndFreeNode(GetTrie(dhcp), find, GetSubnetSize(dhcp)));    
+    return (FindAndFreeNode(GetTrie(dhcp), find, size_of_ip));    
 }
 
 /*Counts how many IP are left to allocate*/
@@ -217,15 +215,10 @@ size_t DHCPCountFree(const dhcp_t *dhcp)
 
 static dhcp_t *InitDHCP(dhcp_t *dhcp)
 {
-    bitarr_t dummy0 = 0;
-    bitarr_t dummy254 = 0;
-    bitarr_t dummy255 = 0;
-    unsigned char str0[BYTES_IN_IP] = {'\0'};
-    unsigned char str254[BYTES_IN_IP] = {'\0'};
-    unsigned char str255[BYTES_IN_IP] = {'\0'};
-    unsigned char test0[BYTES_IN_IP] = {'\0'};
-    unsigned char test254[BYTES_IN_IP] = {'\0'};
-    unsigned char test255[BYTES_IN_IP] = {'\0'};
+    unsigned char network[BYTES_IN_IP] = {'\0','\0', '\0', '\0'};
+    unsigned char server[BYTES_IN_IP] = {255, 255, 255, 254};
+    unsigned char broadcast[BYTES_IN_IP] = {255, 255, 255, 255};
+    unsigned char dummy[BYTES_IN_IP] = {'\0','\0', '\0', '\0'};
 
     assert(NULL != dhcp);
 
@@ -235,32 +228,17 @@ static dhcp_t *InitDHCP(dhcp_t *dhcp)
         return (NULL);
     }
 
-    dummy0 = GetSubnetIp(dhcp);
-    dummy254 = GetSubnetIp(dhcp);
-    dummy255 = GetSubnetIp(dhcp);
-
-    dummy0 <<= (INT_SIZE - GetSubnetSize(dhcp));
-    dummy254 <<= (INT_SIZE - GetSubnetSize(dhcp));
-    dummy255 <<= (INT_SIZE - GetSubnetSize(dhcp));
-
-    dummy254 |= 254;
-    dummy255 |= 255;
-
-    BitToString(dummy0, str0);
-    BitToString(dummy254, str254);
-    BitToString(dummy255, str255);
-
-    if (DHCP_FAILURE == DHCPAllocIP(dhcp, str0, test0))
+    if (DHCP_FAILURE == DHCPAllocIP(dhcp, network, dummy))
     {
         return (NULL);
     }
 
-    if (DHCP_FAILURE == DHCPAllocIP(dhcp, str254, test254))
+    if (DHCP_FAILURE == DHCPAllocIP(dhcp, server, dummy))
     {
         return (NULL);
     }
 
-    if (DHCP_FAILURE == DHCPAllocIP(dhcp, str255, test255))
+    if (DHCP_FAILURE == DHCPAllocIP(dhcp, broadcast, dummy))
     {
         return (NULL);
     }
@@ -278,7 +256,7 @@ static void CountOccupiedNodes(trie_node_t *root, size_t *count)
        return;
     }
 
-    if (IsOccupied(root))
+    if (IsLeaf(root))
     {
         ++(*count);
     }
@@ -290,119 +268,110 @@ static void CountOccupiedNodes(trie_node_t *root, size_t *count)
 static dhcp_status_t FindAndFreeNode(trie_node_t *root, bitarr_t ip_to_find,
                                      size_t shift)
 {
-    int dir = (ip_to_find & (ONE << shift));
+    int dir = GetPath(ip_to_find, (shift - 1));
 
     if (0 == shift)
     {   
         return (DHCP_SUCCESS);
     }
-
-    else if (NULL == GetChild(root, (dir)))
-    {   
-        return (DHCP_DOUBLE_FREE_FAILURE);
-    }
-
-    if (DHCP_SUCCESS != FindAndFreeNode(GetChild(root, (dir)), 
-                                        ip_to_find, --(shift)))
+ 
+    else if (DHCP_DOUBLE_FREE_FAILURE == FindAndFreeNode(GetChild(root, dir), 
+                                                    ip_to_find, (shift - 1)))
     {
         return (DHCP_DOUBLE_FREE_FAILURE);
     }
 
-    if (!IsLeaf(root))
+
+    if (NULL == GetChild(root, dir))
+    {   
+        return (DHCP_DOUBLE_FREE_FAILURE);
+    }
+
+    else if (!IsLeaf(GetChild(root, dir)))
     {      
         SetFree(root);
     }
 
     else
     {
-        free(root);
+        free(GetChild(root, dir));
+        SetChild(root, NULL, dir);
     }
 
+    
+
     return (DHCP_SUCCESS); 
+}
+
+static int SetAvailableIP(trie_node_t *root, bitarr_t *new_ip, 
+                          size_t distance)
+{  
+    int status = 0; 
+    int root_path = GetPath(*new_ip, (distance - 1)); 
+
+    if (ZERO == root_path)
+    {
+        *new_ip |= (ONE << (distance - 1));
+        status = SetRequestedIP(GetChild(root, root_path), new_ip, (distance - 1));
+        SetOccupiedTrie(root);
+
+        return (status);
+    }
+
+    else 
+    {
+        *new_ip &= (~ZERO << (distance - 1));
+
+        return (BLOCKED);
+    }
 
 }
 
-/*static trie_node_t *NextAvaialableNode(trie_node_t *root, size_t distance)
+static int SetRequestedIP(trie_node_t *root, bitarr_t *requested_ip, 
+                          size_t distance)
 {  
     int root_path = 0;
-    trie_node_t *insert = NULL;  
-
-    assert(NULL != root);
-
-    if (0 == distance)
-    {
-        SetOccupied(root);
-        return (root);
-    }
-
-    root_path = GetPath(root);
-
-    if (NULL != GetChild(root, root_path))
-    {
-        root = GetChild(root, root_path);
-    }
-
-    else
-    {
-        insert = TrieNodeCreate();
-        if (NULL == insert)
-        {
-            return (NULL);
-        }
-        SetChild(root, insert, root_path);
-
-        root = insert;      
-    }
- 
-    NextAvaialableNode(root, --(distance));
-    
-    if (BLOCKED == GetPath(root))
-    {
-        SetOccupied(root);
-    }
-
-    return (root);
-}*/
-
-static trie_node_t *SetNewIP(trie_node_t *root, 
-                                       bitarr_t *requested_ip, size_t distance)
-{  
-    int root_path = 0;
+    int status = 0;
     trie_node_t *insert = NULL; 
 
+    if (IsOccupied(root))
+    {
+        return (BLOCKED);
+    }
+
     if (0 == distance)
     {
         SetOccupied(root);
-        return (root);
+        return (SUCCESS);
     }
 
-    root_path = GetPath(root);
+    root_path = GetPath(*requested_ip, (distance - 1));
     
     if (NULL == GetChild(root, root_path))
     {
         insert = TrieNodeCreate();
         if (NULL == insert)
         {
-            return (NULL);
+            return (FAIL);
         }
         SetChild(root, insert, root_path);
 
-        root = insert;
+        status = SetRequestedIP(insert, requested_ip, (distance - 1));
+        SetOccupiedTrie(root);
+
+        return (status);
     }
 
-    else /*if (NULL == GetChild(root, root_path))*/
-    {
-        root = GetChild(root, root_path);   
-    }
+    status =  SetRequestedIP(GetChild(root, root_path), 
+                                      requested_ip, (distance - 1));
     
-    SetNewIP(root, requested_ip, --(distance));
-
-    if (IsOccupied(GetChild(root, RIGHT)) && IsOccupied(GetChild(root, LEFT)))
+    if (BLOCKED == status)
     {
-        SetOccupied(root);
+        status = SetAvailableIP(root, requested_ip, distance);  
     }
+    SetOccupiedTrie(root);
 
-    return (root);
+    return (status);
 }
 
 /*----------------------Translators-------------------------------------------*/
@@ -411,7 +380,11 @@ static void StringToBit(bitarr_t *bit_arr, const unsigned char ip[BYTES_IN_IP])
     int i = BYTES_IN_IP - 1;
     unsigned int shift = 0; 
 
-    assert(NULL != ip);
+    if (NULL == ip)
+    {
+        *bit_arr = 0;
+        return;
+    }
 	
     while (0 <= i)
     {
@@ -462,13 +435,11 @@ static void TrieNodeDestroy(trie_node_t *root)
     if (NULL != GetChild(root, LEFT))
     {
         TrieNodeDestroy(GetChild(root, LEFT));
-        SetChild(root, NULL, LEFT);
     }
 
     if (NULL != GetChild(root, RIGHT))
     {
         TrieNodeDestroy(GetChild(root, RIGHT));
-        SetChild(root, NULL, RIGHT);
     }
 
     free(root);
@@ -502,21 +473,9 @@ static bitarr_t GetSubnetIp(dhcp_t *dhcp)
     return (dhcp->subnet_ip);
 }
 
-static int GetPath(trie_node_t *root)
+static int GetPath(bitarr_t ip, size_t shift)
 {
-    assert(NULL != root);
-
-    if (!IsOccupied(GetChild(root, RIGHT)) || NULL == GetChild(root, RIGHT))
-    {
-        return (RIGHT);
-    }
-    
-    else if (!IsOccupied(GetChild(root, LEFT))|| NULL == GetChild(root, LEFT))
-    {
-        return (LEFT);
-    }
-
-    return (BLOCKED);
+    return ((ip >> shift) & ONE);
 }
 
 static int IsOccupied(trie_node_t *node)
@@ -526,8 +485,9 @@ static int IsOccupied(trie_node_t *node)
         return (FALSE);
     }
     
-    return (OCCUPIED == node->is_occupied);
+    return (node->is_occupied);
 }
+
 
 static void SetChild(trie_node_t *current, trie_node_t *to_set, int child)
 {
@@ -539,6 +499,17 @@ static void SetOccupied(trie_node_t *node)
     assert(NULL != node);
 
     node->is_occupied = OCCUPIED;
+}
+
+static void SetOccupiedTrie(trie_node_t *node) 
+{
+    assert(NULL != node);
+
+    if (IsOccupied(GetChild(node, LEFT)) && IsOccupied(GetChild(node, RIGHT)))
+    {
+        SetOccupied(node);
+    }
+
 }
 
 static void SetFree(trie_node_t *node) 
@@ -553,17 +524,20 @@ static int IsLeaf(trie_node_t *node)
     return (NULL == GetChild(node, RIGHT) && NULL == GetChild(node, LEFT));
 } 
 
-/*static int IsValidIP(dhcp_t *dhcp, unsigned char requested_ip[BYTES_IN_IP])
+
+void PrintTree(dhcp_t *tree)
 {
-    bitarr_t check_request = 0; 
+    PrintAVLHelper(tree->root, 1);
+}
 
-    assert(NULL != dhcp);
-    assert(NULL != requested_ip);
+static void PrintAVLHelper(trie_node_t *node, int indent)
+{
+    if (NULL == node)
+    {
+        return;
+    }
 
-    StringToBit(&check_request, requested_ip);
-
-    check_request >>= INT_SIZE - GetSubnetSize(dhcp);
-
-    return (check_request == GetSubnetIp(dhcp));
-}*/
-
+    PrintAVLHelper(node->children[LEFT], indent + 4);
+    printf("%*s%d\n", indent, "", node->is_occupied);
+    PrintAVLHelper(node->children[RIGHT], indent + 4);
+}

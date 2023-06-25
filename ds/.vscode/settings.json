@@ -24,6 +24,9 @@
         "heap.h": "c",
         "numbers": "c",
         "string.h": "c",
-        "heap_q.h": "c"
+        "heap_q.h": "c",
+        "iterator": "c",
+        "algorithm": "c",
+        "math.h": "c"
     }
 }

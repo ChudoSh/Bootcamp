@@ -1,7 +1,18 @@
 
 #define WORD sizeof(size_t)
 
-Bingo review again;
+void Shuffle(dvector_t playlist)
+{
+	size_t i = 0;
+	size_t play_index = 0; 
+
+	assert(NULL != playlist);
+
+	i = DVectorSize(playlist);
+
+	return (playlist);
+
+}
 
 int IsAligned(char *p)
 {

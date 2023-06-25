@@ -6,8 +6,8 @@ CPPFLAGS = -I./
 VLG = valgrind -s --leak-check=yes --track-origins=yes
 GDB = cgdb
 
-NAMESPACE = heap
-LIBS = $(SRC)/dvector.c
+NAMESPACE = dhcp
+#LIBS = $(SRC)/stack.c
 
 SRC = src
 TEST = test

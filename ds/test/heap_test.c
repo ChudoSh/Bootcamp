@@ -43,16 +43,16 @@ static void TestCreatenDestroy()
 static void TestInsertSize()
 {
     size_t i = 0;
-    int arr[6] = {8, 10, 30, 100 , 45, 7};
+    int arr[11] = {8, 10, 30, 100 , 45, 7, 20, 2 , 66, 4 , 1};
     heap_t *heap = HeapCreate(Compare);
 
-    for(i = 0; i < 6; ++i)
+    for(i = 0; i < 11; ++i)
     { 
        HeapPush(heap, &arr[i]);
     } 
-    
-    AutomatedTest(6 == HeapSize(heap), "Insert & Size", __LINE__);
-    AutomatedTest(7 == *(int *)HeapPeek(heap), "Peek", __LINE__);
+
+    AutomatedTest(11 == HeapSize(heap), "Insert & Size", __LINE__);
+    AutomatedTest(1 == *(int *)HeapPeek(heap), "Peek", __LINE__);
 
     HeapDestroy(heap);
 }
@@ -60,16 +60,21 @@ static void TestInsertSize()
 static void TestPop()
 {
     size_t i = 0;
-    int arr[6] = {8, 10, 30, 100 , 45, 7};
+    int arr[11] = {8, 10, 30, 100 , 45, 7, 20, 2 , 66, 4 , 1};
     heap_t *heap = HeapCreate(Compare);
 
-    for(i = 0; i < 6; ++i)
+    for(i = 0; i < 11; ++i)
     { 
        HeapPush(heap, &arr[i]);
     } 
 
     HeapPop(heap);
-    AutomatedTest(5 == HeapSize(heap) && 8 == *(int *)HeapPeek(heap), "Pop", __LINE__);
+
+    HeapSort(heap, 11);
+
+    HeapPrint(heap);
+
+    AutomatedTest(10 == HeapSize(heap) && 2 == *(int *)HeapPeek(heap), "Pop", __LINE__);
    
     HeapDestroy(heap);
 }
@@ -101,8 +106,6 @@ static int IsMatch(const void *a, const void *b)
 {   
     return (*(int *)a == *(int *)b);
 }
-
-
 
 static void AutomatedTest(int val, const char *func, int line)
 {

@@ -293,3 +293,30 @@ static size_t GetParent(size_t index)
 {
     return ((index - 1) / 2); 
 }
+
+
+void HeapPrint(heap_t *heap)
+{
+    size_t i = 0; 
+
+    for (i = 0 ; i < HeapSize(heap); ++i)
+    {
+        printf("%d\n", **(int **)GetData(heap, i));
+    } 
+}
+
+void HeapSort(heap_t *heap, size_t index)
+{
+    assert(NULL != heap);
+
+    Swap(heap, ROOT_INDEX, index);
+    
+    HeapifyDown(heap, index);
+
+    if(0 == index)
+    {
+        return;
+    }
+    
+    HeapSort(heap, --(index));
+}

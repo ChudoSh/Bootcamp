@@ -93,5 +93,9 @@ Space complexity: O(1)
 */
 void *HeapRemove(heap_t *heap, void *data, int(*is_match)(const void *, const void *));
 
+void HeapPrint(heap_t *heap);
+
+void HeapSort(heap_t *heap, size_t index);
+
 #endif /*__HEAP_H__*/
 

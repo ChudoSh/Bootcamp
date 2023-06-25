@@ -150,7 +150,7 @@ int AVLInsert(avl_tree_t *tree, void *data)
         return (SUCCESS);
     }
 
-    if(NULL == BalancedInsert(tree, GetRoot(tree), insert))
+    if (NULL == BalancedInsert(tree, GetRoot(tree), insert))
     {
         return (FAIL);
     }

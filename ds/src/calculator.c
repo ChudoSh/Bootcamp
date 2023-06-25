@@ -1,9 +1,9 @@
 
 /*
 Dev: BarSH
-Rev: 
-Status: 
-Date: 
+Rev: OlegV
+Status: Approved
+Date: 24.6.23
 */
 #include <assert.h>/*assert*/
 #include <stdlib.h>/*malloc*/
@@ -99,7 +99,7 @@ static calculator_status_t Calculate(calc_con_t *container, void *op);
 
 /*=====Global LUTS======*/
 int levels[7][6] = 
-{
+{   
     {OP_ADD, OP_ADD, OP_ADD, OP_ADD, OP_ADD},
     {OP_ADD, OP_ADD, OP_ADD, OP_ADD, OP_ADD},
     {OP_ADD, OP_ADD, OP_PARENTH_CLOSE, OP_PARENTH_CLOSE, OP_PARENTH_CLOSE},
@@ -228,7 +228,7 @@ calculator_status_t Calculator(const char *expression, double *result)
 }
 
 /**************************static functions************************************/
-static calculator_status_t Calculate(calc_con_t *container, void*op)
+static calculator_status_t Calculate(calc_con_t *container, void *op)
 {
     double val1 = 0;
     double val2 = 0;
@@ -265,6 +265,7 @@ static calculator_status_t Calculate(calc_con_t *container, void*op)
     {
         return (SYNTAX_ERR);
     }
+
     return (SUCCESS);
 }
 
@@ -309,14 +310,13 @@ static calculator_status_t OpCollapes(calc_con_t *container, void *op)
     {
         return (MATH_ERR);
     }
-
-
+    
     StackPush(GetOpStack(container), op);
 
     return (SUCCESS);
 }
 
-static calculator_status_t OpCollapesParenth(calc_con_t *container, void*op)
+static calculator_status_t OpCollapesParenth(calc_con_t *container, void *op)
 {
     operator_t *new_op = op; 
 
@@ -413,7 +413,7 @@ static double Division(double *dest, double *to_divide)
 {
     if(0 == to_divide)
     {
-        return MATH_ERR;
+        return (MATH_ERR);
     }
 
     return ((*dest) / (*to_divide));

@@ -518,77 +518,6 @@ static void DestroyNode(avl_node_t *to_free)
     free(to_free);
 }
 
-
-/*int RecInsert(avl_tree_t *tree ,avl_node_t *where, avl_node_t *insert)
-{
-    int new_dir = 0;
-    int to_balance = 0; 
-    int compare_left = 0; 
-    int compare_right = 0;
-    
-    assert(NULL != where);
-    assert(NULL != insert);
-
-    new_dir = GetCompared(tree ,GetData(where), GetData(insert));
-
-    if (FOUND == new_dir)
-    {
-        free(insert);
-        return (FAIL);
-    }
-
-    if (NULL == GetChild(where, new_dir))
-    {
-        SetChild(where, insert, new_dir);
-        SetHeight(where, IsHeigher(GetChild(where, LEFT), 
-                                   GetChild(where, RIGHT)) + 1);
-    }
-
-    to_balance = ToBalance(where);
-    if (0 == to_balance)
-    {
-        return (SUCCESS);
-    }
-
-
-    if (NULL != GetChild(where, LEFT))
-    {    
-        compare_left = GetCompared(tree ,GetData(insert), 
-                               GetData(GetChild(where, LEFT)));
-
-        if (to_balance > UPPER_BALANCE && 1 == compare_left)     
-        {
-            RotateRight(where);
-        }
-
-        if (to_balance > UPPER_BALANCE &&  0 == compare_left)
-        {
-            SetChild(where, RotateLeft(GetChild(where, LEFT)), LEFT);
-            RotateRight(where);
-        }
-    }
-    
-    if(NULL != GetChild(where, RIGHT))
-    {
-        compare_right = GetCompared(tree ,GetData(insert), 
-                                GetData(GetChild(where, RIGHT)));
-        
-        if (to_balance < LOWER_BALANCE && 0 == compare_right)
-        {
-            RotateLeft(where);
-        }
-        
-        
-        if (to_balance < LOWER_BALANCE && 1 == compare_right)
-        {
-            SetChild(where, RotateLeft(GetChild(where,RIGHT)), RIGHT);
-            RotateLeft(where);
-        }  
-    }
-
-    return (RecInsert(tree, GetChild(where, new_dir), insert));
-}*/
-
 avl_node_t *RecRemove(avl_tree_t *tree, avl_node_t *to_remove, void *data)
 {
     avl_node_t *temp = NULL; 
@@ -668,8 +597,8 @@ static int TraversePre(avl_node_t *where,
         return (FAIL);
     }
 
-    TraverseIn(GetChild(where, LEFT), call_back, param);
-    TraverseIn(GetChild(where, RIGHT), call_back, param);
+    TraversePre(GetChild(where, LEFT), call_back, param);
+    TraversePre(GetChild(where, RIGHT), call_back, param);
 }
 
 static int TraversePost(avl_node_t *where, 
@@ -682,8 +611,8 @@ static int TraversePost(avl_node_t *where,
        return (SUCCESS);
     }
     
-    TraverseIn(GetChild(where, LEFT), call_back, param);
-    TraverseIn(GetChild(where, RIGHT), call_back, param);
+    TraversePost(GetChild(where, LEFT), call_back, param);
+    TraversePost(GetChild(where, RIGHT), call_back, param);
 
     if (FAIL == call_back(GetData(where), param))
     {

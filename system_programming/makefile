@@ -6,8 +6,8 @@ CPPFLAGS = -I./
 VLG = valgrind -s --leak-check=yes --track-origins=yes
 GDB = cgdb
 
-NAMESPACE = vsa
-//LIBS = $(SRC)/dlist.c
+NAMESPACE = simple_shell
+#LIBS = $(SRC)/simple_shell.c
 
 SRC = src
 TEST = test

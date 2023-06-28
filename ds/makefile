@@ -6,8 +6,8 @@ CPPFLAGS = -I./
 VLG = valgrind -s --leak-check=yes --track-origins=yes
 GDB = cgdb
 
-NAMESPACE = dhcp
-#LIBS = $(SRC)/stack.c
+NAMESPACE = knightstour
+LIBS = $(SRC)/bitarray.c
 
 SRC = src
 TEST = test

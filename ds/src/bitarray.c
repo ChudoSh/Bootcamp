@@ -1,178 +1,223 @@
-/*
-Dev: BarSh
-Rev: Grag 
-Date 19.4.23
-Status: Fixed
-*/
+#include <assert.h> /* assert */
+#include <stddef.h> /*size_t*/
 
-#include <stddef.h>
-#include <assert.h>
 
 #include "bitarray.h"
 
-#define ONE (1UL)
-#define ZERO (0UL)
-#define TWO (2UL)
-#define CHAR_SIZE (__CHAR_BIT__)
-#define SIZE_ARR (sizeof(size_t) * CHAR_SIZE)
-#define SIZE_LUT (256)
-#define UNUSED(a) ((void)a)
-#define NIBBLE (CHAR_SIZE / 2)
-#define POS_TO_INDEX(pos) (pos - 1)
-#define MASK_SIZE (6)
+#define NIBBLE (4)
+#define CRUMB (2)
+#define BITS_IN_ARR (64)
+#define UNUSED(x) ((void)(x))
+#define MAX_64_BIT_NUM (0xffffffffffffffff)
+#define BIT_64_SET (0x8000000000000000)
+#define TRUE (1)
+#define FALSE (0)
 
 bitarr_t BitArrSetOn(bitarr_t arr, size_t pos)
 {	
-	assert(SIZE_ARR > pos);
+	assert((BITS_IN_ARR - 1) >= pos);
 	
-	return (BitArrSet(arr, pos, ONE));
-	/*Given arr 1 and pos 2 :0001 | (0001 << 1) -> 0001 | 0010 -> 0011*/	 
+	return (arr | (((bitarr_t)1 << pos)));
 }
 
 bitarr_t BitArrSetOff(bitarr_t arr, size_t pos)
 {
-	assert(SIZE_ARR > pos);
+	bitarr_t n = 1;
+	assert((BITS_IN_ARR - 1) >= pos);
 	
-	return (BitArrSet(arr, pos, ZERO));
-	/*Given arr 2 and pos 2 :(0010 | ~(0001 << 1)) -> (0001 | (1101)) -> 0011*/
+	n <<= pos;
+	arr &= ~n;
+	
+	return (arr);
 }
 
 bitarr_t BitArrSet(bitarr_t arr, size_t pos, int bool_val)
-{	
-	assert(SIZE_ARR > pos);
-	assert(2 > bool_val);
-	assert(-1 < bool_val);
-
-	return ((arr  & ~(ONE << POS_TO_INDEX(pos))) | (bool_val << POS_TO_INDEX(pos)));
-	/*Given arr 2, pos 2 and val 1 :(0010 | (0000 << 1)) -> (0001 | (1101)) -> 0011*/	
+{
+	assert((BITS_IN_ARR - 1) >= pos);
+	assert(0 == bool_val || 1 == bool_val);
+	
+	if(!bool_val)
+	{
+		return (BitArrSetOff(arr, pos));
+	}
+	else
+	{
+		return (BitArrSetOn(arr, pos));
+	}
 }
 
 size_t BitArrGetVal(bitarr_t arr, size_t pos)
 {
-	assert(SIZE_ARR > pos);
+	bitarr_t n = 1;
+	assert((BITS_IN_ARR - 1) >= pos);
 	
-	return (arr & (ONE << POS_TO_INDEX(pos)));
-	/*Given arr 1 and pos 2 :(0010 & (0001 << 1) -> (0001 & 0010) -> 0000*/
+	n <<= pos;
+	
+	return ((arr | n) == arr);
 }
 
 bitarr_t BitArrSetAll(bitarr_t arr)
 {
-	return (~ZERO);
 	UNUSED(arr);
-	/*Sets 0 as size_t and flips it*/
+	return (MAX_64_BIT_NUM);
 }
 
 bitarr_t BitArrResetAll(bitarr_t arr)
 {
-	return (!BitArrSetAll(arr));
-	/* The opposite for SetAll*/
+	UNUSED(arr);
+	return (0);
 }
 
 size_t BitArrCountOn(bitarr_t arr)
 {
-	size_t count = 0; 
-	
-	while (0 < arr)
-	{	
-		arr = arr & (arr - 1); /*The Kernighan Algorithm*/
-		++count;	
+	size_t counter = 0;
+
+	while (arr) 
+	{
+		arr = arr & (arr - 1);
+		++counter;
 	}
 	
-	return count; 		
+	return (counter); 
 }
 
 size_t BitArrCountOff(bitarr_t arr)
 {
-	return (SIZE_ARR - BitArrCountOn(arr));
-	/*Maximum amount of bits minus the counted*/
+	return (BITS_IN_ARR - BitArrCountOn(arr));
 }
 
 bitarr_t BitArrFlip(bitarr_t arr, size_t pos)
 {
-	return (BitArrSet(arr, pos, !(BitArrGetVal(arr, pos))));
-	/*Sets the !value in the given position*/
+	bitarr_t n = 1;
+	assert((BITS_IN_ARR - 1) >= pos);
+	
+	n <<= pos;
+	
+	return (arr ^ n);
 }
-
 
 bitarr_t BitArrMirror(bitarr_t arr)
 {
-	size_t i = 0;
-	static size_t mask[MASK_SIZE] = 
-	{
-		0x5555555555555555,/*01010101..*/ 
-		0x3333333333333333,/*011011011..*/
-		0x0F0F0F0F0F0F0F0F,/*111100001111..*/
-		0x00FF00FF00FF00FF,/*1111111100000000..*/
-		0x0000FFFF0000FFFF,/*11111111111111110000000000000000..*/
-		0x00000000FFFFFFFF /*32's 1 and 32's 0*/
-	};
-	
-	for (i = 0; i < MASK_SIZE; ++i)
-	{
-		arr = ((arr & mask[i]) << (ONE << i)) | ((arr & ~(mask[i])) >> (ONE << i));
-		/*The Hamming Weight Algorithm*/	
-	}
-	
-	return (arr);		
+	arr = (arr >> 32) | (arr << 32);
+	arr = ((arr >> 16) & 0x0000ffff0000ffff) | ((arr & 0x0000ffff0000ffff) << 16);
+	arr = ((arr >> 8) & 0x00ff00ff00ff00ff) | ((arr & 0x00ff00ff00ff00ff) << 8);
+	arr = ((arr >> 4) & 0x0f0f0f0f0f0f0f0f) | ((arr & 0x0f0f0f0f0f0f0f0f) << 4);
+	arr = ((arr >> 2) & 0x3333333333333333) | ((arr & 0x3333333333333333) << 2);
+	arr = ((arr >> 1) & 0x5555555555555555) | ((arr & 0x5555555555555555) << 1);
+
+	return (arr);
 }
 
 bitarr_t BitArrRotateLeft(bitarr_t arr, size_t shift)
 {
-	assert(ZERO < shift);
+	shift %= BITS_IN_ARR;
 	
-	return ((arr << shift) | (arr >> (shift - SIZE_ARR)));
+	while(shift)
+	{
+		if(BitArrGetVal(arr, (BITS_IN_ARR - 1)))
+		{
+			arr <<= 1;
+			arr += 1;
+		}
+		else
+		{
+			arr <<= 1;
+		}
+		--shift;
+	}
+	
+	return (arr);
 }
 
 bitarr_t BitArrRotateRight(bitarr_t arr, size_t shift)
-{
-	assert(ZERO < shift);
+{	
+	shift %= BITS_IN_ARR;
 	
-	return ((arr >> shift) | (arr << (shift - SIZE_ARR)));
+	while(shift)
+	{
+		if(BitArrGetVal(arr, 0))
+		{
+			arr >>= 1;
+			arr += BIT_64_SET;
+		}
+		else
+		{
+			arr >>=1;
+		}
+		--shift;
+	}
+	
+	return (arr);
 }
 
 char *BitArrToString(bitarr_t arr, char *dest)
 {
-	int i = (SIZE_ARR);
-    
-    assert(NULL != dest);
-    
-	dest[SIZE_ARR] = '\0';
+	size_t i = 0;
 	
-    while (0 <= i)
-    {
-    	--i;
-    	dest[i] = (arr & ONE) + 48;  
-        arr = arr >> 1;
-    }
-     
-    return (dest);
+	assert(NULL != dest);
+	
+	for(i = 1; i <= BITS_IN_ARR; ++i)
+	{
+		if(BitArrGetVal(arr, i))
+		{
+			*dest = '1';
+		}
+		else
+		{
+			*dest = '0';
+		}
+		++dest;
+	}
+	
+	return (dest);
 }
 
-size_t BitArrCountOnLUT(bitarr_t arr)
+bitarr_t BitArrMirrorLUT(bitarr_t arr)
 {
-	size_t count = 0; 
+	bitarr_t mod_arr = 0;
+	bitarr_t temp = 0;
+	static bitarr_t LUT[BITS_IN_ARR] = {0};
+	static int is_LUT_init = 0;
 	size_t i = 0;
-	static size_t LUT[SIZE_LUT];
-	static size_t flag = 0;
 	
-	if (0 == flag)
+	if(FALSE == is_LUT_init)
 	{
-		for (i = 0; SIZE_LUT > i; ++i)
+		for(i = 0; BITS_IN_ARR > i; ++i)
 		{
-			LUT[i] = BitArrCountOn(i);
+			LUT[i] = BitArrSetOn(temp, (BITS_IN_ARR - 1 - i));
+			temp = 0;
 		}
-				
-		flag = 1;
+		
+		is_LUT_init = TRUE;
 	}
 	
 	i = 0;
 	
-	while (CHAR_SIZE > i)
+	while(arr)
 	{
-		count += LUT[(arr % CHAR_SIZE)]; 
-		arr /= CHAR_SIZE;
+		if(BitArrGetVal(arr, 0))
+		{
+			mod_arr |= LUT[i];
+		}
 		++i;
+		arr >>= 1;
 	}
 	
-	return (count);		
+	return (mod_arr);
 }
+
+size_t BitArrCountOnLUT(bitarr_t arr)
+{
+	int counter = 0;
+	static int set_bits_LUT[NIBBLE + 1] = {0, 1, 1, 2, 1};
+	
+	while(arr)
+	{
+		counter += set_bits_LUT[(arr % NIBBLE)];
+		arr /= NIBBLE;
+	}
+
+	return (counter); 
+}
+
+

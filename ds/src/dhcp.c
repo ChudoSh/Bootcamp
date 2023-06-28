@@ -1,14 +1,13 @@
 /*
 Dev: BarSH
-Rev: 
-Date: .6.23
-Status: 
+Rev: MariaP
+Date: 25.6.23
+Status: Approved
 */
 
 #include <stdlib.h>/*malloc*/
 #include <assert.h>/*assert*/
 #include <string.h>/*memcpy*/
-#include <stdio.h>
 
 #include "dhcp.h"
 
@@ -24,13 +23,6 @@ enum STATUS
     SUCCESS = 0
 };
 
-enum BOOL
-{
-    FALSE = 0, 
-    TRUE = 1
-};
-
-
 enum CHILDREN
 {
     LEFT, 
@@ -41,14 +33,13 @@ enum CHILDREN
 
 enum MASKS
 {
-    CHAR_MASK = 0xFF,
-    SUBNET_MASK = ~0 << 8
+    ZERO = 0U,
+    ONE = 1U,
+    CHAR_MASK = 0xFF
 };
 
 enum MAGIC
-{
-    ZERO = 0U,
-    ONE = 1U,
+{ 
     CHAR_SIZE = 8,
     INT_SIZE = 32
 };
@@ -97,20 +88,17 @@ static void SetOccupiedTrie(trie_node_t *node);
 
 static trie_node_t *GetTrie(const dhcp_t *dhcp);
 static size_t GetSubnetSize(const dhcp_t *dhcp);
-static bitarr_t GetSubnetIp(dhcp_t *dhcp);
 static int IsOccupied(trie_node_t *node);
-
-static void PrintAVLHelper(trie_node_t *node, int indent);
-                                   
+                                  
 /******************************************************************************/
 /*Creates DHCP*/
 dhcp_t *DHCPCreate(const unsigned char subnet_ip[BYTES_IN_IP], 
                    size_t subnet_size_in_bits)
 {
     dhcp_t *dhcp = NULL;
-    bitarr_t bitmask = ~0U; 
+    bitarr_t bitmask = ~ZERO; 
 
-    assert(subnet_size_in_bits <= 32);
+    assert(subnet_size_in_bits <= INT_SIZE);
 
     dhcp = (dhcp_t *)malloc(sizeof(dhcp_t));
     if (NULL == dhcp)
@@ -126,6 +114,7 @@ dhcp_t *DHCPCreate(const unsigned char subnet_ip[BYTES_IN_IP],
     dhcp = InitDHCP(dhcp);
     if (NULL == dhcp)
     {
+        DHCPDestroy(dhcp);
         return (NULL);
     }
 
@@ -143,7 +132,8 @@ void DHCPDestroy(dhcp_t *dhcp)
 }
 
 /*Create a new IP address*/
-dhcp_status_t DHCPAllocIP(dhcp_t *dhcp, const unsigned char request_ip[BYTES_IN_IP], 
+dhcp_status_t DHCPAllocIP(dhcp_t *dhcp, 
+                          const unsigned char request_ip[BYTES_IN_IP], 
                           unsigned char container_ip[BYTES_IN_IP])
 {
     size_t size_of_ip = 0;
@@ -272,22 +262,21 @@ static dhcp_status_t FindAndFreeNode(trie_node_t *root, bitarr_t ip_to_find,
 
     if (0 == shift)
     {   
-        return (DHCP_SUCCESS);
+        return (DHCP_SUCCESS);   
     }
- 
-    else if (DHCP_DOUBLE_FREE_FAILURE == FindAndFreeNode(GetChild(root, dir), 
+
+    else if (NULL == GetChild(root, dir))
+    {   
+        return (DHCP_DOUBLE_FREE_FAILURE);
+    }
+
+    if (DHCP_DOUBLE_FREE_FAILURE == FindAndFreeNode(GetChild(root, dir), 
                                                     ip_to_find, (shift - 1)))
     {
         return (DHCP_DOUBLE_FREE_FAILURE);
     }
 
-
-    if (NULL == GetChild(root, dir))
-    {   
-        return (DHCP_DOUBLE_FREE_FAILURE);
-    }
-
-    else if (!IsLeaf(GetChild(root, dir)))
+    if (!IsLeaf(GetChild(root, dir)))
     {      
         SetFree(root);
     }
@@ -297,8 +286,6 @@ static dhcp_status_t FindAndFreeNode(trie_node_t *root, bitarr_t ip_to_find,
         free(GetChild(root, dir));
         SetChild(root, NULL, dir);
     }
-
-    
 
     return (DHCP_SUCCESS); 
 }
@@ -312,7 +299,8 @@ static int SetAvailableIP(trie_node_t *root, bitarr_t *new_ip,
     if (ZERO == root_path)
     {
         *new_ip |= (ONE << (distance - 1));
-        status = SetRequestedIP(GetChild(root, root_path), new_ip, (distance - 1));
+        status = SetRequestedIP(GetChild(root, root_path), new_ip, 
+                                (distance - 1));
         SetOccupiedTrie(root);
 
         return (status);
@@ -401,14 +389,12 @@ static void BitToString(bitarr_t bit_arr, unsigned char container[BYTES_IN_IP])
     int i = BYTES_IN_IP - 1; 
     unsigned int shift = 0;
 	
-    while (0 <= i)/*to copy 4 times*/
+    while (0 <= i)
     {
-    	container[i] = ((bit_arr >> shift) & CHAR_MASK); /*1111110000011110001010101*/ 
-
+    	container[i] = ((bit_arr >> shift) & CHAR_MASK); 
         shift += CHAR_SIZE;
         --(i);
     }
-
 }
 /*---------------------------------Trie Funcs---------------------------------*/
 static trie_node_t *TrieNodeCreate(void)
@@ -466,13 +452,6 @@ static size_t GetSubnetSize(const dhcp_t *dhcp)
     return (dhcp->size_subnet_ip);
 }
 
-static bitarr_t GetSubnetIp(dhcp_t *dhcp)
-{
-    assert(NULL != dhcp);
-    
-    return (dhcp->subnet_ip);
-}
-
 static int GetPath(bitarr_t ip, size_t shift)
 {
     return ((ip >> shift) & ONE);
@@ -482,12 +461,11 @@ static int IsOccupied(trie_node_t *node)
 {
     if (NULL == node)
     {
-        return (FALSE);
+        return (FREE);
     }
     
     return (node->is_occupied);
 }
-
 
 static void SetChild(trie_node_t *current, trie_node_t *to_set, int child)
 {
@@ -524,20 +502,3 @@ static int IsLeaf(trie_node_t *node)
     return (NULL == GetChild(node, RIGHT) && NULL == GetChild(node, LEFT));
 } 
 
-
-void PrintTree(dhcp_t *tree)
-{
-    PrintAVLHelper(tree->root, 1);
-}
-
-static void PrintAVLHelper(trie_node_t *node, int indent)
-{
-    if (NULL == node)
-    {
-        return;
-    }
-
-    PrintAVLHelper(node->children[LEFT], indent + 4);
-    printf("%*s%d\n", indent, "", node->is_occupied);
-    PrintAVLHelper(node->children[RIGHT], indent + 4);
-}

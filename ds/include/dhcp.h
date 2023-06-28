@@ -1,8 +1,8 @@
 /*
 Dev: BarSH
-Rev: 
-Date: .6.23
-Status: 
+Rev: MariaP
+Date: 25.6.23
+Status: Approved
 */
 
 #ifndef _ILRD_DHCP_H_
@@ -85,5 +85,6 @@ Time complexity: O(n)
 Space complexity: O(1)
 */
 size_t DHCPCountFree(const dhcp_t *dhcp);
+
 
 #endif /*_ILRD_DHCP_H_*/

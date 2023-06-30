@@ -6,7 +6,7 @@ CPPFLAGS = -I./
 VLG = valgrind -s --leak-check=yes --track-origins=yes
 GDB = cgdb
 
-NAMESPACE = simple_shell
+NAMESPACE = signal_ping_pong
 #LIBS = $(SRC)/simple_shell.c
 
 SRC = src

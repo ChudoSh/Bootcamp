@@ -340,9 +340,6 @@ int RecBinarySearch(int *arr, int find, size_t size)
     return (RecBinarySearch(arr, find, size)); 
 }
 
-
-
-
 /******************************static functions********************************/
 static void Swap(int* a, int* b)
 {

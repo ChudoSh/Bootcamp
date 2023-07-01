@@ -2,57 +2,39 @@
 #include <assert.h>
 #include <string.h>
 
-void StringPermutationsIter(char *str);
-void StringPermutationsRec(char *str, size_t size);
+void StringPermutations(char *str, size_t start, size_t end);
 void Swap(char *x, char *y);
 
 int main(void)
 {
-    
-    StringPermutationsIter("ABC");
+    char str[] = "ABC";
+    StringPermutations(str, 0, 3);
     return (0);
 }
 
-void StringPermutationsIter(char *str)
+void StringPermutations(char *str, size_t start, size_t end)
 {   
     size_t i = 0;
-    char *start_run = NULL; 
-    char *end_run = NULL;
-     
     assert(NULL != str);
-   
-    start_run = str;
-    end_run += strlen(str);
 
-    while ('\0' != *str)
+    if (start == end)
     {
-        if (start_run == end_run)
-        {
-            printf("%s",str);
-        }
-
-        Swap(end_run, start_run);
-
-        while (start_run != end_run)
-        {
-            
-            if (start_run == end_run)
-            {
-                printf("%s",str);
-            }
-            Swap(end_run, start_run);
-
-            ++(start_run);
-            --(end_run);
-        }
-        printf("\n");
-        ++(str);
+        printf("%s\n",str);
+        return;
     }
+    
+    for (i = start; i < end; ++i)
+    {   
+        Swap((str + start), (str + i)); 
+        StringPermutations(str, start + 1, end);
+        Swap((str + start), (str + i));  
+    }
+
+    return;
 }
 void Swap(char* x, char* y)
 {
-    char temp;
-    temp = *x;
+    char temp = *x;
     *x = *y;
     *y = temp;
 }

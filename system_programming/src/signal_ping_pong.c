@@ -23,10 +23,11 @@ void TableTennis()
 
     if (0 != child) 
     {
-        raise(SIGUSR1);  
+        raise(SIGUSR1);
+        waitpid(child, NULL, WUNTRACED); 
     }
     else
-    { 
+    {
         raise(SIGUSR2);
         exit(0);
     } 

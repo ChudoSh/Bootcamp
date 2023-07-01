@@ -57,7 +57,7 @@ void *FSAAlloc(fsa_t *fsa)
 	
 	assert(NULL != fsa);
 	
-	if (DRY_POOL == fsa->next_avaiable)
+	if (DRY_POOL == fsa->next_available)
 	{
 		return (NULL);
 	}

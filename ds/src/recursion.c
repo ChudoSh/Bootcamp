@@ -26,7 +26,7 @@ int Fibonnachi(int element_index)
     return (Fibonnachi(element_index - 1) + Fibonnachi(element_index - 2));
 }
 
-node_t *Flip(node_t *head)
+node_t *FlipRec(node_t *head)
 {	
 	return (RecursiveFlip(NULL, head)); 
 }

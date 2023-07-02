@@ -1,6 +1,11 @@
 {
     "files.associations": {
         "unistd.h": "c",
-        "types.h": "c"
+        "types.h": "c",
+        "stdlib.h": "c",
+        "stdio.h": "c",
+        "signal_ping_pong.h": "c",
+        "errno.h": "c",
+        "signal.h": "c"
     }
 }

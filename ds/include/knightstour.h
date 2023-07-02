@@ -1,8 +1,8 @@
 /*
-Rev: 
+Rev: EtaiSh
 Dev: BarSh
-status: 
-date: .6.23
+status: Approved
+date: 2.7.23
 */
 
 #ifndef __KNIGHT_H__

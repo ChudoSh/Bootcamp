@@ -41,7 +41,7 @@ static int Compare_Time(const void *task1, const void *task2);
 static int IsMatchUID(const void *task, const void *uid);
 
 /*Create a scheduler*/
-scheduler_t *SchedulerCreate(void)
+scheduler_t *HSchedulerCreate(void)
 {
 	scheduler_t *new_scheduler = NULL;
 	
@@ -51,7 +51,7 @@ scheduler_t *SchedulerCreate(void)
 		return (NULL);
 	}
 	
-	new_scheduler->pqueue = PQCreate(Compare_Time);
+	new_scheduler->pqueue = PQHCreate(Compare_Time);
 	if (NULL == new_scheduler->pqueue)
 	{
 		free(new_scheduler);
@@ -66,19 +66,19 @@ scheduler_t *SchedulerCreate(void)
 }
 
 /*Destroys a scheduler*/
-void SchedulerDestroy(scheduler_t *scheduler)
+void HSchedulerDestroy(scheduler_t *scheduler)
 {
 	assert(NULL != scheduler);
 	
-	SchedulerClear(scheduler);
+	HSchedulerClear(scheduler);
 	
-	PQDestroy(scheduler->pqueue);
+	PQHDestroy(scheduler->pqueue);
 	
 	free(scheduler);
 }
 
 /*Adds a new task*/
-ilrd_uid_t SchedulerAddTask(scheduler_t *scheduler, 
+ilrd_uid_t HSchedulerAddTask(scheduler_t *scheduler, 
 							int (*op_func_t)(void *), 
 					   		void *op_param, size_t delay_in_sec, 
 					 		size_t interval_in_sec, 
@@ -98,7 +98,7 @@ ilrd_uid_t SchedulerAddTask(scheduler_t *scheduler,
 		return (UIDBadUID);
 	}
 						 
-	if (ENQ_FAIL == PQEnqueue(scheduler->pqueue, new_task))
+	if (ENQ_FAIL == PQHEnqueue(scheduler->pqueue, new_task))
 	{
 		TaskDestroy(new_task);
 		return (UIDBadUID);
@@ -108,7 +108,7 @@ ilrd_uid_t SchedulerAddTask(scheduler_t *scheduler,
 }
 
 /*Removes a task*/
-int SchedulerRemoveTask(scheduler_t *scheduler, ilrd_uid_t uid)
+int HSchedulerRemoveTask(scheduler_t *scheduler, ilrd_uid_t uid)
 {
 	task_t *save = NULL;
 	
@@ -122,7 +122,7 @@ int SchedulerRemoveTask(scheduler_t *scheduler, ilrd_uid_t uid)
 		return (SUCCESS);
 	}
 	
-	save = PQErase(scheduler->pqueue, IsMatchUID, &uid);
+	save = PQHErase(scheduler->pqueue, IsMatchUID, &uid);
 	
 	if (NULL != save)
 	{
@@ -135,17 +135,17 @@ int SchedulerRemoveTask(scheduler_t *scheduler, ilrd_uid_t uid)
 }
 
 /*Runs the schedule*/
-int SchedulerRun(scheduler_t *scheduler)
+int HSchedulerRun(scheduler_t *scheduler)
 {
 	assert(NULL != scheduler);
 	
 	scheduler->is_running = RUN;
 	
-	while (RUN == scheduler->is_running && !SchedulerIsEmpty(scheduler))
+	while (RUN == scheduler->is_running && !HSchedulerIsEmpty(scheduler))
 	{
 		if (!scheduler->current_occupied)
 		{
-			scheduler->current_task = PQDequeue(scheduler->pqueue);
+			scheduler->current_task = PQHDequeue(scheduler->pqueue);
 			scheduler->current_occupied = TRUE;
 		}
 		 
@@ -161,7 +161,7 @@ int SchedulerRun(scheduler_t *scheduler)
 		{
 			TaskUpdateTimeToRun(scheduler->current_task);
 			
-			if (ENQ_FAIL == PQEnqueue(scheduler->pqueue, 
+			if (ENQ_FAIL == PQHEnqueue(scheduler->pqueue, 
 									  scheduler->current_task))
 			{	
 				scheduler->is_running = ERROR;
@@ -184,7 +184,7 @@ int SchedulerRun(scheduler_t *scheduler)
 }
 
 /*Stops the scheduler*/
-void SchedulerStop(scheduler_t *scheduler)
+void HSchedulerStop(scheduler_t *scheduler)
 {
 	assert(NULL != scheduler);
 
@@ -192,28 +192,28 @@ void SchedulerStop(scheduler_t *scheduler)
 }
 
 /*returns the number of tasks in the scheduler*/
-size_t SchedulerSize(const scheduler_t *scheduler)								
+size_t HSchedulerSize(const scheduler_t *scheduler)								
 {
 	assert(NULL != scheduler);
 	
 	if (scheduler->current_occupied)
 	{
-		return (PQSize(scheduler->pqueue) + 1);
+		return (PQHSize(scheduler->pqueue) + 1);
 	} 
 	
-	return (PQSize(scheduler->pqueue));
+	return (PQHSize(scheduler->pqueue));
 }
 
 /*Is scheduler is empty*/
-int SchedulerIsEmpty(const scheduler_t *scheduler)
+int HSchedulerIsEmpty(const scheduler_t *scheduler)
 {
 	assert(NULL != scheduler);
 	
-	return (0 == SchedulerSize(scheduler));
+	return (0 == HSchedulerSize(scheduler));
 }
 
 /*Clears the scheduler*/
-void SchedulerClear(scheduler_t *scheduler)
+void HSchedulerClear(scheduler_t *scheduler)
 {
 	assert(NULL != scheduler);
 	
@@ -224,9 +224,9 @@ void SchedulerClear(scheduler_t *scheduler)
 		scheduler->current_occupied = FALSE;
 	}
 
-	while (!SchedulerIsEmpty(scheduler))
+	while (!HSchedulerIsEmpty(scheduler))
 	{
-		TaskDestroy((PQDequeue(scheduler->pqueue)));
+		TaskDestroy((PQHDequeue(scheduler->pqueue)));
 	}
 }
 

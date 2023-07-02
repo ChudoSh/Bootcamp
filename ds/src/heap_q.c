@@ -25,7 +25,7 @@ struct PQueue
 static heap_t *GetHeap(const pq_t *pq);
 
 /*Create a priority queue.*/
-pq_t *PQCreate(int (*compare)(const void *,const void *))
+pq_t *PQHCreate(int (*compare)(const void *,const void *))
 {
 	pq_t *pqueue = NULL;
 	
@@ -48,7 +48,7 @@ pq_t *PQCreate(int (*compare)(const void *,const void *))
 }
 
 /*Destroys a priority queue.*/
-void PQDestroy(pq_t *pq)
+void PQHDestroy(pq_t *pq)
 {
 	assert(NULL != pq);
 	
@@ -57,7 +57,7 @@ void PQDestroy(pq_t *pq)
 }
 
 /*Insert a new node into the pqueue*/
-int PQEnqueue(pq_t *pq, void *data)
+int PQHEnqueue(pq_t *pq, void *data)
 {
 	assert(NULL != pq);
 	
@@ -65,12 +65,12 @@ int PQEnqueue(pq_t *pq, void *data)
 }
 
 /*Removes the node with the least priority*/
-void *PQDequeue(pq_t *pq)
+void *PQHDequeue(pq_t *pq)
 {
     void *removed = NULL; 
 
 	assert(NULL != pq);
-	assert(!PQIsEmpty(pq));
+	assert(!PQHIsEmpty(pq));
 
     removed = HeapPeek(GetHeap(pq));
     HeapPop(GetHeap(pq));
@@ -79,7 +79,7 @@ void *PQDequeue(pq_t *pq)
 }
 
 /*Gets the value of the most significant node*/
-void *PQPeek(const pq_t *pq)
+void *PQHPeek(const pq_t *pq)
 {
 	assert(NULL != pq);
 	
@@ -87,7 +87,7 @@ void *PQPeek(const pq_t *pq)
 }
 
 /*Erases a node in the pqueue given its element*/
-void *PQErase(pq_t *pq, int (*is_match)(const void *, const void *), void *param)
+void *PQHErase(pq_t *pq, int (*is_match)(const void *, const void *), void *param)
 {
 	assert(NULL != pq);
 	assert(NULL != is_match);
@@ -97,7 +97,7 @@ void *PQErase(pq_t *pq, int (*is_match)(const void *, const void *), void *param
 }
 
 /*Empties the queue*/ 
-void PQClear(pq_t *pq)
+void PQHClear(pq_t *pq)
 {
 	assert(NULL != pq);
 	
@@ -108,7 +108,7 @@ void PQClear(pq_t *pq)
 }
 
 /*Count elements in the queue*/ 
-size_t PQSize(const pq_t *pq)
+size_t PQHSize(const pq_t *pq)
 {
 	assert(NULL != pq);
 	
@@ -116,7 +116,7 @@ size_t PQSize(const pq_t *pq)
 }
 
 /*Checks if the pqueue is empty*/
-int PQIsEmpty(const pq_t *pq)
+int PQHIsEmpty(const pq_t *pq)
 {
 	assert(NULL != pq);
 	

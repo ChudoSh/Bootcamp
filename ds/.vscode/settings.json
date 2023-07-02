@@ -27,6 +27,7 @@
         "heap_q.h": "c",
         "iterator": "c",
         "algorithm": "c",
-        "math.h": "c"
+        "math.h": "c",
+        "types.h": "c"
     }
 }

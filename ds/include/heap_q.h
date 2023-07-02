@@ -26,7 +26,7 @@ Time complexity: O(1).
 Space complexity: O(1).
 */
 
-pq_t *PQCreate(int (*compare)(const void *,const void *));
+pq_t *PQHCreate(int (*compare)(const void *,const void *));
 
 /*****************************************************************************/
 /*
@@ -40,7 +40,7 @@ Time complexity: O(1).
 Space complexity: O(1).
 */
 
-void PQDestroy(pq_t *pq);
+void PQHDestroy(pq_t *pq);
 
 /*****************************************************************************/
 /*
@@ -53,7 +53,7 @@ Return:
 Time complexity: O(1).
 Space complexity: O(1).
 */
-int PQEnqueue(pq_t *pq, void *data);
+int PQHEnqueue(pq_t *pq, void *data);
 
 /*****************************************************************************/
 /*
@@ -65,7 +65,7 @@ Return:
 Time complexity: O(1).
 Space complexity: O(1).
 */
-void *PQDequeue(pq_t *pq);
+void *PQHDequeue(pq_t *pq);
 
 /***********************************************************************/
 /*
@@ -77,7 +77,7 @@ Return:
 Time complexity: O(1)
 Space complexity: O(1)
 */
-void *PQPeek(const pq_t *pq);
+void *PQHPeek(const pq_t *pq);
 
 /*****************************************************************************/
 /*
@@ -91,7 +91,7 @@ Return:
 Time complexity: O(n).
 Space complexity: O(1).
 */
-void *PQErase(pq_t *pq, int (*is_match)(const void *, const void *), void *param);
+void *PQHErase(pq_t *pq, int (*is_match)(const void *, const void *), void *param);
 
 /*****************************************************************************/
 /*
@@ -104,7 +104,7 @@ Time complexity: O(n).
 Space complexity: O(1).
 */
 
-void PQClear(pq_t *pq);
+void PQHClear(pq_t *pq);
 /*****************************************************************************/
 /*
 Description: Count elements in the pqueue. 
@@ -116,7 +116,7 @@ Time complexity: O(n).
 Space complexity: O(1).
 */
 
-size_t PQSize(const pq_t *pq);
+size_t PQHSize(const pq_t *pq);
 
 /*****************************************************************************/
 /*
@@ -128,7 +128,7 @@ Return:
 Time complexity: O(n).
 Space complexity: O(1).
 */
-int PQIsEmpty(const pq_t *pq);
+int PQHIsEmpty(const pq_t *pq);
 
 
 #endif /* __PQUEUE_H__ */

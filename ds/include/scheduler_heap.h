@@ -28,7 +28,7 @@ Time complexity: O(1).
 Space complexity: O(1).
 */
 
-scheduler_t *SchedulerCreate(void);
+scheduler_t *HSchedulerCreate(void);
 
 /*****************************************************************************/
 /*
@@ -40,7 +40,7 @@ Time complexity: O(n).
 Space complexity: O(1).
 */
 
-void SchedulerDestroy(scheduler_t *scheduler);
+void HSchedulerDestroy(scheduler_t *scheduler);
 
 /*****************************************************************************/
 /*
@@ -58,7 +58,7 @@ Time complexity: O(n).
 Space complexity: O(1).
 */
 
-ilrd_uid_t SchedulerAddTask(scheduler_t *scheduler, int (*op_func_t)(void *), 
+ilrd_uid_t HSchedulerAddTask(scheduler_t *scheduler, int (*op_func_t)(void *), 
 					   		void *op_param, size_t delay_in_sec, 
 					 		size_t interval_in_sec, void (*task_cleanup)(void *), 
 					  		void *cleanup_param);
@@ -74,7 +74,7 @@ Time complexity: O(n).
 Space complexity: O(1).
 */
 
-int SchedulerRemoveTask(scheduler_t *scheduler, ilrd_uid_t uid);
+int HSchedulerRemoveTask(scheduler_t *scheduler, ilrd_uid_t uid);
 
 /*****************************************************************************/
 /*
@@ -87,7 +87,7 @@ Time complexity: O(n).
 Space complexity: O(1).
 */
 
-int SchedulerRun(scheduler_t *scheduler);
+int HSchedulerRun(scheduler_t *scheduler);
 
 /*****************************************************************************/
 /*
@@ -99,7 +99,7 @@ Time complexity: O(n).
 Space complexity: O(1).
 */
 
-void SchedulerStop(scheduler_t *scheduler);
+void HSchedulerStop(scheduler_t *scheduler);
 
 /*****************************************************************************/
 /*
@@ -111,7 +111,7 @@ Time complexity: O(n).
 Space complexity: O(1).
 */
 
-size_t SchedulerSize(const scheduler_t *scheduler);
+size_t HSchedulerSize(const scheduler_t *scheduler);
 
 /*****************************************************************************/
 /*
@@ -123,7 +123,7 @@ Time complexity: O(1).
 Space complexity: O(1).
 */
 
-int SchedulerIsEmpty(const scheduler_t *scheduler);
+int HSchedulerIsEmpty(const scheduler_t *scheduler);
 
 /*****************************************************************************/
 /*
@@ -135,7 +135,7 @@ Time complexity: O(n).
 Space complexity: O(1).
 */
 
-void SchedulerClear(scheduler_t *scheduler);
+void HSchedulerClear(scheduler_t *scheduler);
 
 /*****************************************************************************/
 

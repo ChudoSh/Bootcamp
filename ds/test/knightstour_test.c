@@ -1,8 +1,8 @@
 /*
-Dev: BarSH
-Rev: MariaP
-Date: 25.6.23
-Status: Approved
+Rev: EtaiSh
+Dev: BarSh
+status: Approved
+date: 2.7.23
 */
 
 #include <stdio.h>
@@ -25,7 +25,7 @@ static void Test()
 	status_t status = 0;
     int i = 0;
     unsigned char Path[64] = {'\0'};
-	status = KnightsTour(0,0, 3600,  0, Path);
+	status = KnightsTour(0,0, 5,  0, Path);
 
 	printf("%d\n", status);
 
@@ -37,7 +37,6 @@ static void Test()
     }
     
 }
-
 
 static void AutoTest(int val, const char *func, int line)
 {

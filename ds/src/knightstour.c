@@ -1,23 +1,15 @@
 /*
-Rev: 
+Rev: EtaiSh
 Dev: BarSh
-status: 
-date: .6.23
+status: Approved
+date: 2.7.23
 */
-
-
-#include <stdlib.h>/*malloc*/
-#include <time.h>/*time_t*/
-#include <assert.h>/*assert*/
-#include <stdio.h>
-
-#include "knightstour.h"
 
 #include <sys/types.h> /* size_t */
 #include <assert.h> /* assert */
 #include <time.h> /* clock */
 
-#include "knighttour.h"
+#include "knightstour.h"
 
 
 #define MOVEMENTS (8)
@@ -70,12 +62,12 @@ status_t KnightsTour(unsigned char column, unsigned char row,
 
     assert(NULL != path);
 
-    if(0 == timeout_in_sec)
+    if (0 == timeout_in_sec)
     {
         return (KNIGHT_TOUR_TIME_OUT);
     }
 
-    if(FALSE == status)
+    if (FALSE == status)
     {
         stat = (BruteForce(board, i, path, 0, timeout_in_sec, start, movesLUT));
     }
@@ -99,12 +91,12 @@ static status_t BruteForce(size_t board, size_t current_tile,
     status_t ret = KNIGHT_TOUR_SUCCESS;
     clock_t end = clock();
 
-    if((end - start) / CLOCKS_PER_SEC > timeout_in_sec)
+    if ((end - start) / CLOCKS_PER_SEC > timeout_in_sec)
     {
         return (KNIGHT_TOUR_TIME_OUT);
     }
 
-    if(MAX_MOVES == moves)
+    if (MAX_MOVES == moves)
     {
         *path = current_tile;
 
@@ -148,12 +140,12 @@ static status_t Warnsdorff(size_t board, size_t current_tile,
     clock_t end = clock();
     size_t next = 0;
 
-    if((end - start) / CLOCKS_PER_SEC > timeout_in_sec)
+    if ((end - start) / CLOCKS_PER_SEC > timeout_in_sec)
     {
         return (KNIGHT_TOUR_TIME_OUT);
     }
 
-    if(MAX_MOVES == moves)
+    if (MAX_MOVES == moves)
     {
         *(path + moves) = (unsigned char)current_tile;
 
@@ -161,19 +153,19 @@ static status_t Warnsdorff(size_t board, size_t current_tile,
     }
 
     next = FewestAvailable(board, current_tile, movesLUT);
-    if(ILLEGAL == next)
+    if (ILLEGAL == next)
     {
         return (KNIGHT_TOUR_NOT_FOUND);
     }
 
     ret = Warnsdorff(BitArrSetOn(board, current_tile), next, path + 1, 
                      moves + 1, timeout_in_sec, start, movesLUT);
-    if(KNIGHT_TOUR_TIME_OUT == ret)
+    if (KNIGHT_TOUR_TIME_OUT == ret)
     {
         return (ret);
     }
 
-    if(KNIGHT_TOUR_SUCCESS == ret)
+    if (KNIGHT_TOUR_SUCCESS == ret)
     {
         *path = current_tile;
         return (KNIGHT_TOUR_SUCCESS);
@@ -192,11 +184,11 @@ static void LutInit(size_t LUT[TOTAL_TILES][MOVEMENTS])
     size_t y = 0;
     action_t arr[MOVEMENTS] = {UUR, UUL, DDR, DDL, LLU, LLD, RRU, RRD};
 
-    for(j = 0; j < MOVEMENTS; ++j)
+    for (j = 0; j < MOVEMENTS; ++j)
     {
-        for(x = 0; x < MOVEMENTS; ++x)
+        for (x = 0; x < MOVEMENTS; ++x)
         {
-            for(y = 0; y < MOVEMENTS; ++y)
+            for (y = 0; y < MOVEMENTS; ++y)
             {
                 i = x + (y * MOVEMENTS);
                 LUT[i][j] = arr[j](x, y);
@@ -209,7 +201,7 @@ static void LutInit(size_t LUT[TOTAL_TILES][MOVEMENTS])
 
 static size_t UUR(size_t x, size_t y)
 {
-    if(((y + 2) >= MOVEMENTS) || ((x + 1) >= MOVEMENTS))
+    if (((y + 2) >= MOVEMENTS) || ((x + 1) >= MOVEMENTS))
     {
         return (ILLEGAL);
     }
@@ -219,8 +211,8 @@ static size_t UUR(size_t x, size_t y)
 
 static size_t UUL(size_t x, size_t y)
 {
-    if(((y + 2) >= MOVEMENTS) || (((int)x - 1) < 0))
-    {
+    if (((y + 2) >= MOVEMENTS) || (((int)x - 1) < 0))
+    { 
         return (ILLEGAL);
     }
 
@@ -229,8 +221,8 @@ static size_t UUL(size_t x, size_t y)
 
 static size_t DDR(size_t x, size_t y)
 {
-    if((((int)y - 2) < 0) || ((x + 1) >= MOVEMENTS))
-    {
+    if ((((int)y - 2) < 0) || ((x + 1) >= MOVEMENTS))
+    { 
         return (ILLEGAL);
     }
 
@@ -239,7 +231,7 @@ static size_t DDR(size_t x, size_t y)
 
 static size_t DDL(size_t x, size_t y)
 {
-    if((((int)y - 2) < 0) || (((int)x - 1) < 0))
+    if ((((int)y - 2) < 0) || (((int)x - 1) < 0))
     {
         return (ILLEGAL);
     }
@@ -249,7 +241,7 @@ static size_t DDL(size_t x, size_t y)
 
 static size_t LLU(size_t x, size_t y)
 {
-    if(((y + 1) >= MOVEMENTS) || (((int)x - 2) < 0))
+    if (((y + 1) >= MOVEMENTS) || (((int)x - 2) < 0))
     {
         return (ILLEGAL);
     }
@@ -259,7 +251,7 @@ static size_t LLU(size_t x, size_t y)
 
 static size_t LLD(size_t x, size_t y)
 {
-    if((((int)y - 1) < 0) || (((int)x - 2) < 0))
+    if ((((int)y - 1) < 0) || (((int)x - 2) < 0))
     {
         return (ILLEGAL);
     }
@@ -269,7 +261,7 @@ static size_t LLD(size_t x, size_t y)
 
 static size_t RRU(size_t x, size_t y)
 {
-    if(((y + 1) >= MOVEMENTS) || ((x + 2) >= MOVEMENTS))
+    if (((y + 1) >= MOVEMENTS) || ((x + 2) >= MOVEMENTS))
     {
         return (ILLEGAL);
     }
@@ -279,7 +271,7 @@ static size_t RRU(size_t x, size_t y)
 
 static size_t RRD(size_t x, size_t y)
 {
-    if((((int)y - 1) < 0) || ((x + 2) >= MOVEMENTS))
+    if ((((int)y - 1) < 0) || ((x + 2) >= MOVEMENTS))
     {
         return (ILLEGAL);
     }

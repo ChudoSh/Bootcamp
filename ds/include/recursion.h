@@ -31,7 +31,7 @@ Return:
 Time complexity: O(n).
 Space complexity: O(1).
 */
-node_t *Flip(node_t *head);
+node_t *FlipRec(node_t *head);
 
 /***********************************************************************/
 /*

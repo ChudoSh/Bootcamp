@@ -3,7 +3,7 @@
 *.out
 *.o
 *.txt
-simulations
+./simulations
 .*.d
 .vscode
 

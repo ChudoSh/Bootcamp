@@ -1,6 +1,6 @@
 /*
 Dev: BarSh
-Rev:Ido I
+Rev:IdoI
 Status: Approved
 Date: 2.7.23
 */
@@ -16,7 +16,6 @@ Date: 2.7.23
 static void Pong(int sig);
 
 typedef struct sigaction sigact_t;
-typedef union sigval sv_t;
 
 int main(int argc, char *argv[])
 {

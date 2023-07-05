@@ -12,7 +12,7 @@ DBG_LDLIB = $(DBGDIR)/dbg_libds.so
 VLG = valgrind -s --leak-check=yes --track-origins=yes
 GDB = cgdb
 
-NAMESPACE = signal_ping_pong
+NAMESPACE = 100kthreads
 RELEASE_DIR = bin/release/$(NAMESPACE)_release.out
 DEBUG_DIR = bin/debug/$(NAMESPACE)_test_dbg.out
 

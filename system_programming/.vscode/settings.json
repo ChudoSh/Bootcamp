@@ -7,7 +7,10 @@
         "signal_ping_pong.h": "c",
         "errno.h": "c",
         "signal.h": "c",
-        "pthread.h": "c"
+        "pthread.h": "c",
+        "semaphore.h": "c",
+        "type_traits": "c",
+        "string.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

@@ -55,7 +55,7 @@ release: $(REL_OBJS)
 	
 test : debug  
 	@ $(foreach d, $(TESTNAME), $(CC) $(CFLAGS) ./test/$d_test.c -o \
-	./bin/debug/$d_test_dbg.out $(LDFLAGS) $(DBG_LDLIB);)
+	./bin/debug/$d_dbg.out $(LDFLAGS) $(DBG_LDLIB);)
 	
 clean: 
 	@ rm -f $(REL_OBJS) $(DBG_OBJS) $(wildcard *.out)

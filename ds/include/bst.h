@@ -230,5 +230,4 @@ Space complexity: O(1)
 
 int BSTIsSameIter(const bst_iter_t iter1, bst_iter_t iter2);
 
-
 #endif /* __BST_H__ */

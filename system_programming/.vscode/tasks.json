@@ -14,7 +14,8 @@
                 "-I",
                 "${fileDirname}/../include",
                 "${file}",
-                "${fileDirname}/../test/${fileBasenameNoExtension}_test.c",
+                /*"${fileDirname}/../test/${fileBasenameNoExtension}.c",*/
+                "-lpthread",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
             ],

@@ -37,7 +37,7 @@ int main()
 
 void BasicFunctionTest()
 {
-	scheduler_t *scheduler = SchedulerCreate();
+	scheduler_t *scheduler = HSchedulerCreate();
 	size_t test_count = 0;
 	
 	ilrd_uid_t id[6] = {0};
@@ -45,42 +45,42 @@ void BasicFunctionTest()
 	printf("Scheduler basic functions tests\n");
 	printf("_Line__Name____________Status_\n");
 	
-	Test(SchedulerIsEmpty(scheduler), "IsEmpty", __LINE__);
+	Test(HSchedulerIsEmpty(scheduler), "IsEmpty", __LINE__);
 	
-	id[0] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 10, 1, NULL, NULL);
-	id[1] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 15, 1, NULL, NULL);
-	id[2] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 20, 1, NULL, NULL);
-	id[3] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 25, 1, NULL, NULL);
-	id[4] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 30, 1, (void (*)(void *))(SchedulerStop), scheduler);
-	id[5] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 35, 1, NULL, NULL);
+	id[0] = HSchedulerAddTask(scheduler, FuncForTask, &test_count, 10, 1, NULL, NULL);
+	id[1] = HSchedulerAddTask(scheduler, FuncForTask, &test_count, 15, 1, NULL, NULL);
+	id[2] = HSchedulerAddTask(scheduler, FuncForTask, &test_count, 20, 1, NULL, NULL);
+	id[3] = HSchedulerAddTask(scheduler, FuncForTask, &test_count, 25, 1, NULL, NULL);
+	id[4] = HSchedulerAddTask(scheduler, FuncForTask, &test_count, 30, 1, (void (*)(void *))(HSchedulerStop), scheduler);
+	id[5] = HSchedulerAddTask(scheduler, FuncForTask, &test_count, 35, 1, NULL, NULL);
 	
-	Test(6 == SchedulerSize(scheduler), "AddTask & Size", __LINE__);
+	Test(6 == HSchedulerSize(scheduler), "AddTask & Size", __LINE__);
 	
-	SchedulerRemoveTask(scheduler, id[5]);
+	HSchedulerRemoveTask(scheduler, id[5]);
 	
-	Test(5 == SchedulerSize(scheduler), "Remove", __LINE__);
+	Test(5 == HSchedulerSize(scheduler), "Remove", __LINE__);
 
-	SchedulerRun(scheduler);
+	HSchedulerRun(scheduler);
 	
 	Test(25 == test_count, "Scheduler Run", __LINE__);
 	
-	id[0] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 5, 1, NULL, NULL);
-	id[1] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 6, 1, NULL, NULL);
-	id[2] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 7, 1, NULL, NULL);
-	id[3] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 8, 1, NULL, NULL);
-	id[4] = SchedulerAddTask(scheduler, FuncForTask, &scheduler, 9, 1, NULL, NULL);
-	id[5] = SchedulerAddTask(scheduler, FuncForTask, &test_count, 10, 1, NULL, NULL);
+	id[0] = HSchedulerAddTask(scheduler, FuncForTask, &test_count, 5, 1, NULL, NULL);
+	id[1] = HSchedulerAddTask(scheduler, FuncForTask, &test_count, 6, 1, NULL, NULL);
+	id[2] = HSchedulerAddTask(scheduler, FuncForTask, &test_count, 7, 1, NULL, NULL);
+	id[3] = HSchedulerAddTask(scheduler, FuncForTask, &test_count, 8, 1, NULL, NULL);
+	id[4] = HSchedulerAddTask(scheduler, FuncForTask, &scheduler, 9, 1, NULL, NULL);
+	id[5] = HSchedulerAddTask(scheduler, FuncForTask, &test_count, 10, 1, NULL, NULL);
 	
-	SchedulerClear(scheduler);
+	HSchedulerClear(scheduler);
 	
-	Test(0 == SchedulerSize(scheduler), "Clear", __LINE__);
+	Test(0 == HSchedulerSize(scheduler), "Clear", __LINE__);
 	
-	SchedulerDestroy(scheduler);	
+	HSchedulerDestroy(scheduler);	
 }
 
 static int FuncToStop(void *data)
 {
-	SchedulerStop((scheduler_t *)data);
+	HSchedulerStop((scheduler_t *)data);
 	return (1);
 }
 
@@ -113,11 +113,11 @@ static void Test(int val, const char *func, int line)
 }
 void SchedulerTest1()
 {
-	scheduler_t *moo = SchedulerCreate();
-	Test(0 == SchedulerSize(moo), "Size 0", __LINE__);
-	Test(SchedulerIsEmpty(moo), "IsEmpty", __LINE__);
-	Test(SUCCESS == SchedulerRun(moo), "Run empty", __LINE__);
-	SchedulerDestroy(moo);
+	scheduler_t *moo = HSchedulerCreate();
+	Test(0 == HSchedulerSize(moo), "Size 0", __LINE__);
+	Test(HSchedulerIsEmpty(moo), "IsEmpty", __LINE__);
+	Test(SUCCESS == HSchedulerRun(moo), "Run empty", __LINE__);
+	HSchedulerDestroy(moo);
 }
 
 void SchedulerTest2()
@@ -125,53 +125,53 @@ void SchedulerTest2()
 	char *print = "Hi!";
 	char *pront = "Bye!";
 	ilrd_uid_t id4 = {0};
-	scheduler_t *moo = SchedulerCreate();
-	Test(0 == SchedulerSize(moo), "Size 0", __LINE__);
+	scheduler_t *moo = HSchedulerCreate();
+	Test(0 == HSchedulerSize(moo), "Size 0", __LINE__);
 	
-	SchedulerAddTask(moo, PrintStuff, "Potato!", 10, 15, PrintStoff, pront);
-	Test(1 == SchedulerSize(moo), "Size 1", __LINE__);
+	HSchedulerAddTask(moo, PrintStuff, "Potato!", 10, 15, PrintStoff, pront);
+	Test(1 == HSchedulerSize(moo), "Size 1", __LINE__);
 	
-	SchedulerAddTask(moo, PrintStuff, print, 20, 0, PrintStoff, pront);
-	Test(2 == SchedulerSize(moo), "Size 2", __LINE__);
+	HSchedulerAddTask(moo, PrintStuff, print, 20, 0, PrintStoff, pront);
+	Test(2 == HSchedulerSize(moo), "Size 2", __LINE__);
 	
-	SchedulerAddTask(moo, StopRun, moo, 30, 0, PrintStoff, pront);
-	Test(3 == SchedulerSize(moo), "Size 3", __LINE__);
+	HSchedulerAddTask(moo, StopRun, moo, 30, 0, PrintStoff, pront);
+	Test(3 == HSchedulerSize(moo), "Size 3", __LINE__);
 	
-	id4 = SchedulerAddTask(moo, PrintStuff, "Potato!", 40, 0, PrintStoff, pront);
-	Test(4 == SchedulerSize(moo), "Size 4", __LINE__);
+	id4 = HSchedulerAddTask(moo, PrintStuff, "Potato!", 40, 0, PrintStoff, pront);
+	Test(4 == HSchedulerSize(moo), "Size 4", __LINE__);
 
-	Test(!SchedulerIsEmpty(moo), "Not empty", __LINE__);
+	Test(!HSchedulerIsEmpty(moo), "Not empty", __LINE__);
 	
-	Test(STOPPED == SchedulerRun(moo), "Run stopped", __LINE__);
+	Test(STOPPED == HSchedulerRun(moo), "Run stopped", __LINE__);
 	
-	Test(1 == SchedulerSize(moo), "Size after stop", __LINE__);
+	Test(1 == HSchedulerSize(moo), "Size after stop", __LINE__);
 	
-	Test(SUCCESS == SchedulerRemoveTask(moo, id4), "remove", __LINE__);
+	Test(SUCCESS == HSchedulerRemoveTask(moo, id4), "remove", __LINE__);
 	
-	Test(0 == SchedulerSize(moo), "Remove task", __LINE__);
+	Test(0 == HSchedulerSize(moo), "Remove task", __LINE__);
 	
-	SchedulerAddTask(moo, PrintStuff, "Potato!", 10, 15, PrintStoff, pront);
-	SchedulerAddTask(moo, PrintStuff, print, 20, 0, PrintStoff, pront);
-	SchedulerAddTask(moo, StopRun, moo, 30, 0, PrintStoff, pront);
-	SchedulerAddTask(moo, PrintStuff, "Potato!", 40, 0, PrintStoff, pront);
-	Test(4 == SchedulerSize(moo), "Add 4 tasks", __LINE__);
+	HSchedulerAddTask(moo, PrintStuff, "Potato!", 10, 15, PrintStoff, pront);
+	HSchedulerAddTask(moo, PrintStuff, print, 20, 0, PrintStoff, pront);
+	HSchedulerAddTask(moo, StopRun, moo, 30, 0, PrintStoff, pront);
+	HSchedulerAddTask(moo, PrintStuff, "Potato!", 40, 0, PrintStoff, pront);
+	Test(4 == HSchedulerSize(moo), "Add 4 tasks", __LINE__);
 	
-	SchedulerClear(moo);
-	Test(0 == SchedulerSize(moo), "Clear", __LINE__);
+	HSchedulerClear(moo);
+	Test(0 == HSchedulerSize(moo), "Clear", __LINE__);
 
-	SchedulerDestroy(moo);
+	HSchedulerDestroy(moo);
 }
 
 void SchedulerTest3()
 {
 	char *pront = "Bye!";
-	scheduler_t *moo = SchedulerCreate();
+	scheduler_t *moo = HSchedulerCreate();
 		
-	SchedulerAddTask(moo, PrintStuffTwice, "Potato!", 10, 5, PrintStoff, pront);
-	SchedulerAddTask(moo, StopRun, moo, 20, 0, PrintStoff, pront);
-	Test(STOPPED == SchedulerRun(moo), "Several runs", __LINE__);
+	HSchedulerAddTask(moo, PrintStuffTwice, "Potato!", 10, 5, PrintStoff, pront);
+	HSchedulerAddTask(moo, StopRun, moo, 20, 0, PrintStoff, pront);
+	Test(STOPPED == HSchedulerRun(moo), "Several runs", __LINE__);
 	
-	SchedulerDestroy(moo);
+	HSchedulerDestroy(moo);
 }
 
 static int PrintStuff(void *print_me)
@@ -199,7 +199,7 @@ static int UnAlive(void *kill_me)
 
 static int StopRun(void *sched)
 {
-	SchedulerStop((scheduler_t *)sched);
+	HSchedulerStop((scheduler_t *)sched);
 	return (DO_NOT_REPEAT);
 }
 

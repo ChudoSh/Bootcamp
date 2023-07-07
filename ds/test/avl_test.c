@@ -49,7 +49,6 @@ static void TestInsertSizeForEach()
         AVLInsert(tree, &array[i]);
     } 
 
-    PrintTree(tree);
 
     AutomatedTest(20 == AVLCount(tree), "Insert & Size", __LINE__);
 

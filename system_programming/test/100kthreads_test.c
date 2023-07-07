@@ -9,7 +9,7 @@ Date:
 #include <time.h>
 #include <omp.h>
 
-#define NUM_THREADS (6)
+#define NUM_THREADS (10)
 #define ARR_SIZE (100000)
 #define DIVISOR_NUM (0x77ffffff)
 
@@ -30,7 +30,7 @@ int main()
     Exer2();
     Exer3();*/
     Exer4();
-    Exer5();
+    /*Exer5();*/
 
     return (0); 
 }
@@ -103,6 +103,7 @@ static int Exer4()
                                    SetSumOfDivisors,
                                    (void *)i));
     }
+
 
     for (i = 0; i < NUM_THREADS; ++i)
     {

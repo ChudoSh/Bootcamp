@@ -421,7 +421,23 @@ static double Division(double *dest, double *to_divide)
 
 static double Power(double *dest, double *to_raise)
 {
-    return (pow((*dest), (*to_raise)));
+    size_t i = 0;
+    double base = *dest;
+    double power = *to_raise;
+    double result = 0;
+
+    if (power < 0)
+    {
+        base = 1/base;
+        power = -power;
+    }
+
+    for (i = 0; i < power; ++i)
+    {
+        result += (base * power);
+    }
+
+    return (result);
 }
 
 

@@ -11,6 +11,9 @@
         "functional": "c",
         "queue.h": "c",
         "bst.h": "c",
-        "*.out": "c"
+        "*.out": "c",
+        "utility": "c",
+        "assert.h": "c",
+        "*.tcc": "c"
     }
 }

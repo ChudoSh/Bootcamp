@@ -12,9 +12,9 @@ DBG_LDLIB = $(DBGDIR)/dbg_libds.so
 VLG = valgrind -s --leak-check=yes --track-origins=yes
 GDB = cgdb
 
-NAMESPACE =  knightstour#this is where I can run test on a specific file
+NAMESPACE =  uid#this is where I can run test on a specific file
 RELEASE_DIR = bin/release/$(NAMESPACE)_release.out
-DEBUG_DIR = bin/debug/$(NAMESPACE)_debug.out
+DEBUG_DIR = bin/debug/$(NAMESPACE)_test_debug.out
 
 IDIR    = include
 SDIR    = src

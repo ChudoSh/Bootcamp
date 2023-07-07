@@ -36,38 +36,38 @@ static void BasicFunctionTest()
     int arr[6] = {6,5,1,7,10,65};
     int i = 0;
 	
-	pq_t *PartyQuest = PQCreate(Compare);
+	pq_t *PartyQuest = PQHCreate(Compare);
 	
 	printf("Basic Functions tests\n");
 	printf("_Line__Name____________Status_\n");
 	
-	Test(PQIsEmpty(PartyQuest), "Is Empty", __LINE__);
+	Test(PQHIsEmpty(PartyQuest), "Is Empty", __LINE__);
 
     for (i = 0; i < 6; ++i)
     {
-	    Test(SUCCESS == PQEnqueue(PartyQuest, &arr[i]), "Enqueue", __LINE__);
+	    Test(SUCCESS == PQHEnqueue(PartyQuest, &arr[i]), "Enqueue", __LINE__);
     }
 
-    Test(arr[2] == *(int *)(PQPeek(PartyQuest)), "Peek", __LINE__);
+    Test(arr[2] == *(int *)(PQHPeek(PartyQuest)), "Peek", __LINE__);
 	
-	Test(6 == PQSize(PartyQuest), "Size 6", __LINE__);
+	Test(6 == PQHSize(PartyQuest), "Size 6", __LINE__);
 	
-	Test(10 == *(int *)PQErase(PartyQuest, &MatchInt, &arr[4]), "Erase", __LINE__);
+	Test(10 == *(int *)PQHErase(PartyQuest, &MatchInt, &arr[4]), "Erase", __LINE__);
 	
-	PQDequeue(PartyQuest);
-	PQDequeue(PartyQuest);
-	PQDequeue(PartyQuest);
+	PQHDequeue(PartyQuest);
+	PQHDequeue(PartyQuest);
+	PQHDequeue(PartyQuest);
 
-	Test(7 == *(int *)(PQPeek(PartyQuest)), "Dequeue & Peek", __LINE__);
+	Test(7 == *(int *)(PQHPeek(PartyQuest)), "Dequeue & Peek", __LINE__);
 	
-	Test(2 == PQSize(PartyQuest), "Size 2", __LINE__);
+	Test(2 == PQHSize(PartyQuest), "Size 2", __LINE__);
 
-    PQDequeue(PartyQuest);
-    PQDequeue(PartyQuest);
+    PQHDequeue(PartyQuest);
+    PQHDequeue(PartyQuest);
 	
-	Test(PQIsEmpty(PartyQuest), "IsEmpty", __LINE__);
+	Test(PQHIsEmpty(PartyQuest), "IsEmpty", __LINE__);
 	
-	PQDestroy(PartyQuest);
+	PQHDestroy(PartyQuest);
 }
 
 static void EraseAndClearTest()
@@ -80,27 +80,27 @@ static void EraseAndClearTest()
 	int y = 10;
 	int g = 1;
 	
-	pq_t *PartyQuest = PQCreate(Compare);
+	pq_t *PartyQuest = PQHCreate(Compare);
 	
 	printf("Clear\n");
 	printf("_Line__Name____________Status_\n");
 	
-	Test(PQIsEmpty(PartyQuest), "Is empty", __LINE__);
+	Test(PQHIsEmpty(PartyQuest), "Is empty", __LINE__);
 	
-	PQEnqueue(PartyQuest, &y);
-	PQEnqueue(PartyQuest, &b);
-	PQEnqueue(PartyQuest, &a);	
-	PQEnqueue(PartyQuest, &x);
-	PQEnqueue(PartyQuest, &u);
-	PQEnqueue(PartyQuest, &g);
+	PQHEnqueue(PartyQuest, &y);
+	PQHEnqueue(PartyQuest, &b);
+	PQHEnqueue(PartyQuest, &a);	
+	PQHEnqueue(PartyQuest, &x);
+	PQHEnqueue(PartyQuest, &u);
+	PQHEnqueue(PartyQuest, &g);
 
-	Test(6 == PQSize(PartyQuest), "Size 6", __LINE__);
+	Test(6 == PQHSize(PartyQuest), "Size 6", __LINE__);
 	
-	PQClear(PartyQuest);
+	PQHClear(PartyQuest);
 	
-	Test(PQIsEmpty(PartyQuest), "Clear", __LINE__);
+	Test(PQHIsEmpty(PartyQuest), "Clear", __LINE__);
 	
-	PQDestroy(PartyQuest);
+	PQHDestroy(PartyQuest);
 }
 
 static int MatchInt(const void *a, const void *b)

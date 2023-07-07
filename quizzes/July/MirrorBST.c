@@ -16,9 +16,6 @@ int main()
     int arr[5] = {2, 5,3 ,1 ,4};
     int i = 0; 
 
-
-
-
     return (0);   
 }
 

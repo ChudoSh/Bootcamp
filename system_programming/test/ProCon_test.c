@@ -1,8 +1,8 @@
 /*
 Dev: BarSh
-Rev:
-Status:
-Date:
+Rev: IdoI
+Status: Approved
+Date: 12.7.23
 */
 
 #include <pthread.h>
@@ -618,7 +618,7 @@ Description:
 
 Implementation:
     1. Exer6 -> Creates Consumer & Producer threads, a buffer and a barrier and initiates them
-    
+
     2. Producer -> Locks
                    Runs over the string
                    Insert a random chars into the list

@@ -10,7 +10,8 @@
         "pthread.h": "c",
         "semaphore.h": "c",
         "type_traits": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "slist.h": "c"
     },
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "enabled"
 }

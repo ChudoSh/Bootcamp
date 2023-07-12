@@ -78,12 +78,12 @@ static size_t GetIndex(void)
 	size_t tmp = 0;
 
 	pthread_mutex_lock(&mutex);
-
-	tmp = index;
-	++(index);
-
+	{
+		tmp = index;
+		++(index);
+	}
 	pthread_mutex_unlock(&mutex);
 
-	return tmp;
+	return (tmp);
 }
 

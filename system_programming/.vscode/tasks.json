@@ -12,12 +12,13 @@
                 "-Wextra",
                 "-g",
                 "-I",
-                "${fileDirname}/../include",
+                "../../ds/include",
+                "../../ds/src/slist.c",
                 "${file}",
-                /*"${fileDirname}/../test/${fileBasenameNoExtension}.c",*/
-                "-lpthread",
+                "${fileDirname}/../test/${fileBasenameNoExtension}.c",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
+                "-lpthread"
             ],
             "options": {
                 "cwd": "${fileDirname}"

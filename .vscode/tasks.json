@@ -6,10 +6,20 @@
             "command": "/usr/bin/gcc-11",
             "args": [
                 "-fdiagnostics-color=always",
+                "-ansi",
+                "-pedantic-errors",
+                "-Wall",
+                "-Wextra",
                 "-g",
+                "-I",
+                "../../ds/include",
+                "../../ds/src/slist.c",
+                "../../ds/src/queue.c",
                 "${file}",
+                /*"${fileDirname}/../test/${fileBasenameNoExtension}.c",*/
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "${fileDirname}/${fileBasenameNoExtension}",
+                "-lpthread"
             ],
             "options": {
                 "cwd": "${fileDirname}"

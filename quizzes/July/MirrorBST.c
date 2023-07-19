@@ -4,8 +4,8 @@
 typedef struct node
 {
     void *value;
-    node_tree_t *kids[2];
-    
+    node_tree_t *root;
+    node_tree_t *kids[2];  
 }node_tree_t;
 
 

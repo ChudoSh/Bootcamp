@@ -54,7 +54,6 @@ int CreateProcess()
                 scanf("%s", path);*/
                 printf("Enter new command:\n");
                 scanf("%s", command);
-
                 execl("/bin/sh","sh","-c", command,(char*)NULL);
                 exit(0);
             }

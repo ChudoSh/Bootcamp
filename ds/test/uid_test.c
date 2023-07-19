@@ -21,8 +21,8 @@ int main()
 	PrintUID(uid2);
 	
 	
-	printf("uid1 is equal to uid1? %d\n", UIDIsSame(uid1, uid1));
-	printf("uid1 is equal to uid2? %d\n", UIDIsSame(uid1, uid2));
+	printf("Is uid1 equal to uid1? %d\n", UIDIsSame(uid1, uid1));
+	printf("Is uid1 equal to uid2? %d\n", UIDIsSame(uid1, uid2));
 	
 	return (0);
 	

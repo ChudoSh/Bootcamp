@@ -22,6 +22,19 @@
         "type_traits": "c",
         "stack.h": "c",
         "slist": "c",
-        "queue.h": "c"
+        "queue.h": "c",
+        "types.h": "c",
+        "stdatomic.h": "c",
+        "scheduler.h": "c",
+        "scheduler_heap.h": "c",
+        "watchdog.h": "c",
+        "unistd.h": "c",
+        "chrono": "c",
+        "algorithm": "c",
+        "task.h": "c",
+        "signal.h": "c",
+        "semaphore.h": "c",
+        "pthread.h": "c",
+        "sigthread.h": "c"
     }
 }

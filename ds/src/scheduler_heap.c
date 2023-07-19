@@ -8,19 +8,18 @@ Date: 19.5.23
 #include <stdlib.h> /*malloc*/
 #include <assert.h>/* assert */
 #include <time.h> /* time */  
-#include <stdio.h>
 
 
+#include "heap_q.h" 
 #include "scheduler_heap.h"
 
-
-enum BOOLEAN/*change the name*/
+enum BOOLEAN
 {
 	FALSE = 0,
 	TRUE = 1
 };
 
-enum STATUS/*change the name*/
+enum STATUS
 {
     ENQ_FAIL = -1,
     FAIL = -1,
@@ -36,7 +35,6 @@ struct Scheduler
 	int current_occupied;
 };
 
-/*static void SetCurrentTask(scheduler_t *scheduler, task_t *task);*/
 static int Compare_Time(const void *task1, const void *task2);
 static int IsMatchUID(const void *task, const void *uid);
 
@@ -149,7 +147,8 @@ int HSchedulerRun(scheduler_t *scheduler)
 			scheduler->current_occupied = TRUE;
 		}
 		 
-		/*while(sleep(TaskGetTimeToRun(scheduler->current_task) - time(NULL)));*/
+		while(0 != sleep(TaskGetTimeToRun(scheduler->current_task)- time(NULL)));
+
 		 
 		if(!(scheduler->current_occupied))
 		{
@@ -248,10 +247,3 @@ static int IsMatchUID(const void *task, const void *uid)
 	return (TaskIsMatch((const task_t *)task, *((ilrd_uid_t *)uid)));
 	
 }
-
-/*static void SetCurrentTask(scheduler_t *scheduler, task_t *task)
-{
-	assert(NULL != scheduler);
-	
-	scheduler->current_task = task;
-}*/

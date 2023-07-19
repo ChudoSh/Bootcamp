@@ -96,7 +96,6 @@ Return: (0) on success, (not 0) on fail.
 Time complexity: O(1).
 Space complexity: O(1).
 */			
-
 int TaskRun(task_t *task); 
 
 /*****************************************************************************/

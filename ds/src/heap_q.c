@@ -91,7 +91,7 @@ void *PQHErase(pq_t *pq, int (*is_match)(const void *, const void *), void *para
 {
 	assert(NULL != pq);
 	assert(NULL != is_match);
-	assert(!PQIsEmpty(pq));
+	assert(!PQHIsEmpty(pq));
 			  
 	return (HeapRemove(GetHeap(pq), param, is_match));
 }

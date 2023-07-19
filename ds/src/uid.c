@@ -5,22 +5,15 @@ Date: 6.7.23
 Status: 
 */
 
+#include <ifaddrs.h>/*struct ifaddrs, getifaddrs*/
 #include <arpa/inet.h>/*inet_ntoa*/
-#include <sys/socket.h>/*sockaddr_in*/
-#include <ifaddrs.h>/*ifaddrs*/
 #include <string.h>/*memcmp*/
 #include <time.h>/*time*/
 #include <unistd.h>/*getpid*/
-#include <netdb.h>
-#include <sys/types.h>
-
-#include <pthread.h> /*pthread_mutex_unlock*/
-
-
+#include <stdatomic.h> /*atomic*/
+#include <stdlib.h> /*free*/
 
 #include "uid.h"
-
-#define ASCII (256)
 
 enum BOOL
 {
@@ -28,22 +21,33 @@ enum BOOL
 	TRUE
 };
 
-const ilrd_uid_t UIDBadUID = {0};
-static size_t index = 1;
+enum STATUS
+{
+	FAIL = -1,
+	SUCCESS
+};
 
-static char *GetIP(void);
-static size_t GetIndex(void);
+const ilrd_uid_t UIDBadUID = {0};
+
+static void GetIP(char **new_ip);
 
 ilrd_uid_t UIDCreate(void)
 {
 	ilrd_uid_t new_uid = {0};
-	
+	static atomic_size_t counter = 0;
+	char *new_ip = NULL;
+
 	new_uid.pid = getpid();
 	new_uid.time = time(NULL);
-	new_uid.counter = GetIndex(); 
+	new_uid.counter =  ++(counter);
+	GetIP(&new_ip);
+	
+	if (NULL == new_ip)
+	{
+		return (UIDBadUID);
+	}
 
-    while (NULL == strcpy(new_uid.ip, GetIP()));
-    if (NULL == new_uid.ip)
+    if (NULL == strcpy(new_uid.ip, new_ip))
     {
     	return (UIDBadUID);
     }
@@ -56,34 +60,27 @@ int UIDIsSame(ilrd_uid_t id1, ilrd_uid_t id2)
 	return (!memcmp(&id1, &id2, sizeof(ilrd_uid_t)));
 }
 
-static char *GetIP()
+static void GetIP(char **new_ip)
 {
-	char hostbuffer[256] = {'\0'};
-    char *IPbuffer = NULL;
-    struct hostent *host_entry = NULL;
-   
-	gethostname(hostbuffer, sizeof(hostbuffer));
- 
-    host_entry = gethostbyname(hostbuffer);
- 
-    IPbuffer = inet_ntoa(*((struct in_addr*)
-                        host_entry->h_addr_list[0]));
-    
-    return (IPbuffer);
-}
+	struct ifaddrs *ifap = NULL; 
+	struct ifaddrs *ifa = NULL;
+	struct sockaddr_in *sa = NULL;
 
-static size_t GetIndex(void)
-{
-	static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-	size_t tmp = 0;
-
-	pthread_mutex_lock(&mutex);
+	if(FAIL == getifaddrs(&ifap))
 	{
-		tmp = index;
-		++(index);
+		new_ip = NULL;
 	}
-	pthread_mutex_unlock(&mutex);
+		
+	ifa = ifap;
+	
+	while (AF_INET != ifa->ifa_addr->sa_family && NULL != ifa->ifa_next)
+	{
+		ifa = ifa->ifa_next;		
+	}
+	
+	sa = (struct sockaddr_in *) ifa->ifa_addr;
 
-	return (tmp);
+	*new_ip = inet_ntoa(sa->sin_addr);
+
+	freeifaddrs(ifap);
 }
-

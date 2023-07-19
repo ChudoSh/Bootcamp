@@ -10,9 +10,9 @@ Date: 19.5.23
 #include <time.h> /* time */  
 #include <stdio.h>
 
-
+#include "task.h"
+#include "pqueue.h" 
 #include "scheduler.h"
-
 
 #define ENQ_FAIL (-1)
 #define FAIL (-1)

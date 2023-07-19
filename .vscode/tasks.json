@@ -12,13 +12,22 @@
                 "-Wextra",
                 "-g",
                 "-I",
+                "../include",
+                "../src/watchdog.c",
+                "-I",
                 "../../ds/include",
-                "../../ds/src/slist.c",
-                "../../ds/src/queue.c",
+                "../../ds/src/uid.c",
+                "../../ds/src/heap_q.c",
+                "../../ds/src/task.c",
+                "../../ds/src/scheduler_heap.c",
+                "../../ds/src/heap.c",
+                "../../ds/src/dvector.c",
                 "${file}",
                 /*"${fileDirname}/../test/${fileBasenameNoExtension}.c",*/
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}",
+                /*"who_let_the_watchdog.out",*/
+                "watchdog_test.out",
+                /*"${fileDirname}/${fileBasenameNoExtension}",*/
                 "-lpthread"
             ],
             "options": {

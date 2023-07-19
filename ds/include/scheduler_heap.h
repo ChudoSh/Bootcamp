@@ -7,7 +7,6 @@ Date: 18.5.23
 #ifndef __SCHEDULER_H__
 #define __SCHEDULER_H__
 
-#include "heap_q.h" 
 #include "task.h"
 
 typedef struct Scheduler scheduler_t;
@@ -57,7 +56,6 @@ Return: UID of created task.
 Time complexity: O(n).
 Space complexity: O(1).
 */
-
 ilrd_uid_t HSchedulerAddTask(scheduler_t *scheduler, int (*op_func_t)(void *), 
 					   		void *op_param, size_t delay_in_sec, 
 					 		size_t interval_in_sec, void (*task_cleanup)(void *), 

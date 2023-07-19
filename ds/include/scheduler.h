@@ -7,8 +7,7 @@ Date: 18.5.23
 #ifndef __SCHEDULER_H__
 #define __SCHEDULER_H__
 
-#include "pqueue.h" 
-#include "task.h"
+#include "uid.h"
 
 typedef struct Scheduler scheduler_t;
 

@@ -14,7 +14,7 @@ int main()
 {
     int i = 0; 
     char *path = "watchdog_test.c";
-    
+    printf("WD Init\n");
     WDStart(&path);
     for (i = 0; i < 10; ++i)
     {

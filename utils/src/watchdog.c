@@ -54,7 +54,7 @@ static sem_t *usr_sem = NULL;
 static atomic_int flag_to_stop = FALSE;
 static atomic_int counter = 0; 
 pid_t wdg_pid = 0;
-pid_t usr_proc = 0;
+pid_t usr_pid = 0;
 psched_t *psched = NULL;
 pthread_t user_thread = 0;
 static sigact_t sa_run = {NULL};
@@ -79,32 +79,31 @@ static int Path_SchedCreate(char **path);
 static void Path_SchedDestroy();
 static int SigactInit();
 static int SemInit();
-static int PSchedInit();
+static int PSchedRun();
 
 /******************************************************************************/
 /*Spawns the watch dog*/
 int WDStart(char **path)
 {
-    pid_t to_compare = (NULL != getenv(WD_PID)) ? atoi(getenv(WD_PID)) : 0;
+    /* pid_t to_compare = (NULL != getenv(WD_PID)) ? atoi(getenv(WD_PID)) : 0;
 
-    if (to_compare != getpid())
+    if (to_compare != (int)getpid())
     {
         printf("WD - Process %d Start\n", getpid());
         return (WDProcess(path)); 
     }
     
     printf("WD - User %d Start\n", getpid());
-    return (WDUser(path));
+    return (WDUser(path)); */
     
-
-    /*if (NULL == path)
+    if (NULL == path)
     {
         printf("WD - Process %d Start\n", getpid());
         return (WDProcess(path));
     }
 
     printf("WD - User %d Start\n", getpid());
-    return (WDUser(path));*/
+    return (WDUser(path));
 }
 
 /*Stops the watchdog*/
@@ -113,21 +112,12 @@ void WDStop(size_t timeout)
     time_t exit_time = time(NULL) + timeout;
 
     kill(wdg_pid, SIGUSR2);
-    kill(usr_proc, SIGUSR2);
+    kill(usr_pid, SIGUSR2);
 
     printf("WDStop signals sent\n");
     counter = 0;
 
     while(exit_time > time(NULL) && !flag_to_stop);
-
-    if (time(NULL) < exit_time)
-    {
-        printf("Watchdog stopped garcefully\n");   
-    }
-    else
-    {
-        printf("Watchdog stop delayed..\n");
-    }
 
     if (SUCCESS != pthread_join(user_thread, NULL))
     {
@@ -144,6 +134,15 @@ void WDStop(size_t timeout)
     if (SUCCESS != unsetenv(WD_PID))
     {
         printf("unsetenv fail..\n");
+    }
+    
+    if (time(NULL) < exit_time)
+    {
+        printf("Watchdog Process #%d stopped garcefully\n",wdg_pid);   
+    }
+    else
+    {
+        printf("Watchdog stop delayed..\n");
     }
 
     return;
@@ -175,8 +174,8 @@ static int WDUser(char **path)
     
    
     /*user and watchdog init*/
-    /* if (NULL == getenv(WD_PID))
-    { */
+    if (NULL == getenv(WD_PID))
+    { 
         /*forking*/
         wdg_pid = fork();
         if (FAIL == wdg_pid)
@@ -208,10 +207,17 @@ static int WDUser(char **path)
                 printf("Failed to create the thread\n");
                 return (FAILED_TO_CREATE_WATCHDOG);
             }
-        }
-   /*  } */
 
-    /* else 
+            sigemptyset(&set);
+            if (SUCCESS != pthread_sigmask(SIG_BLOCK, &set, NULL))
+            {
+                printf("mask fail..\n");
+                return (FAILED_TO_CREATE_WATCHDOG);
+            }
+        }
+    }
+
+    else 
     {
         sem_post(usr_sem);
         if (SUCCESS != pthread_create(&user_thread, NULL, WDThread, psched))
@@ -219,14 +225,14 @@ static int WDUser(char **path)
             printf("Failed to create the thread\n");
             return (FAILED_TO_CREATE_WATCHDOG);
         } 
-    
-    } */
 
-    sigemptyset(&set);
-    if (SUCCESS != pthread_sigmask(SIG_BLOCK, &set, NULL))
-    {
-        printf("mask fail..\n");
-        return (FAILED_TO_CREATE_WATCHDOG);
+        sigemptyset(&set);
+        if (SUCCESS != pthread_sigmask(SIG_BLOCK, &set, NULL))
+        {
+            printf("mask fail..\n");
+            return (FAILED_TO_CREATE_WATCHDOG);
+        }
+    
     }
 
     return (WD_SUCCESS);   
@@ -234,6 +240,7 @@ static int WDUser(char **path)
 static void *WDThread(void *arg)
 {
     sigset_t set = {0};
+    wdg_pid = getpid();
 
     assert(NULL != arg);
 
@@ -246,7 +253,12 @@ static void *WDThread(void *arg)
         printf("mask fail..\n");
     }
 
-    if (SUCCESS != PSchedInit())
+    if (SUCCESS != Path_SchedCreate(((psched_t *)arg)->path))
+    {
+        printf("WDThread Fail..\n");
+    }
+
+    if (SUCCESS != PSchedRun())
     {
         printf("WDThread Fail..\n");
     }
@@ -273,10 +285,10 @@ static int WDProcess(char **path)
         return (FAIL);
     }
     
-    printf("About to unlock\n");
-    sem_post(usr_sem);
     /*init sched*/
-    if (SUCCESS != PSchedInit())
+    sem_post(usr_sem);
+    printf("sem unlocked\n");
+    if (SUCCESS != PSchedRun())
     {
         return (FAILED_TO_CREATE_WATCHDOG);
     }
@@ -364,6 +376,31 @@ static int Path_SchedCreate(char **path)
         return (FAIL);
     }
 
+     if (UIDIsSame(UIDBadUID, 
+                  HSchedulerAddTask(psched->sched, Sender, 
+                                     psched, 1, 1, NULL, NULL)))
+    {
+        printf("Bad UID\n");
+        return (FAIL);
+    }
+
+    if (UIDIsSame(UIDBadUID, 
+                  HSchedulerAddTask(psched->sched, Checker, 
+                                    psched, 1, 2, NULL, NULL)))
+    {
+        printf("Bad UID\n");
+        return (FAIL);
+    }
+
+    if (UIDIsSame(UIDBadUID, 
+                  HSchedulerAddTask(psched->sched, Stopper, 
+                                    psched, 1, 1, NULL, NULL)))
+    {
+        printf("Bad UID\n");
+        return (FAIL);
+    }
+
+
     psched->path = path;
 
     return (SUCCESS);
@@ -405,33 +442,9 @@ static int SemInit()
     return (SUCCESS);
 }
 
-static int PSchedInit()
+static int PSchedRun()
 {
     int status = 0; 
-
-    if (UIDIsSame(UIDBadUID, 
-                  HSchedulerAddTask(psched->sched, Sender, 
-                                     psched, 1, 1, NULL, NULL)))
-    {
-        printf("Bad UID\n");
-        return (FAIL);
-    }
-
-    if (UIDIsSame(UIDBadUID, 
-                  HSchedulerAddTask(psched->sched, Checker, 
-                                    psched, 1, 1, NULL, NULL)))
-    {
-        printf("Bad UID\n");
-        return (FAIL);
-    }
-
-    if (UIDIsSame(UIDBadUID, 
-                  HSchedulerAddTask(psched->sched, Stopper, 
-                                    psched, 1, 1, NULL, NULL)))
-    {
-        printf("Bad UID\n");
-        return (FAIL);
-    }
 
     status = HSchedulerRun(psched->sched);
     if (ERROR == status)

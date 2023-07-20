@@ -240,7 +240,6 @@ static int WDUser(char **path)
 static void *WDThread(void *arg)
 {
     sigset_t set = {0};
-    wdg_pid = getpid();
 
     assert(NULL != arg);
 
@@ -304,7 +303,7 @@ static int WDProcess(char **path)
 /*Sends the signals accordignly*/
 static int Sender(void *arg)
 {
-    printf("Process %d Sent SIGUSR1\n", getpid());
+    printf("Process %d Sent SIGUSR1 to %d\n", getpid(), wdg_pid);
     kill(wdg_pid, SIGUSR1);
 
     return (REPEAT);
@@ -322,6 +321,7 @@ static int Checker(void *arg)
 
     else/*Revive*/
     {
+        printf("Init revive\n");
         (void)arg;
     }
    
@@ -341,7 +341,7 @@ static int Stopper(void *arg)
     return (REPEAT);
 }
 
-/********************************HANDLERS**************************************/
+/*===============================HANDLERS=====================================*/
 /*Handler SIGUSR1*/
 static void SigUser1Handler(int signal)
 {
@@ -386,7 +386,7 @@ static int Path_SchedCreate(char **path)
 
     if (UIDIsSame(UIDBadUID, 
                   HSchedulerAddTask(psched->sched, Checker, 
-                                    psched, 1, 2, NULL, NULL)))
+                                    psched, 1, 5, NULL, NULL)))
     {
         printf("Bad UID\n");
         return (FAIL);

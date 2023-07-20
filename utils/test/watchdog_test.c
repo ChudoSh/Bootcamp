@@ -19,7 +19,7 @@ int main()
     for (i = 0; i < 10; ++i)
     {
 		printf("%d bark\n", i + 1);
-        sleep(1);
+        sleep(4);
     }
     WDStop(10);
 

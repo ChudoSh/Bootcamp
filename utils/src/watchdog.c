@@ -26,7 +26,7 @@ Status:
 #include "../include/watchdog.h"
 
 #define BUFFER_SIZE (100)
-#define SEM_NAME ("/LockTheDog")
+#define SEM_NAME ("/SemTheDog")
 #define SEM_PERMS (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP)
 #define WD_PID ("ILRD_WD_PID")
 #define WD_EXEC ("/home/barchik/Mygit/bar.shadkhin/utils/test/who_let_the_watchdog.out")
@@ -129,6 +129,7 @@ void WDStop(size_t timeout)
     {
         printf("sem_clsoe fail..\n");
     }
+    sem_unlink(SEM_NAME);
 
     if (time(NULL) < exit_time)
     {
@@ -243,6 +244,7 @@ static void *WDThread(void *arg)
     return (NULL);
     (void)arg;
 }
+
 static int WDProcess(char **path)
 {
     wdg_pid = getppid();
@@ -269,7 +271,7 @@ static int WDProcess(char **path)
     {
         return (FAILED_TO_CREATE_WATCHDOG);
     }
-
+    
     WDPath_SchedDestroy();
     printf("WD Destroyed\n");
 
@@ -295,7 +297,8 @@ static int WDRevive()
     {
         return (FAIL);
     }
-    else if (0 == revive_pid)/*Im the user and I need to create a new WD*/
+
+    if (0 == revive_pid)/*Im the WD and I need to create a new user*/
     { 
         if (is_current_proc_wd)
         {
@@ -304,7 +307,7 @@ static int WDRevive()
             {
                 printf("setenv fail..\n");
                 return (FAILED_TO_CREATE_CHILD_PROCESS);
-            }
+            } 
 
             printf("The path to the new user %s and the pid %d\n", psched->path, getpid());
             if (FAILED_TO_CREATE_CHILD_PROCESS == execl(USER_EXEC, psched->path))
@@ -314,15 +317,16 @@ static int WDRevive()
             }
             printf("Dont Get Here\n");
         }
-        else
+        else/*Im the user and I need to create a new WD*/
         {
-            if (SUCCESS != WDSetEnvVar(getpid()))
+            wdg_pid = getpid();
+            if (SUCCESS != WDSetEnvVar(wdg_pid))
             {
                 printf("setenv fail..\n");
                 return (FAILED_TO_CREATE_CHILD_PROCESS);
             }
 
-            printf("The path to the new user %s and the pid %d\n", WD_EXEC, getpid());
+            printf("The path to the new wd %s and the pid %d\n", WD_EXEC, getpid());
             if(FAILED_TO_CREATE_CHILD_PROCESS == execl(WD_EXEC, psched->path))
             {
                 perror("Execl FAIL\n");
@@ -331,6 +335,11 @@ static int WDRevive()
             printf("Dont Get Here\n");
         }
     }
+    else
+    {
+        printf("Revive pid %d\n",revive_pid);
+        wdg_pid = revive_pid;
+    }
     
     sem_wait(usr_sem);
     
@@ -338,7 +347,7 @@ static int WDRevive()
 
 }
 
-/********************************TASKS*****************************************/
+/*===============================TASKS========================================*/
 /*Sends the signals accordignly*/
 static int WDSender(void *arg)
 {
@@ -492,7 +501,6 @@ static int WDSemInit(void)
         printf("sem fail..\n");
         return (FAIL);
     }
-    sem_unlink(SEM_NAME);
     return (SUCCESS);
 }
 

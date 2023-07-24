@@ -1,100 +1,170 @@
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 
-enum KIDS
+#define COUNT 10
+
+typedef struct node
 {
-    LEFT,
-    RIGHT,
-    NUM_OF_KIDS
-};
+    void *data;
+    struct node *parent;
+    struct node *left;
+    struct node *right;
+} node_t;
 
-typedef struct NODE node_tree_t;
-struct NODE
+static node_t *FindTail(node_t *node);
+static void print2DUtil(node_t *root, int space);
+static void print2D(node_t *root);
+
+node_t *BSTToSortedList(node_t *root)
 {
-    void *value;
-    node_tree_t *kids[2];  
-};
+    node_t *left_list = NULL;
+    node_t *right_list = NULL;
+    node_t *left_list_tail = NULL;
 
+    if (NULL == root)
+    {
+        return (NULL);
+    }
 
-int IsLeaf(node_tree_t *root);
-void GenericSwap(void *a, void *b);
-void TreeToList(node_tree_t *root);
+    left_list = BSTToSortedList(root->left);
+    right_list = BSTToSortedList(root->right);
+
+    if (NULL == left_list && NULL == right_list)
+    {
+        return (root);
+    }
+
+    left_list_tail = FindTail(left_list);
+
+    if (NULL != left_list_tail)
+    {
+        left_list_tail->right = root;
+        root->left = left_list_tail;
+    }
+
+    root->right = right_list;
+
+    if (NULL != right_list)
+    {
+        right_list->left = root;
+    }
+
+    return ((left_list != NULL) ? left_list : root);
+}
+
+static node_t *FindTail(node_t *node)
+{
+    if (node == NULL)
+    {
+        return (NULL);
+    }
+
+    while (node->right != NULL)
+    {
+        node = node->right;
+    }
+
+    return (node);
+}
 
 int main()
 {
-    int arr[7] = {10, 6, 14, 4, 8, 12, 16};
-    node_tree_t *root = (node_tree_t *)malloc(sizeof(node_tree_t));
-    if (NULL == root)
+    int arr[8] = {4, 6, 8, 10, 12, 14, 16, 13};
+    node_t *list = NULL;
+
+    node_t node_4;
+    node_t node_6;
+    node_t node_8;
+    node_t node_10;
+    node_t node_12;
+    node_t node_13;
+    node_t node_14;
+    node_t node_16;
+
+    node_4.data = &arr[0];
+    node_4.parent = &node_6;
+    node_4.left = NULL;
+    node_4.right = NULL;
+
+    node_8.data = &arr[2];
+    node_8.parent = &node_6;
+    node_8.left = NULL;
+    node_8.right = NULL;
+
+    node_12.data = &arr[4];
+    node_12.parent = &node_14;
+    node_12.left = NULL;
+    node_12.right = &node_13;
+
+    node_13.data = &arr[7];
+    node_13.parent = &node_12;
+    node_13.left = NULL;
+    node_13.right = NULL;
+
+    node_16.data = &arr[6];
+    node_16.parent = &node_14;
+    node_16.left = NULL;
+    node_16.right = NULL;
+
+    node_6.data = &arr[1];
+    node_6.parent = &node_10;
+    node_6.left = &node_4;
+    node_6.right = &node_8;
+
+    node_14.data = &arr[5];
+    node_14.parent = &node_10;
+    node_14.left = &node_12;
+    node_14.right = &node_16;
+
+    node_10.data = &arr[3];
+    node_10.parent = NULL;
+    node_10.left = &node_6;
+    node_10.right = &node_14;
+
+    print2D(&node_10);
+
+    list = BSTToSortedList(&node_10);
+
+    printf("\n\n");
+
+    while (NULL != list)
     {
-        perror("malloc");
-        return (-1);
+        printf("%d ->", *(int *)list->data);
+        list = list->right;
     }
 
-    root->value = &arr[0];
-    root->kids[LEFT]->value = &arr[1];
-    root->kids[RIGHT]->value = &arr[2];
-    root->kids[LEFT]->kids[LEFT]->value = &arr[3];
-    root->kids[LEFT]->kids[RIGHT]->value = &arr[4];
-    root->kids[RIGHT]->kids[LEFT]->value = &arr[5];
-    root->kids[RIGHT]->kids[RIGHT]->value = &arr[6];
+    printf("\n");
 
-    TreeToList(root);
-
-    return (0);   
+    return (0);
 }
 
-node_tree_t *TreeToList(node_tree_t *root)
+static void print2DUtil(node_t *root, int space)
 {
-    node_tree_t *iter = NULL;
-    node_tree_t *temp = NULL; 
+    int i = 0;
 
-    if (IsLeaf(root) || NULL == root)
+    if (root == NULL)
     {
         return;
-    } 
-
-    if (NULL != root->kids[LEFT])
-    {
-        TreeToList(root->kids[LEFT]);
-
-        temp = root->kids[RIGHT];
-        root->kids[RIGHT] = root->kids[LEFT];
-        root->kids[LEFT] = NULL;
-
-        iter = root->kids[RIGHT];
-        while (NULL != iter->kids[RIGHT])
-        {
-            iter = iter->kids[RIGHT];
-        }
-
-        iter->kids[RIGHT] = temp; 
     }
 
-    TreeToList(root->kids[RIGHT]);
-   
-    /*GenericSwap(root->value, root->kids[RIGHT]->value);
+    space += COUNT;
 
-    root->kids[RIGHT]->kids[LEFT] = root->kids[LEFT]; 
-    root->kids[LEFT]->kids[RIGHT] = root->kids[RIGHT];
-    root->kids[LEFT] = NULL;
-    
-    TreeToList(root->kids[RIGHT]);
-    GenericSwap(root->value, root->kids[LEFT]->value);
+    print2DUtil(root->right, space);
 
-    root->kids[RIGHT]->kids[LEFT] = root->kids[LEFT]; 
-    root->kids[LEFT]->kids[RIGHT] = root->kids[RIGHT];
-    root->kids[RIGHT] = NULL;*/
+    printf("\n");
+
+    for (i = COUNT; i < space; i++)
+    {
+        printf(" ");
+    }
+
+    printf("%d\n", *(int *)root->data);
+
+    print2DUtil(root->left, space);
+
+    printf("\n");
 }
 
-void GenericSwap(void *a, void *b)
+static void print2D(node_t *root)
 {
-    char temp = *(char *)a;
-    memcpy(a, b, sizeof(void *));
-    memcpy(b, &temp, sizeof(void *));
-}
-
-int IsLeaf(node_tree_t *root)
-{
-    return (NULL == root->kids[LEFT] && NULL == root->kids[RIGHT]);
+    print2DUtil(root, 0);
 }

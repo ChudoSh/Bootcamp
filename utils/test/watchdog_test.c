@@ -12,13 +12,12 @@ Date:
 
 int main(int argc, char *argv[])
 {
-    char *path = "/home/barchik/Mygit/bar.shadkhin/utils/test/watchdog_test.out";
+   /*  char *path = "/home/barchik/Mygit/bar.shadkhin/utils/test/watchdog_test.out"; */
     int i = 0; 
     printf("Starting Program\n");
-    WDStart(&path);
+    WDStart(argv);
     for (i = 0; i < 20; ++i)
     {
-		printf("%d bark\n", i + 1);
         sleep(1);
     }
     WDStop(10);

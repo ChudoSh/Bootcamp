@@ -8,6 +8,7 @@ Date: 18.5.23
 #define __SCHEDULER_H__
 
 #include "uid.h"
+#include "task.h"
 
 typedef struct Scheduler scheduler_t;
 

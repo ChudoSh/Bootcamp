@@ -35,6 +35,8 @@
         "signal.h": "c",
         "semaphore.h": "c",
         "pthread.h": "c",
-        "sigthread.h": "c"
+        "sigthread.h": "c",
+        "stddef.h": "c",
+        "uid.h": "c"
     }
 }

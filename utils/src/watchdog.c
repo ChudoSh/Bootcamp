@@ -26,11 +26,12 @@ Status:
 #include "../include/watchdog.h"
 
 #define BUFFER_SIZE (100)
-#define SEM_NAME ("/SemTheDog")
-#define SEM_PERMS (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP)
+#define SEM_NAME ("/blalalalas")
+#define SEM_PERMS (0644)
+/* #define SEM_PERMS (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP) */
 #define WD_PID ("ILRD_WD_PID")
-#define WD_EXEC ("/home/barchik/Mygit/bar.shadkhin/utils/test/who_let_the_watchdog.out")
-#define USER_EXEC ("/home/barchik/Mygit/bar.shadkhin/utils/test/watchdog_test.out")
+#define WD_EXEC ("/home/barchik/Mygit/bar.shadkhin/utils/test/watchdog_prg.out")
+#define USER_EXEC ("/home/barchik/Mygit/bar.shadkhin/utils/test/watchdog_test.out") 
 
 typedef struct sigaction sigact_t;
 
@@ -48,20 +49,18 @@ enum STATUS
 
 typedef struct Path_Sched
 {
-    scheduler_t *sched;
+    hscheduler_t *sched;
     char *path;
 }psched_t;
 
 static sem_t *usr_sem = NULL;
 static atomic_int flag_to_stop = FALSE;
 static atomic_int counter = 0; 
-pid_t wdg_pid = 0;
-ilrd_uid_t task_uid = {0};
-psched_t *psched = NULL;
-pthread_t user_thread = 0;
-static sigact_t sa_run = {NULL};
-static sigact_t sa_stop = {NULL};
-sigset_t *set = NULL;
+static pid_t wdg_pid = 0;
+static ilrd_uid_t task_uid = {0};
+static psched_t *psched = NULL;
+static pthread_t user_thread = 0;
+static sigset_t *set = NULL;
 
 /*Watchdog*/
 static int WDUser(char **path);
@@ -108,17 +107,11 @@ void WDStop(size_t timeout)
 {
     time_t exit_time = time(NULL) + timeout;
 
-    HSchedulerRemoveTask(psched->sched, task_uid);
-    printf("WDChecker remove\n");
-
     while (!flag_to_stop && exit_time != time(NULL))
     {
         kill(wdg_pid, SIGUSR2);
     }
-
-    WDPath_SchedDestroy();
-    printf("User Sched destroyed\n");
-
+    
     if (SUCCESS != pthread_join(user_thread, NULL))
     {
         printf("Failed to join the thread\n");
@@ -191,6 +184,7 @@ static int WDUser(char **path)
         else
         {
             sem_wait(usr_sem);
+            sem_close(usr_sem);
             if (SUCCESS != pthread_create(&user_thread, NULL, WDThread, psched))
             {
                 printf("Failed to create the thread\n");
@@ -204,6 +198,7 @@ static int WDUser(char **path)
         wdg_pid = getppid();
 
         sem_post(usr_sem);
+        sem_close(usr_sem);
         if (SUCCESS != pthread_create(&user_thread, NULL, WDThread, psched))
         {
             printf("Failed to create the thread\n");
@@ -240,6 +235,10 @@ static void *WDThread(void *arg)
         printf("WDThread Fail..\n");
         return (NULL);
     }
+    HSchedulerRemoveTask(psched->sched, task_uid);
+    printf("WDChecker remove\n");
+    WDPath_SchedDestroy();
+    printf("User Sched destroyed\n");
 
     return (NULL);
     (void)arg;
@@ -267,20 +266,15 @@ static int WDProcess(char **path)
     
     /*init sched*/
     sem_post(usr_sem);
+    sem_close(usr_sem); 
     if (SUCCESS != WDPSchedRun())
     {
         return (FAILED_TO_CREATE_WATCHDOG);
     }
-    
     WDPath_SchedDestroy();
     printf("WD Destroyed\n");
 
     if (SUCCESS != sem_close(usr_sem))
-    {
-        return (FAIL);
-    }
-
-    if (SUCCESS != unsetenv(WD_PID))
     {
         return (FAIL);
     }
@@ -341,7 +335,13 @@ static int WDRevive()
         wdg_pid = revive_pid;
     }
     
+    if (SUCCESS != WDSemInit())
+    {
+        return (FAIL);
+    }
+    
     sem_wait(usr_sem);
+    sem_close(usr_sem);
     
     return (WD_SUCCESS);
 
@@ -394,7 +394,7 @@ static int WDStopper(void *arg)
 /*Handler SIGUSR1*/
 static void WDSigUser1Handler(int signal)
 {
-    printf("Process %d Counter increases\n",getpid());
+
     ++(counter);
     (void)signal;   
 }
@@ -402,7 +402,6 @@ static void WDSigUser1Handler(int signal)
 /*Handler SIGUSR1*/
 static void WDSigUser2Handler(int signal)
 {
-    /* printf("Process %d Flag turns TRUE\n",getpid()); */
     flag_to_stop = TRUE;
     (void)signal;
 }
@@ -427,32 +426,22 @@ static int WDPath_SchedCreate(char **path)
 
     if (UIDIsSame(UIDBadUID, 
                   HSchedulerAddTask(psched->sched, WDSender, 
-                                     psched, 1, 1, NULL, NULL)))
+                                     psched, 0, 1, NULL, NULL)))
     {
         printf("Bad UID\n");
         return (FAIL);
     }
 
-    if (NULL == getenv(WD_PID))
-    {
-        task_uid = HSchedulerAddTask(psched->sched, WDChecker, 
+    
+    task_uid = HSchedulerAddTask(psched->sched, WDChecker, 
                                     psched, 5, 5, NULL, NULL);
-        if (UIDIsSame(UIDBadUID, task_uid))
-        {
-            printf("WDChecker: Bad UID\n");
-            return (FAIL);
-        }
-    }
-
-    if (UIDIsSame(UIDBadUID, 
-                  HSchedulerAddTask(psched->sched, WDChecker, 
-                                    psched, 5, 5, NULL, NULL)))
+    if (UIDIsSame(UIDBadUID, task_uid))
     {
-        printf("Bad UID\n");
+        printf("WDChecker: Bad UID\n");
         return (FAIL);
     }
-
-    if (NULL != getenv(WD_PID))
+    
+    if (WDIsWatchDog())
     {
         if (UIDIsSame(UIDBadUID, 
                       HSchedulerAddTask(psched->sched, WDStopper, 
@@ -477,6 +466,9 @@ static void WDPath_SchedDestroy(void)
 
 static int WDSigactInit(void)
 {
+    sigact_t sa_run = {NULL};
+    sigact_t sa_stop = {NULL};
+
     sa_run.sa_handler = WDSigUser1Handler;
     sa_stop.sa_handler = WDSigUser2Handler;
     
@@ -554,6 +546,7 @@ static int WDSetEnvVar(pid_t pid)
 
 static int WDSetSigMask(int to_block)
 {
+    
     sigemptyset(set);
   
     if (to_block)

@@ -39,11 +39,11 @@ static int Compare_Time(const void *task1, const void *task2);
 static int IsMatchUID(const void *task, const void *uid);
 
 /*Create a scheduler*/
-scheduler_t *HSchedulerCreate(void)
+hscheduler_t *HSchedulerCreate(void)
 {
-	scheduler_t *new_scheduler = NULL;
+	hscheduler_t *new_scheduler = NULL;
 	
-	new_scheduler = (scheduler_t *)malloc(sizeof(scheduler_t));
+	new_scheduler = (hscheduler_t *)malloc(sizeof(hscheduler_t));
 	if (NULL == new_scheduler)
 	{
 		return (NULL);
@@ -64,7 +64,7 @@ scheduler_t *HSchedulerCreate(void)
 }
 
 /*Destroys a scheduler*/
-void HSchedulerDestroy(scheduler_t *scheduler)
+void HSchedulerDestroy(hscheduler_t *scheduler)
 {
 	assert(NULL != scheduler);
 	
@@ -76,7 +76,7 @@ void HSchedulerDestroy(scheduler_t *scheduler)
 }
 
 /*Adds a new task*/
-ilrd_uid_t HSchedulerAddTask(scheduler_t *scheduler, 
+ilrd_uid_t HSchedulerAddTask(hscheduler_t *scheduler, 
 							int (*op_func_t)(void *), 
 					   		void *op_param, size_t delay_in_sec, 
 					 		size_t interval_in_sec, 
@@ -106,7 +106,7 @@ ilrd_uid_t HSchedulerAddTask(scheduler_t *scheduler,
 }
 
 /*Removes a task*/
-int HSchedulerRemoveTask(scheduler_t *scheduler, ilrd_uid_t uid)
+int HSchedulerRemoveTask(hscheduler_t *scheduler, ilrd_uid_t uid)
 {
 	task_t *save = NULL;
 	
@@ -133,7 +133,7 @@ int HSchedulerRemoveTask(scheduler_t *scheduler, ilrd_uid_t uid)
 }
 
 /*Runs the schedule*/
-int HSchedulerRun(scheduler_t *scheduler)
+int HSchedulerRun(hscheduler_t *scheduler)
 {
 	assert(NULL != scheduler);
 	
@@ -183,7 +183,7 @@ int HSchedulerRun(scheduler_t *scheduler)
 }
 
 /*Stops the scheduler*/
-void HSchedulerStop(scheduler_t *scheduler)
+void HSchedulerStop(hscheduler_t *scheduler)
 {
 	assert(NULL != scheduler);
 
@@ -191,7 +191,7 @@ void HSchedulerStop(scheduler_t *scheduler)
 }
 
 /*returns the number of tasks in the scheduler*/
-size_t HSchedulerSize(const scheduler_t *scheduler)								
+size_t HSchedulerSize(const hscheduler_t *scheduler)								
 {
 	assert(NULL != scheduler);
 	
@@ -204,7 +204,7 @@ size_t HSchedulerSize(const scheduler_t *scheduler)
 }
 
 /*Is scheduler is empty*/
-int HSchedulerIsEmpty(const scheduler_t *scheduler)
+int HSchedulerIsEmpty(const hscheduler_t *scheduler)
 {
 	assert(NULL != scheduler);
 	
@@ -212,7 +212,7 @@ int HSchedulerIsEmpty(const scheduler_t *scheduler)
 }
 
 /*Clears the scheduler*/
-void HSchedulerClear(scheduler_t *scheduler)
+void HSchedulerClear(hscheduler_t *scheduler)
 {
 	assert(NULL != scheduler);
 	

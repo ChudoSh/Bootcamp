@@ -9,7 +9,7 @@ Date:
 
 int main(int argc, char *argv[])
 {    
-    WDStart(&argv[0]);
+    WDStart(argv);
 
     return (0);
     (void)argc;

@@ -57,7 +57,7 @@ static sem_t *usr_sem = NULL;
 static atomic_int flag_to_stop = FALSE;
 static atomic_int counter = 0; 
 static pid_t wdg_pid = 0;
-static ilrd_uid_t task_uid = {0};
+static ilrd_uid_t checker_task_uid = {0};
 static psched_t *psched = NULL;
 static pthread_t user_thread = 0;
 static sigset_t *set = NULL;
@@ -107,16 +107,22 @@ void WDStop(size_t timeout)
 {
     time_t exit_time = time(NULL) + timeout;
 
+    HSchedulerRemoveTask(psched->sched, checker_task_uid);
+    
     while (!flag_to_stop && exit_time != time(NULL))
     {
         kill(wdg_pid, SIGUSR2);
     }
+    
+    HSchedulerStop(psched->sched);
     
     if (SUCCESS != pthread_join(user_thread, NULL))
     {
         printf("Failed to join the thread\n");
         return;
     }
+
+    WDPath_SchedDestroy();
 
     if (SUCCESS != sem_destroy(usr_sem))
     {
@@ -139,12 +145,6 @@ void WDStop(size_t timeout)
 /********************************User and WD***********************************/
 static int WDUser(char **path)
 { 
-    /*psched init*/
-    if (SUCCESS != WDPath_SchedCreate(path))
-    {
-        return (FAIL);
-    }
-
     /*sigaction init*/
     if (SUCCESS != WDSigactInit())
     {
@@ -174,7 +174,7 @@ static int WDUser(char **path)
                 return (FAILED_TO_CREATE_CHILD_PROCESS);
             }
             
-            if (FAILED_TO_CREATE_CHILD_PROCESS == execl(WD_EXEC, psched->path))
+            if (FAILED_TO_CREATE_CHILD_PROCESS == execl(WD_EXEC, *path))
             {
                 return (FAILED_TO_CREATE_CHILD_PROCESS);
             }
@@ -185,7 +185,7 @@ static int WDUser(char **path)
         {
             sem_wait(usr_sem);
             sem_close(usr_sem);
-            if (SUCCESS != pthread_create(&user_thread, NULL, WDThread, psched))
+            if (SUCCESS != pthread_create(&user_thread, NULL, WDThread, *path))
             {
                 printf("Failed to create the thread\n");
                 return (FAILED_TO_CREATE_WATCHDOG);
@@ -199,7 +199,7 @@ static int WDUser(char **path)
 
         sem_post(usr_sem);
         sem_close(usr_sem);
-        if (SUCCESS != pthread_create(&user_thread, NULL, WDThread, psched))
+        if (SUCCESS != pthread_create(&user_thread, NULL, WDThread, *path))
         {
             printf("Failed to create the thread\n");
             return (FAILED_TO_CREATE_WATCHDOG);
@@ -224,7 +224,7 @@ static void *WDThread(void *arg)
         return (NULL);
     }
 
-    if (SUCCESS != WDPath_SchedCreate(&(psched->path)))
+    if (SUCCESS != WDPath_SchedCreate((char **)arg))
     {
         printf("WDThread Fail..\n");
         return (NULL);
@@ -233,12 +233,8 @@ static void *WDThread(void *arg)
     if (SUCCESS != WDPSchedRun())
     {
         printf("WDThread Fail..\n");
-        return (NULL);
+        return (NULL);&(psched->path)
     }
-    HSchedulerRemoveTask(psched->sched, task_uid);
-    printf("WDChecker remove\n");
-    WDPath_SchedDestroy();
-    printf("User Sched destroyed\n");
 
     return (NULL);
     (void)arg;
@@ -433,9 +429,9 @@ static int WDPath_SchedCreate(char **path)
     }
 
     
-    task_uid = HSchedulerAddTask(psched->sched, WDChecker, 
+    checker_task_uid = HSchedulerAddTask(psched->sched, WDChecker, 
                                     psched, 5, 5, NULL, NULL);
-    if (UIDIsSame(UIDBadUID, task_uid))
+    if (UIDIsSame(UIDBadUID, checker_task_uid))
     {
         printf("WDChecker: Bad UID\n");
         return (FAIL);
@@ -462,6 +458,7 @@ static void WDPath_SchedDestroy(void)
     HSchedulerDestroy(psched->sched);
     
     free(psched);
+    printf("Sched Freed\n");
 }
 
 static int WDSigactInit(void)

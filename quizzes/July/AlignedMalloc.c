@@ -59,5 +59,5 @@ void AlignedFree(void *p)
 
     *((size_t *)p2 - 1) = (size_t)p1;
 
-    return p2;
+    return (p2);
 } */

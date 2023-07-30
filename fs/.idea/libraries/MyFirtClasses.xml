@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="MyFirtClasses">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/java_intro/out/production/java_intro/MyFirtClasses.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

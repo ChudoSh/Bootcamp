@@ -1,13 +1,5 @@
 #Ignore_everything
-*.md
-*.out
-*.o
-*.txt
-./simulations
-.*.d
-.vscode
-*.jar
-*.class
+*
 
 #exception_rule
 !dummy.md
@@ -16,5 +8,7 @@
 !*/
 !makefile
 !*.java
+!*.c
+!*.h
 
 

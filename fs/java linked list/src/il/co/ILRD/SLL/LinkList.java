@@ -2,6 +2,7 @@ package il.co.ILRD.SLL;
 
 public class LinkList {
     private Node head;
+
     private class Node {
         private Object data;
         private Node next;
@@ -11,6 +12,7 @@ public class LinkList {
             this.next = next;
         }
     }
+
     private class ListIteratorIMP implements ListIterator {
         private Node current;
 
@@ -33,7 +35,7 @@ public class LinkList {
     }
 
     public int Size() {
-        ListIteratorIMP iter = (ListIteratorIMP) this.Begin();
+        ListIterator iter = this.Begin();
         int count = 0;
 
         while (iter.hasNext()) {
@@ -49,13 +51,10 @@ public class LinkList {
     }
 
     public void pushFront(Object data) {
-        Node newNode = new Node(data, this.head);
-        this.head = newNode;
+        this.head = new Node(data, this.head);
     }
 
     public Object popFront() {
-        assert !this.isEmpty();
-
         Object toReturn = this.head.data;
         this.head = this.head.next;
 
@@ -63,11 +62,12 @@ public class LinkList {
     }
 
     public ListIterator Find(Object data) {
-        ListIteratorIMP iter = (ListIteratorIMP) this.Begin();
+        ListIterator iter = this.Begin();
 
-        while (iter.hasNext() && !data.equals(iter.current.data)) {
+        while (iter.hasNext() &&
+                !data.equals(((ListIteratorIMP) iter).current.data)) {
             iter.Next();
-        }
+        }//Breaks enacapsulation :(
 
         return (iter);
     }

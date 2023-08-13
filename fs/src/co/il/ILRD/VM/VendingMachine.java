@@ -16,11 +16,13 @@ public class VendingMachine {
         this.vmDisplay = display;
         int size = productList.size();
         this.vmSlots = new ArrayList<>();
+        int i = 0;
 
-        for (int i = 0; i < size; ++i) {
-            Product product = productList.get(i);
-            VMSlot slot = new VMSlot(product, i, product.getPrice());
+        for (Product currentProduct : productList) {
+            VMSlot slot = new VMSlot(currentProduct, i,
+                    currentProduct.getPrice());
             this.vmSlots.add(slot);
+            ++i;
         }
     }
 
@@ -42,7 +44,7 @@ public class VendingMachine {
     }
 
     private VMSlot getSlotFromList(int productCode) {
-        return this.vmSlots.get(productCode - 1);
+        return this.vmSlots.get(productCode);
     }
 
     private void setCurrentSlot(VMSlot slot) {
@@ -104,8 +106,9 @@ public class VendingMachine {
     }
 
     //**********************************Dev space*******************************
-    enum VMState {
+    private enum VMState {
         OFF {
+            @Override
             public void on(VendingMachine vm) {
                 vm.runDisplay("Machine is now on, please select your product");
                 vm.setCurrentState(WAITING_FOR_SELECTION);
@@ -153,7 +156,7 @@ public class VendingMachine {
 
         abstract public void insertCoin(VendingMachine vm, Coin coin);
 
-         public void selectProduct(VendingMachine vm, int productCode){
+        public void selectProduct(VendingMachine vm, int productCode) {
             vm.setCurrentSlot(vm.getSlotFromList(productCode));
             vm.runDisplay("A new product selected: " + vm.getCurrentSlot().getProduct().getName());
             vm.checkEnoughMoneyToPurchase();
@@ -167,23 +170,24 @@ public class VendingMachine {
             vm.setCurrentState(WAITING_FOR_SELECTION);
         }
     }
+
     //********************************VMSlot class******************************
     private static class VMSlot {
         private VMSlot(Product product, int productCode, int price) {
             this.product = product;
-            this.productCode = productCode + 1;
+            this.productCode = productCode;
             this.price = price * 2;
         }
 
-        Product product;
-        int productCode;
-        int price;
+        private final Product product;
+        private final int productCode;
+        private final int price;
 
-        public Product getProduct() {
+        private Product getProduct() {
             return this.product;
         }
 
-        public int getProductPrice() {
+        private int getProductPrice() {
             return this.price;
         }
     }

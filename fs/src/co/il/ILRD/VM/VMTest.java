@@ -112,7 +112,7 @@ public class VMTest {
         this.vm.insertCoin(Coin.HAMESH);
         assertEquals(650,this.vm.getCurrentCredit());
         assertEquals(1, this.vm.getCurrentState());
-        this.vm.selectProduct(1);
+        this.vm.selectProduct(0);
         assertEquals(1, this.vm.getCurrentState());
         this.vm.selectProduct(1);
         assertEquals(2, this.vm.getCurrentState());
@@ -125,14 +125,14 @@ public class VMTest {
     @Order(8)
     void selectProduct() {
         assertEquals(0, this.vm.getCurrentState());
-        this.vm.selectProduct(1);
+        this.vm.selectProduct(0);
         assertEquals(0, this.vm.getCurrentState());
         this.vm.on();
         assertEquals(1, this.vm.getCurrentState());
         this.vm.insertCoin(Coin.HALF);
         this.vm.insertCoin(Coin.HALF);
         this.vm.insertCoin(Coin.HALF);
-        this.vm.selectProduct(1);
+        this.vm.selectProduct(0);
         assertEquals(2, this.vm.getCurrentState());
         this.vm.insertCoin(Coin.SHNEKEL);
         this.vm.insertCoin(Coin.HALF);
@@ -141,7 +141,7 @@ public class VMTest {
         this.vm.insertCoin(Coin.HAMESH);
         assertEquals(2, this.vm.getCurrentState());
         this.vm.selectProduct(1);
-        assertEquals(1, this.vm.getCurrentState());
+        assertEquals(2, this.vm.getCurrentState());
     }
 
     @Test
@@ -163,7 +163,7 @@ public class VMTest {
         this.vm.cancel();
         assertEquals(1, this.vm.getCurrentState());
     }
-        private class Item implements Product {
+        private static class Item implements Product {
 
         private String name;
         private int price;

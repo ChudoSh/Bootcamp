@@ -1,4 +1,4 @@
-package co.il.ILRD.Java2C.JacaCode;
+package co.il.ILRD.Java2C;
 
 public class Java2C {
     public static void foo(Animal a) {
@@ -39,7 +39,7 @@ public class Java2C {
 
         System.gc();
         System.out.println("After gc");
-        Runtime.runFinalizersOnExit(true);
+//        Runtime.runFinalizersOnExit(true);
     }
 }
 

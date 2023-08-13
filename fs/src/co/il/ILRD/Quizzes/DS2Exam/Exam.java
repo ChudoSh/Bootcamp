@@ -1,11 +1,8 @@
-package co.il.ILRD.DS2Exam;
-import org.junit.Before;
+package co.il.ILRD.Quizzes.DS2Exam;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Random;
 
 import java.util.ArrayList;
 import java.util.Stack;
@@ -81,11 +78,19 @@ public class Exam {
 
 //    @Test
 //    public void TUQ5(){
-//        Q5 treeIter = new Q5(5);
+//        Q5 tree = new Q5(5);
 //
-//        treeIter.insertIteratively(6);
-//        treeIter.insertIteratively(4);
-//        treeIter.insertIteratively(3);
+//        tree.insertIteratively(4);
+//
+//        assertEquals(30, root.left.value);
+//
+//
+//        assertEquals(30, root.left.value);
+//        assertEquals(70, root.right.value);
+//        assertEquals(20, root.left.left.value);
+//        assertEquals(40, root.left.right.value);
+//        assertEquals(60, root.right.left.value);
+//        assertEquals(80, root.right.right.value);
 //
 //
 //    }

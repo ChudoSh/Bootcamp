@@ -1,26 +1,52 @@
 package co.il.ILRD.Quizzes.BankBranch;
 
 import java.time.LocalDate;
-import java.util.Date;
 
-public class BankBranch {
-    public static class Junior {
-        int id;
-        String name;
-        Date birthday;
-        Date startDate;
+public class BankEmployee {
+    private final int id;
+    private final String name;
+    private final LocalDate birthday;
+    private final LocalDate startDate;
+    private double salary;
+    private EmployeeStrategy salaryLevel;
 
-        public Junior(int id, String name, Date birthday, Date startDate) {
-            this.id = id;
-            this.name = name;
-            this.birthday = birthday;
-            this.startDate = startDate;
-        }
+    public BankEmployee(int id, String name, LocalDate birthday, LocalDate startDate, double salary) {
+        this.id = id;
+        this.name = name;
+        this.birthday = birthday;
+        this.startDate = startDate;
+        this.salary = salary;
+    }
 
-//        public int calculateAnnualSalary() {
-//            return (((LocalDate.betweLocalDate.now()) >= 1) ?)
-//        }
+    public void setSalary(double salary) {
+        this.salary = salary;
+    }
 
+    public int getId() {
+        return id;
+    }
 
+    public void setRole(EmployeeStrategy newSalaryLevel) {
+        this.salaryLevel = newSalaryLevel;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public LocalDate getBirthday() {
+        return birthday;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public double getSalary() {
+        return salary;
+    }
+
+    public double calculateAnnualSalary(){
+        return salaryLevel.calculateAnnualSalary(this.startDate, this.salary);
     }
 }

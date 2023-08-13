@@ -1,4 +1,4 @@
-package co.il.ILRD.Java2C.JacaCode;
+package co.il.ILRD.Java2C;
 
 public class LegendaryAnimal extends Cat {
     public LegendaryAnimal() {

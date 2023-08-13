@@ -1,4 +1,4 @@
-package co.il.ILRD.DS2Exam;
+package co.il.ILRD.Quizzes.DS2Exam;
 
 import java.util.Stack;
 

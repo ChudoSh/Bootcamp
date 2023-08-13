@@ -1,4 +1,4 @@
-package co.il.ILRD.DS2Exam;
+package co.il.ILRD.Quizzes.DS2Exam;
 
 public class Q8 {
     public static void printAllPermutations(String str) {
@@ -8,7 +8,7 @@ public class Q8 {
     private static void printPermutations(String str, String ans) {
         int j = 0;
         // If string is empty
-        if (str.length() == 0) {
+        if (str.isEmpty()) {
             System.out.print(ans + " ");
             return;
         }
@@ -27,8 +27,5 @@ public class Q8 {
             // Recursive call, adding the extracted char to the final printed string of this specific permute
             printPermutations(ros, ans + ch);
         }
-
-
-
     }
 }

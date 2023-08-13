@@ -140,7 +140,6 @@ void WDStop(size_t timeout)
     }
 
     return;
-
 }
 /********************************User and WD***********************************/
 static int WDUser(char **path)

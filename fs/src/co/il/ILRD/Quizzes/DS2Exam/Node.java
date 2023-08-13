@@ -1,4 +1,4 @@
-package co.il.ILRD.DS2Exam;
+package co.il.ILRD.Quizzes.DS2Exam;
 
 public class Node {
         private final Object data;

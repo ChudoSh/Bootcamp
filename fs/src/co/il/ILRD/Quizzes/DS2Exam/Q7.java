@@ -1,6 +1,4 @@
-package co.il.ILRD.DS2Exam;
-
-import com.sun.xml.internal.fastinfoset.util.CharArray;
+package co.il.ILRD.Quizzes.DS2Exam;
 
 public class Q7 {
 

@@ -3,13 +3,25 @@ package co.il.ILRD.SLL;
 public class LinkList {
     private Node head;
 
-    private class Node {
+    public class Node {
         private Object data;
         private Node next;
 
         private Node(Object data, Node next) {
             this.data = data;
             this.next = next;
+        }
+
+        public void setNext(Node node){
+            this.next = node;
+        }
+
+        public Node getNext(){
+            return this.next;
+        }
+
+        public boolean hasNext() {
+            return (null != this.next);
         }
     }
 

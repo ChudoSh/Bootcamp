@@ -1,10 +1,6 @@
-package co.il.ILRD.DS2Exam;
-
-import com.sun.xml.internal.fastinfoset.util.CharArray;
+package co.il.ILRD.Quizzes.DS2Exam;
 
 import java.io.*;
-import java.nio.charset.Charset;
-import java.text.Collator;
 import java.util.*;
 
 public class Q4 {

@@ -13,15 +13,15 @@
                 "-g",
                 "-I",
                 "../include",
-                "../src/watchdog.c",
-                "-I",
-                "../../ds/include",
+                /* "../src/watchdog.c",
+                "-I", */
+                /* "../../ds/include",
                 "../../ds/src/uid.c",
                 "../../ds/src/heap_q.c",
                 "../../ds/src/task.c",
                 "../../ds/src/scheduler_heap.c",
                 "../../ds/src/heap.c",
-                "../../ds/src/dvector.c",
+                "../../ds/src/dvector.c", */
                 "${file}",
                 /*"${fileDirname}/../test/${fileBasenameNoExtension}.c",*/
                 "-o",

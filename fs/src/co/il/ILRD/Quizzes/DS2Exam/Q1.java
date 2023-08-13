@@ -1,6 +1,4 @@
-package co.il.ILRD.DS2Exam;
-
-import java.util.ArrayList;
+package co.il.ILRD.Quizzes.DS2Exam;
 
 public class Q1 {
     public static void FlipListIteratively(Node head) {

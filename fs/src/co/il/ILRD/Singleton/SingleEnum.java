@@ -1,10 +1,12 @@
 package co.il.ILRD.Singleton;
 
-public enum SigleEnum {
+public enum SingleEnum {
     SINGLETON();
 
-    SigleEnum() {
+    SingleEnum() {
         Object singleton = new Object();
     }
 }
+
+
 

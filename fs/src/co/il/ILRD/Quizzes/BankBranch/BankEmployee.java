@@ -1,4 +1,4 @@
-package co.il.ILRD.Quizzes;
+package co.il.ILRD.Quizzes.BankBranch;
 
 import java.time.LocalDate;
 import java.util.Date;

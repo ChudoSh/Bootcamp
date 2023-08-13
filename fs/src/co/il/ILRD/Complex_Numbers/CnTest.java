@@ -3,7 +3,7 @@ package co.il.ILRD.Complex_Numbers;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class cnTest {
+public class CnTest {
     @Test
     public void testBasicFunc(){
         ComplexNumber x = new ComplexNumber(5.0 , -4.5);

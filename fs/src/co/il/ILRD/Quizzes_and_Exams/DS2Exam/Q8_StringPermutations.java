@@ -1,6 +1,6 @@
-package co.il.ILRD.Quizzes.DS2Exam;
+package co.il.ILRD.Quizzes_and_Exams.DS2Exam;
 
-public class Q8 {
+public class Q8_StringPermutations {
     public static void printAllPermutations(String str) {
         printPermutations(str, "");
     }

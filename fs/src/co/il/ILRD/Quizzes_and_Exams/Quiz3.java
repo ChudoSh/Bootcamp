@@ -1,4 +1,4 @@
-package co.il.ILRD.Quizzes;
+package co.il.ILRD.Quizzes_and_Exams;
 
 public class Quiz3 {
     public Quiz3() {

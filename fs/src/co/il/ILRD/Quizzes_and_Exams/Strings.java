@@ -1,4 +1,4 @@
-package co.il.ILRD.Quizzes;
+package co.il.ILRD.Quizzes_and_Exams;
 
 public class Strings {
     public static void reverseString(String str) {

@@ -1,7 +1,6 @@
-package co.il.ILRD.Quizzes.BankBranch;
+package co.il.ILRD.Quizzes_and_Exams.BankBranch;
 
 import java.time.LocalDate;
-import java.time.Period;
 
 public class Manager extends BankEmployee {
     EmployeeStrategy salaryLevel = new ManagerSalary();

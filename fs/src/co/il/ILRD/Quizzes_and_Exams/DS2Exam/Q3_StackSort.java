@@ -1,8 +1,8 @@
-package co.il.ILRD.Quizzes.DS2Exam;
+package co.il.ILRD.Quizzes_and_Exams.DS2Exam;
 
 import java.util.Stack;
 
-public class Q3 {
+public class Q3_StackSort {
     public static Stack<Integer> sortStack(Stack<Integer> toSort){
         Stack<Integer> aux_stack = new Stack<Integer>();
         int temp = 0;

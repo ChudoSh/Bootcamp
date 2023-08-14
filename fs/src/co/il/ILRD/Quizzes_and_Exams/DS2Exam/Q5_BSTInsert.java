@@ -1,61 +1,18 @@
-package co.il.ILRD.Quizzes.DS2Exam;
+package co.il.ILRD.Quizzes_and_Exams.DS2Exam;
 
-public class Q5 {
+public class Q5_BSTInsert {
     private TreeNode root = null;
 
-    private enum Children {
+    enum Children {
         FAIL(-1),
         LEFT(0),
         RIGHT(1);
 
-        private int child;
-
         Children(int child) {
-            this.child = child;
         }
     }
 
-    private class TreeNode {
-        private TreeNode parent = null;
-        private TreeNode left = null;
-        private TreeNode right = null;
-        private Integer data = null;
-
-        private TreeNode(Integer data) {
-            setData(data);
-        }
-
-        public TreeNode getParent() {
-            return parent;
-        }
-
-        public TreeNode getChild(Children child) {
-            return (child == Children.LEFT) ? this.left : this.right;
-        }
-
-        public Integer getData() {
-            return data;
-        }
-
-        public void setParent(TreeNode parent) {
-            this.parent = parent;
-        }
-
-        public void setChild(TreeNode childNode, Children childPos) {
-            if (Children.LEFT == childPos) {
-                this.left = childNode;
-            } else {
-                this.right = childNode;
-            }
-        }
-
-        public void setData(Integer data) {
-            this.data = data;
-        }
-
-    }
-
-    public Q5(Integer data) {
+    public Q5_BSTInsert(Integer data) {
         this.root = new TreeNode(data);
 
     }
@@ -138,7 +95,7 @@ public class Q5 {
 
     private Children getDirection(TreeNode iterator, Integer data) {
 
-        if (Integer.compare(iterator.getData(), data) > 0) {
+        if (iterator.getData() > data) {
             return Children.LEFT;
         } else if (Integer.compare(iterator.getData(), data) > 0) {
             return Children.RIGHT;

@@ -1,4 +1,4 @@
-package co.il.ILRD.Quizzes.DS2Exam;
+package co.il.ILRD.Quizzes_and_Exams.DS2Exam;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,13 +18,13 @@ public class Exam {
         Node two = new Node(2, three);
         Node head = new Node(1, two);
 
-        Q1.FlipListRecursion(head);
+        Q1_FlipList.FlipListRecursion(head);
         assertSame(tail.getNext(), four, "Rec Fail");
         assertSame(four.getNext(), three, "Rec Fail");
         assertSame(three.getNext(), two, "Rec Fail");
         assertSame(two.getNext(), head, "Rec Fail");
 
-        Q1.FlipListIteratively(tail);
+        Q1_FlipList.FlipListIteratively(tail);
         assertSame(head.getNext(), two, "Iter Fail");
         assertSame(two.getNext(), three, "Iter Fail");
         assertSame(three.getNext(), four, "Iter Fail");
@@ -45,7 +45,7 @@ public class Exam {
         arr.add(-5);
         arr.add(-4);
 
-        assertEquals(Q2.findLargestSumInSubArray(arr), 5, "Q2 fail");
+        assertEquals(Q2_FindLargestSum.findLargestSumInSubArray(arr), 5, "Q2 fail");
 
     }
 
@@ -61,7 +61,7 @@ public class Exam {
         to_sort.push(92);
         to_sort.push(23);
 
-        to_sort = Q3.sortStack(to_sort);
+        to_sort = Q3_StackSort.sortStack(to_sort);
 
         while (to_sort.size() > 1){
             temp = to_sort.pop();
@@ -71,33 +71,31 @@ public class Exam {
 
     @Test
     public void TUQ4(){
-        File file = new File("/home/barchik/Mygit/bar.shadkhin/fs/src/co/il/ILRD/DS2Exam/Q4TestFile.text");
+        File file = new File("/home/barchik/Mygit/bar.shadkhin/fs/src/co/il/ILRD/Quizzes/DS2Exam/Q4TestFile.text");
 
-        Q4.sortCharsInFiles(file);
+        Q4_SortFile.sortCharsInFiles(file);
+
+
     }
 
-//    @Test
-//    public void TUQ5(){
-//        Q5 tree = new Q5(5);
-//
-//        tree.insertIteratively(4);
-//
-//        assertEquals(30, root.left.value);
-//
-//
-//        assertEquals(30, root.left.value);
-//        assertEquals(70, root.right.value);
-//        assertEquals(20, root.left.left.value);
-//        assertEquals(40, root.left.right.value);
-//        assertEquals(60, root.right.left.value);
-//        assertEquals(80, root.right.right.value);
-//
-//
-//    }
+    @Test
+    public void TUQ5(){
+        Q5_BSTInsert tree = new Q5_BSTInsert(5);
+
+
+        tree.insertIteratively(4);
+        tree.insertIteratively(10);
+        tree.insertIteratively(24);
+        tree.insertIteratively(2);
+        tree.insertIteratively(0);
+        tree.insertIteratively(15);
+
+
+    }
 
     @Test
     public void TUQ7(){
-        String result = Q7.reverseString("Malena");
+        String result = Q7_ReverseString.reverseString("Malena");
 
         assertEquals("anelaM", result, "Q7 fail");
 
@@ -105,7 +103,7 @@ public class Exam {
 
     @Test
     public void TUQ8(){
-        Q8.printAllPermutations("BAR");
+        Q8_StringPermutations.printAllPermutations("BAR");
     }
 
     @Test
@@ -120,7 +118,7 @@ public class Exam {
         to_sort.push(92);
         to_sort.push(23);
 
-        Q10.sortStack(to_sort);
+        Q10_RecStackSort.sortStack(to_sort);
 
         while (to_sort.size() > 1){
             temp = to_sort.pop();

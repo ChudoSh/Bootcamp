@@ -8,7 +8,7 @@ public class Exercise {
         fl.foo1(23);
         Outer.banana();
 
-        if (fl == fsl){
+        if (fl.equals(fsl)){
             System.out.println("they are the same");
         }
 
@@ -24,7 +24,7 @@ class Outer {
             final String something = "This is Anonymous, prepare to be cyberliy attacked";
 
             public void oof() {
-                System.out.println(something);
+                System.out.println(this.something);
             }
         }
         new Anonymous().oof();
@@ -40,4 +40,6 @@ class Outer {
                     + Outer.this.x);
         }
     }
+
+    
 }

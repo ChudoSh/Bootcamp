@@ -1,6 +1,6 @@
-package co.il.ILRD.Quizzes.DS2Exam;
+package co.il.ILRD.Quizzes_and_Exams.DS2Exam;
 
-public class Q1 {
+public class Q1_FlipList {
     public static void FlipListIteratively(Node head) {
         Node prev = null;
         Node current = head;

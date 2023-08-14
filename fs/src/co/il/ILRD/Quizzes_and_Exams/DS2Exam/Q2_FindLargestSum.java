@@ -1,8 +1,8 @@
-package co.il.ILRD.Quizzes.DS2Exam;
+package co.il.ILRD.Quizzes_and_Exams.DS2Exam;
 
 import java.util.ArrayList;
 
-public class Q2 {
+public class Q2_FindLargestSum {
     public static int findLargestSumInSubArray(ArrayList<Integer> array) {
         int currentSum = 0;
         int maxSum = 0;

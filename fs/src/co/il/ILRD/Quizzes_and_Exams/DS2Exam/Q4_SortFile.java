@@ -10,7 +10,8 @@ public class Q4_SortFile {
         String ls = System.getProperty("line.separator");
 
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(toSort));
+            BufferedReader reader = new BufferedReader(
+                    new FileReader(toSort));
             while ((line = reader.readLine()) != null) {
                 stringBuilder.append(line);
                 stringBuilder.append(ls);

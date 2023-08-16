@@ -21,7 +21,7 @@ class Outer {
 
     public static void banana() {
         class Anonymous {
-            final String something = "This is Anonymous, prepare to be cyberliy attacked";
+            final String something = "This is Anonymous, prepare to be cyberbullied";
 
             public void oof() {
                 System.out.println(this.something);
@@ -41,5 +41,5 @@ class Outer {
         }
     }
 
-    
+
 }

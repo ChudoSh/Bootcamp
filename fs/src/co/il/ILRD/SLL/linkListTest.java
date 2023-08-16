@@ -22,12 +22,12 @@ public class linkListTest {
     @Test
     public void Test_SizeNPush(){
         LinkList list = new LinkList();
-        assertTrue(0 == list.Size(), "Size Fail");
+        assertEquals(0, list.Size(), "Size Fail");
         list.pushFront(new Integer(3));
         list.pushFront(new Integer(4));
         list.pushFront(new Integer(5));
         list.pushFront(new Integer(6));
-        assertTrue(4 == list.Size(), "Size Fail");
+        assertEquals(4, list.Size(), "Size Fail");
     }
 
     @Test
@@ -43,7 +43,7 @@ public class linkListTest {
 
         toFind = list.Find(three);
         assertEquals(three ,toFind.Next(), "Find Fail");
-        assertTrue(4 == list.Size(), "Size Fail");
+        assertEquals(4, list.Size(), "Size Fail");
     }
 
     @Test
@@ -56,7 +56,7 @@ public class linkListTest {
         list.pushFront(new Integer(5));
         list.pushFront(new Integer(6));
         assertEquals(three, list.Begin().Next() , "Begin Fail");
-        assertTrue(4 == list.Size(), "Size Fail");
+        assertEquals(4, list.Size(), "Size Fail");
     }
 
     @Test
@@ -69,6 +69,6 @@ public class linkListTest {
         list.pushFront(5);
         list.pushFront(6);
         assertEquals(six,list.popFront(), "Pop Fail");
-        assertTrue(3 == list.Size(), "Size Fail");
+        assertEquals(3, list.Size(), "Size Fail");
     }
 }

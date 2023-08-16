@@ -4,20 +4,20 @@ import java.util.Stack;
 
 public class Q3_StackSort {
     public static Stack<Integer> sortStack(Stack<Integer> toSort){
-        Stack<Integer> aux_stack = new Stack<Integer>();
+        Stack<Integer> auxStack = new Stack<>();
         int temp = 0;
 
         while (!toSort.isEmpty()){
 
             temp = toSort.pop();
 
-            while (!aux_stack.isEmpty() && aux_stack.peek() < temp ){
-                toSort.push( aux_stack.pop());
+            while (!auxStack.isEmpty() && auxStack.peek() < temp ){
+                toSort.push( auxStack.pop());
             }
 
-            aux_stack.push(temp);
+            auxStack.push(temp);
         }
 
-        return aux_stack;
+        return auxStack;
     }
 }

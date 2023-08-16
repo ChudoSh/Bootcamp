@@ -3,8 +3,12 @@ package co.il.ILRD.SLL;
 public class LinkList {
     private Node head;
 
-    public class Node {
-        private Object data;
+    public LinkList(){
+        this.head = null;
+    }
+
+    public static class Node {
+        private final Object data;
         private Node next;
 
         private Node(Object data, Node next) {
@@ -25,7 +29,7 @@ public class LinkList {
         }
     }
 
-    private class ListIteratorIMP implements ListIterator {
+    private static class ListIteratorIMP implements ListIterator {
         private Node current;
 
         private ListIteratorIMP(Node node) {
@@ -79,7 +83,7 @@ public class LinkList {
         while (iter.hasNext() &&
                 !data.equals(((ListIteratorIMP) iter).current.data)) {
             iter.Next();
-        }//Breaks enacapsulation :(
+        }//Breaks encapsulation :(
 
         return (iter);
     }

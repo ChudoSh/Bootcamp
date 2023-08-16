@@ -46,7 +46,6 @@ public class Q5_BSTInsert {
     public TreeNode insertRecursively(Integer new_data) {
         TreeNode toInsert = new TreeNode(new_data);
         TreeNode iterator = this.root;
-        Children dir = this.getDirection(iterator, new_data);
 
         if (isLeaf(this.root)) {
             this.root.setChild(toInsert, Children.LEFT);

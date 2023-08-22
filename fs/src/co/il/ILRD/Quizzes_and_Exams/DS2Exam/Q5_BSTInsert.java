@@ -74,6 +74,16 @@ public class Q5_BSTInsert {
         return Recursion(iterator, toInsert);
     }
 
+////    static void Inorder(Node root) {
+////        if (root == null) {
+////            return;
+////        } else {
+////            Inorder(root.left);
+////            System.out.print(root.val + " ");
+////            Inorder(root.right);
+////        }
+//    }
+
     public static int insertToTreeArray(int[] arr, int new_data) {
         int i = 0;
 

@@ -6,26 +6,27 @@ public class Q8_StringPermutations {
     }
 
     private static void printPermutations(String str, String ans) {
-        int j = 0;
-        // If string is empty
+
         if (str.isEmpty()) {
-            System.out.print(ans + " ");
+            System.out.println((ans));
+            for (int i = 1; i < ans.length(); ++i) {
+                printPermutations(ans.substring(0, ans.length() - 1), "");
+            }
             return;
         }
 
-
-        for (int i = 0; i < str.length(); i++) {
-
-            // ith character of str
+        for (int i = 0; i < str.length(); ++i) {
             char ch = str.charAt(i);
-
-            // Rest of the string after excluding
-            // the ith character
-            String ros = str.substring(0, i) +
-                    str.substring(i + 1);
-
-            // Recursive call, adding the extracted char to the final printed string of this specific permute
-            printPermutations(ros, ans + ch);
+            String result = str.substring(0, i) + str.substring(i + 1);
+            printPermutations(result, ans + ch);
         }
+        /*
+        to ensure that each word will generate only once we will use hash table.
+
+        Hash table will give us the possibility of checking if a word was generated in o(1),
+        for each word we will insert a counter to the value of the key that generated to the permutation.
+        and at the end we will go throw the hash table nd print the Strings that there value are bigger than 0.
+        * */
     }
+
 }

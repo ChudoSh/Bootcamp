@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 
 public class Q4_SortFile {
-    public static void sortCharsInFiles(File toSort) {
+    public static void sortCharsInFiles(File toSort, char[] result) {
         StringBuilder stringBuilder = new StringBuilder();
         String line = null;
         String ls = System.getProperty("line.separator");
@@ -20,13 +20,8 @@ public class Q4_SortFile {
             stringBuilder.deleteCharAt(stringBuilder.length() - 1);
             reader.close();
 
-            char[] content = stringBuilder.toString().toCharArray();
-
-            Arrays.sort(content);
-
-            FileWriter writer = new FileWriter(toSort);
-            writer.write(content);
-            writer.close();
+            result = stringBuilder.toString().toCharArray();
+            Arrays.sort(result );
 
         } catch (IOException e) {
             throw new RuntimeException(e);

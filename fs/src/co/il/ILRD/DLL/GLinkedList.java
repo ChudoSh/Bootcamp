@@ -1,15 +1,14 @@
 package co.il.ILRD.DLL;
 
-import javax.naming.OperationNotSupportedException;
-import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
-public class DLL<T> implements Iterable<T> {
+public class GLinkedList<T> implements Iterable<T> {
     private Node<T> head;
-    private static int expectedModCounter = 0;
+    private int expectedModCounter = 0;
 
-    public DLL() {
-        this.head = new Node<>();
+    public GLinkedList() {
+        this.head = new Node<>(null, null, null);
     }
 
     @Override
@@ -46,10 +45,7 @@ public class DLL<T> implements Iterable<T> {
     private static class Node<S> {
         private Node<S> next;
         private Node<S> prev;
-        private S data;
-
-        private Node() {
-        }
+        private final S data;
 
         private Node(S data, Node<S> next, Node<S> prev) {
             this.data = (S) data;
@@ -82,8 +78,18 @@ public class DLL<T> implements Iterable<T> {
     }
 
     public T popFront() {
+        if (this.head == null) {
+            throw new NoSuchElementException();
+        }
         T toReturn = this.head.getData();
+
+        Node<T> toRemove = this.head;
         this.head = this.head.getNext();
+        this.head.setPrev(null);
+
+        toRemove.setNext(null);
+        toRemove.setPrev(null);
+
         --expectedModCounter;
 
         return (toReturn);
@@ -92,7 +98,7 @@ public class DLL<T> implements Iterable<T> {
     public int count() {
         int count = 0;
 
-        for (T t : this) {
+        for (T ignore : this) {
             ++count;
         }
 
@@ -119,8 +125,8 @@ public class DLL<T> implements Iterable<T> {
         return (null == this.head.getNext());
     }
 
-    public static <U> DLL<U> merge(DLL<U> dest,
-                                   DLL<U> src) {
+    public static <U> void merge(GLinkedList<U> dest,
+                                 GLinkedList<U> src) {
 
         ++dest.expectedModCounter;
         ++src.expectedModCounter;
@@ -136,10 +142,9 @@ public class DLL<T> implements Iterable<T> {
 
         runner.setNext(src.head);
         src.head.setPrev(runner);
-        src.head = new Node<>();
+        src.head = new Node<>(null, null, null);
 
         toFree.setPrev(null);
 
-        return dest;
     }
 }

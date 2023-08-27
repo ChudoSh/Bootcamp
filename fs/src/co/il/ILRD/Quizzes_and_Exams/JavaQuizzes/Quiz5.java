@@ -1,8 +1,6 @@
-package co.il.ILRD.Quizzes_and_Exams;
+package co.il.ILRD.Quizzes_and_Exams.JavaQuizzes;
 
-import javax.imageio.stream.ImageInputStream;
-
-import static co.il.ILRD.Quizzes_and_Exams.Quiz5.Test.func;
+import static co.il.ILRD.Quizzes_and_Exams.JavaQuizzes.Quiz5.Test.func;
 
 interface SomeInterface {
     default void foo() {

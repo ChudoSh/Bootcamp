@@ -1,45 +1,39 @@
 package co.il.ILRD.Concurrency.ProdCons;
 
+import co.il.ILRD.Utils.Enums;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
 import static java.lang.Thread.sleep;
 
 
 public class Barrier {
-    static final int numOfThreads = 10;
-    static final int barrierNum = 5;
-    static final int sleepingTime = 600;
     private static final Lock lock = new ReentrantLock();
     private static Semaphore sem = new Semaphore(0);
-    private static LinkedList<String> message = new LinkedList<>();
+    private static String message = null;
     private static final Condition condition = lock.newCondition();
 
     public static void main(String[] args) throws InterruptedException {
-        Thread proList = new myProducer();
+        Thread producer = new myProducer();
         List<Thread> conList = new ArrayList<>();
 
-        for (int i = 0; i < numOfThreads; ++i) {
+        for (int i = 0; i < Enums.MagicNumber.NUM_OF_THREADS.getValue(); ++i) {
             conList.add(new Barrier.myConsumer());
         }
 
-        proList.start();
+        producer.start();
         conList.forEach(Thread::start);
 
-        sleep(sleepingTime);
+        sleep(Enums.MagicNumber.SLEEP.getValue());
 
-        proList.interrupt();
+        producer.interrupt();
         conList.forEach(Thread::interrupt);
 
-        proList.join();
-        for (int i = 0; i < numOfThreads; ++i) {
+        producer.join();
+        for (int i = 0; i < Enums.MagicNumber.SLEEP.getValue(); ++i) {
             conList.get(i).join();
         }
     }
@@ -49,18 +43,20 @@ public class Barrier {
 
         @Override
         public void run() {
-            while (barrierNum != sem.availablePermits()) {
-                try {
-                    sem.acquire();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+            while (!Thread.currentThread().isInterrupted()){
+                while (Enums.MagicNumber.SLEEP.getValue() > i) {
+                    try {
+                        sem.acquire();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    message = "This is for consumer " + i;
+                    ++i;
                 }
-                message.add("This is for consumer " + i);
-                ++i;
+                lock.lock();
+                condition.signalAll();
+                lock.unlock();
             }
-            lock.lock();
-            condition.signalAll();
-            lock.unlock();
         }
     }
 
@@ -69,7 +65,7 @@ public class Barrier {
 
         @Override
         public void run() {
-            if (barrierNum != sem.availablePermits()) {
+            while (!Thread.currentThread().isInterrupted()) {
                 lock.lock();
                 sem.release();
                 try {
@@ -77,9 +73,9 @@ public class Barrier {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
-                System.out.println(message.remove() + ":Consumer " + i + " received");
-                ++i;
                 lock.unlock();
+                System.out.println(message + ":Consumer " + i + " received");
+                ++i;
             }
         }
     }

@@ -1,4 +1,4 @@
-package co.il.ILRD.MT_CountingSort;
+package co.il.ILRD.MultiThreadedCountingSort;
 
 
 import java.io.BufferedReader;

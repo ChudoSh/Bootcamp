@@ -70,24 +70,22 @@ public class FileTree {
             this.list = new ArrayList<>();
             File currentDirectory = new File(this.path);
             File[] filesInDirectory = currentDirectory.listFiles();
-            int i = 0;
             if (null != filesInDirectory) {
+                int i = 0;
                 for (i = 0; i < filesInDirectory.length - 1; ++i) {
                     if (filesInDirectory[i].isDirectory()) {
-                        list.add(new DirectoryComposite("├──" + filesInDirectory[i].getAbsolutePath(), ++this.paddingIndex));
+                        list.add(new DirectoryComposite ("├──" + filesInDirectory[i].getAbsolutePath() , ++this.paddingIndex));
                     } else {
-                        list.add(new FileLeaf("├──" + filesInDirectory[i].getName(), ++this.paddingIndex));
+                        list.add(new FileLeaf("├──" +filesInDirectory[i].getName(), ++this.paddingIndex));
                     }
                 }
-
                 ++i;
                 if (filesInDirectory[i].isDirectory()) {
-                    list.add(new DirectoryComposite("└──" + filesInDirectory[i].getAbsolutePath(), ++this.paddingIndex));
+                    list.add(new DirectoryComposite("└──" + filesInDirectory[i].getAbsolutePath() , ++this.paddingIndex));
                 } else {
                     list.add(new FileLeaf("└──" + filesInDirectory[i].getName(), ++this.paddingIndex));
                 }
             }
-
         }
     }
 }

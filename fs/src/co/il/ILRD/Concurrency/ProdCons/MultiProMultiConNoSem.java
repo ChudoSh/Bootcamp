@@ -23,8 +23,6 @@ public class MultiProMultiConNoSem {
         proList.forEach(Thread::start);
         conList.forEach(Thread::start);
 
-        sleep(600);
-
         proList.forEach(Thread::interrupt);
         conList.forEach(Thread::interrupt);
 
@@ -50,7 +48,9 @@ public class MultiProMultiConNoSem {
         @Override
         public void run() {
             synchronized (lock) {
-                System.out.println(list.remove(++i));
+                if(!list.isEmpty()) {
+                    System.out.println(list.remove(++i));
+                }
             }
         }
     }

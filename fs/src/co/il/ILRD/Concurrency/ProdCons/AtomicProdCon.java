@@ -5,9 +5,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static java.lang.Thread.sleep;
 
 public class AtomicProdCon {
-    private static AtomicBoolean atomicLock = new AtomicBoolean(true);
+    private static AtomicBoolean atomicLock;
 
     public static void main(String[] args) throws InterruptedException {
+        atomicLock = new AtomicBoolean(true);
         Thread producer = new myProducer();
         Thread consumer = new myConsumer();
 

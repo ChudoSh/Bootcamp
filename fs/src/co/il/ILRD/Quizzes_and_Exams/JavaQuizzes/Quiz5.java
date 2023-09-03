@@ -1,5 +1,8 @@
 package co.il.ILRD.Quizzes_and_Exams.JavaQuizzes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static co.il.ILRD.Quizzes_and_Exams.JavaQuizzes.Quiz5.Test.func;
 
 interface SomeInterface {
@@ -15,7 +18,7 @@ public class Quiz5 {
         }
     }
 
-    public static void main(String[] args) {
+    public void main(String[] args) {
         SomeClass sc = new SomeClass();
         sc.foo();
         System.out.println(func());
@@ -29,4 +32,5 @@ public class Quiz5 {
             return --Test.x;
         }
     }
+
 }

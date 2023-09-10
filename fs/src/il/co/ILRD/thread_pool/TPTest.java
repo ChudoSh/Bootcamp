@@ -1,4 +1,4 @@
-package il.co.ILRD.ThreadPool;
+package il.co.ILRD.thread_pool;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

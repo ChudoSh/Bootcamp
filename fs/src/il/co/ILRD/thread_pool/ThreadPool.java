@@ -5,7 +5,7 @@ Status:
 Date:
 */
 
-package il.co.ILRD.ThreadPool;
+package il.co.ILRD.thread_pool;
 
 import com.sun.istack.internal.NotNull;
 import il.co.ILRD.WaitableQueue.SemWaitableQueue;

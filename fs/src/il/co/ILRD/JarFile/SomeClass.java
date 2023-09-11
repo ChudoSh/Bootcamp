@@ -1,0 +1,1 @@
+package il.co.ILRD.JarFile;public class SomeClass implements SomeInterface {    @Override    public void sayHi() {        System.out.println("hi from someClass");    }}

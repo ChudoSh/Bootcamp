@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ThreadPool implements Executor {
     private AtomicInteger numOfThreads;
-    private final SemWaitableQueue<Task<?>> pq;
+    private final SemWaitableQueue<Task<?>> tasks;
     private Semaphore semPause;
     private int pausedThreads = 0;
     private volatile boolean isShutdown = false;
@@ -25,7 +25,7 @@ public class ThreadPool implements Executor {
     /*----------------------------------------------------------------*/
     public ThreadPool(int numOfThreads) {
         this.numOfThreads = new AtomicInteger(0);
-        this.pq = new SemWaitableQueue<>(numOfThreads);
+        this.tasks = new SemWaitableQueue<>(numOfThreads);
         this.semPause = new Semaphore(0);
         createWorkingThreads(numOfThreads);
     }
@@ -52,7 +52,7 @@ public class ThreadPool implements Executor {
         }
 
         Task<V> newTask = new Task<>(command, priority);
-        this.pq.enqueue(newTask);
+        this.tasks.enqueue(newTask);
 
         return newTask.getFuture();
     }
@@ -133,7 +133,7 @@ public class ThreadPool implements Executor {
 
         private final int value;
 
-        private Priority(int value) {
+        Priority(int value) {
             this.value = value;
         }
 
@@ -154,7 +154,7 @@ public class ThreadPool implements Executor {
         public void run() {
             while (!toStop) {
                 try {
-                    pq.dequeue().execute();
+                    tasks.dequeue().execute();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -230,7 +230,7 @@ public class ThreadPool implements Executor {
                 return false;
             }
 
-            if (pq.remove(this.parentTask)){
+            if (tasks.remove(this.parentTask)){
                isCancelFlag = true;
             } else if (mayInterruptIfRunning) { // what does it mean?
                 this.parentTask.workingThread.interrupt();
@@ -284,12 +284,10 @@ public class ThreadPool implements Executor {
 
     /***********************************************************/
     private <V> Callable<V> toCallable(Runnable runnable, V returnValue) {
-        Callable<V> newCall = () -> {
+        return () -> {
             runnable.run();
             return returnValue;
         };
-
-        return newCall;
     }
    private void createWorkingThreads(int toCreate){
        for (int i = 0; i < toCreate; ++i) {

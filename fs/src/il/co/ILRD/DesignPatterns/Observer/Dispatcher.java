@@ -36,9 +36,9 @@ public class Dispatcher<V> {
     }
 
     public static abstract class Callback<U> {
-        Consumer<U> consumer;
-        Runnable cancel;
-        Dispatcher<U> dispatcher;
+        private Consumer<U> consumer;
+        private Runnable cancel;
+        private Dispatcher<U> dispatcher;
 
         public abstract void stop();
 
@@ -46,19 +46,29 @@ public class Dispatcher<V> {
             this.dispatcher = dispatcher;
         }
 
+        protected void setConsumer(Consumer<U> consumer) {
+            this.consumer = consumer;
+        }
+
+        protected void setCancel(Runnable cancel) {
+            this.cancel = cancel;
+        }
+
+        protected void stopDispatcher(){
+            this.dispatcher.unsubscribe(this);
+        }
+
     }
 
     public static class CallbackIMP<V> extends Callback<V> {
-
         public CallbackIMP(Consumer<V> consumer, Runnable cancel) {
-            this.consumer = consumer;
-            this.cancel = cancel;
+            this.setCancel(cancel);
+            this.setConsumer(consumer);
         }
 
         @Override
         public void stop() {
-            this.dispatcher.unsubscribe(this);
-
+            this.stopDispatcher();
         }
     }
 

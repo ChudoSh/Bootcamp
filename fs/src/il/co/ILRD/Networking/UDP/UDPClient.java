@@ -9,7 +9,7 @@ import java.net.InetAddress;
 
 public class UDPClient {
     public static void main(String[] args) throws IOException {
-        new UDPClient(8080, "255.255.255.255");
+        new UDPClient(8080, "10.10.2.56");
     }
 
     private final DatagramSocket datagramSocket;
@@ -24,6 +24,7 @@ public class UDPClient {
         System.out.println("DatagramSocket Started : Client");
         System.out.println(datagramSocket);
         System.out.println("SERVER CONNECTED");
+        System.out.println("Type 'bye' to exit");
         chatClient();
     }
 
@@ -36,7 +37,8 @@ public class UDPClient {
         while (true) {
             try {
                 System.out.println("Please insert message:");
-                BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(System.in));
                 str = reader.readLine();
 
                 if (str.equals("bye")) {
@@ -45,7 +47,9 @@ public class UDPClient {
                 }
 
                 buffer = str.getBytes();
-                sendPacket = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipName), this.port);
+                InetAddress address = InetAddress.getByName(this.ipName);
+                sendPacket = new DatagramPacket(buffer, buffer.length,
+                       address , this.port);
                 this.datagramSocket.send(sendPacket);
                 System.out.println("Message sent");
 

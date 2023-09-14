@@ -4,45 +4,71 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class TCPServer {
-    private ServerSocket ss;
-    private Socket s;
-    private DataInputStream dis;
-    private DataOutputStream dos;
+public class TCPServer implements Runnable {
+    private final ServerSocket ss;
+    private boolean isRunning = true;
 
     public TCPServer(int port) throws IOException {
         this.ss = new ServerSocket(port);
-        this.s = ss.accept();
-        this.dis = new DataInputStream(s.getInputStream());
-        this.dos = new DataOutputStream(s.getOutputStream());
 
-        try {
-            System.out.println("Server Started");
-            System.out.println(s);
-            System.out.println("CLIENT CONNECTED");
-            dis = new DataInputStream(s.getInputStream());
-            dos = new DataOutputStream(s.getOutputStream());
-            ServerChat();
-        } catch (Exception e) {
-            System.out.println(e);
+        System.out.println("TCP Server Started");
+        System.out.println("Type 'bye' to exit");
+    }
+
+    @Override
+    public void run() {
+        while (isRunning) {
+            Socket socket;
+            try {
+                socket = this.getSocket();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            new TCPThread(socket).start();
         }
     }
 
-    public void ServerChat() throws IOException {
-        String str, s1;
-        do {
-            str = dis.readUTF();
-            System.out.println("Client Message:" + str);
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-            s1 = br.readLine();
-            dos.writeUTF(s1);
-            dos.flush();
+    private static class TCPThread extends Thread {
+        private final Socket threadSocket;
+
+        private TCPThread(Socket socket) {
+            this.threadSocket = socket;
         }
-        while (!s1.equals("bye"));
+
+        @Override
+        public void run() {
+            try {
+                String str = null;
+                DataInputStream dis = new DataInputStream(threadSocket.getInputStream());
+                DataOutputStream dos = new DataOutputStream(threadSocket.getOutputStream());
+                System.out.println("TCP CLIENT CONNECTED");
+                str = dis.readUTF();
+                System.out.println("Client Message:" + str);
+
+                while (!str.equals("bye")) {
+                    BufferedReader br = new BufferedReader(
+                            new InputStreamReader(System.in));
+                    str = br.readLine();
+                    dos.writeUTF(str);
+                    dos.flush();
+
+                    str = dis.readUTF();
+                    System.out.println("Client Message:" + str);
+                }
+                this.threadSocket.close();
+            } catch (IOException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
+        }
     }
 
-    public static void main(String[] as) throws IOException {
-        new TCPServer(1234);
+    public Socket getSocket() throws IOException {
+        return ss.accept();
+    }
+
+    public void stop() {
+        this.isRunning = false;
     }
 }
 

@@ -7,7 +7,7 @@ public class Exer8 {
     }
 
     public static int multiply(int a, int b) {
-        if (1 == b){
+        if (1 == b) {
             return a;
         }
 
@@ -19,13 +19,10 @@ public class Exer8 {
     }
 
     private static int incrementRec(int a, int one) {
-        if (0 == (a & one)){
+        if (0 == (a & one)) {
             return (a ^ one);
         }
 
-        a ^= one;
-        one <<= 1;
-
-        return incrementRec(a, one);
+        return incrementRec(a ^ one, one << 1);
     }
 }

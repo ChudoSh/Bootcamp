@@ -21,7 +21,7 @@ public class Exer5 {
     }
 
     public void recursiveIslandCoutning(List<List<Boolean>> bitMap, int currentRow, int currentCol, int nextRow, int nextCol) {
-        if (nextRow < 0 || nextCol < 0 || nextRow > (currentRow - 1) || nextCol > (currentCol - 1)
+        if ((nextRow < 0) || (nextCol < 0) || (nextRow > (currentRow - 1)) || (nextCol > (currentCol - 1))
                 || !bitMap.get(nextRow).get(nextCol)) {
             return;
         }

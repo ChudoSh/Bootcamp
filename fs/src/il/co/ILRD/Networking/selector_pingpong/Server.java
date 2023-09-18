@@ -15,7 +15,7 @@ public class Server {
     }
 
 
-    public void startServer() throws IOException, InterruptedException {
+    public void startServer() {
         new Thread(()->this.udps.run()).start();
         new Thread(()->this.tcps.run()).start();
     }

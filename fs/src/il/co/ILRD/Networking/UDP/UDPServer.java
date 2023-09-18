@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
-public class UDPServer implements Runnable{
+public class UDPServer implements Runnable {
     private final DatagramSocket datagramSocket;
 
     public UDPServer(int port) throws IOException {
@@ -37,7 +37,7 @@ public class UDPServer implements Runnable{
                 datagramSocket.receive(receivePacket);
                 str = new String(buffer, 0, receivePacket.getLength());
 
-                System.out.println("Message from Client:" + str);
+                System.out.println("UDP Client message:" + str);
                 System.out.println("Please insert message:");
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));

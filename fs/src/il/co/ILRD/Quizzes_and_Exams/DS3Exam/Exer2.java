@@ -9,7 +9,6 @@ public class Exer2 {
 
         Arrays.sort(arr);
 
-
         while (arr[end] > sumOfTwo) {
             --end;
         }

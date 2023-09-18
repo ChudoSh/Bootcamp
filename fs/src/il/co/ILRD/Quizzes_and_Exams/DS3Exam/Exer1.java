@@ -13,7 +13,7 @@ public class Exer1 {
         myDS = new DS(len);
     }
 
-    Integer get(int i) {
+    public Integer get(int i) {
 
         Integer result;
 
@@ -46,13 +46,13 @@ public class Exer1 {
         return result;
     }
 
-    void setAll(int val) {
+    public void setAll(int val) {
         isWildcardChanged = true;
         wildcard = val;
         wildcardSetTime = LocalDate.now();
     }
 
-    void set(int i, int val) {
+    public void set(int i, int val) {
         isWildcardChanged = false;
         myDS.arr[i] = new Node(val, wildcardSetTime);
     }

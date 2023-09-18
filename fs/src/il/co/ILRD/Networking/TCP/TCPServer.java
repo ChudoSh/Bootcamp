@@ -38,17 +38,19 @@ public class TCPServer implements Runnable {
         @Override
         public void run() {
             try {
+                DataOutputStream dos;
                 String str = null;
                 DataInputStream dis = new DataInputStream(threadSocket.getInputStream());
-                DataOutputStream dos = new DataOutputStream(threadSocket.getOutputStream());
                 System.out.println("TCP CLIENT CONNECTED");
                 str = dis.readUTF();
-                System.out.println("Client Message:" + str);
+                System.out.println("TCP Client message:" + str);
 
-                while (!str.equals("bye")) {
+                while (!str.equals("bye")){
+                    System.out.println("Please insert message:");
                     BufferedReader br = new BufferedReader(
                             new InputStreamReader(System.in));
                     str = br.readLine();
+                    dos = new DataOutputStream(threadSocket.getOutputStream());
                     dos.writeUTF(str);
                     dos.flush();
 

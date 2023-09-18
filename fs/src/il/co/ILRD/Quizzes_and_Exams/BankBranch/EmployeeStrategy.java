@@ -3,9 +3,8 @@ package il.co.ILRD.Quizzes_and_Exams.BankBranch;
 import java.time.LocalDate;
 import java.time.Period;
 
-abstract public interface EmployeeStrategy {
-
-    abstract public double calculateAnnualSalary(LocalDate startDate, double salary);
+public interface EmployeeStrategy {
+    double calculateAnnualSalary(LocalDate startDate, double salary);
 }
 
 class JuniorSalary implements EmployeeStrategy{

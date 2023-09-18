@@ -1,15 +1,15 @@
-package il.co.ILRD.Networking.selector_pingpong;
+package il.co.ILRD.Networking.multiProtocolServer;
 
 import il.co.ILRD.Networking.TCP.TCPServer;
 import il.co.ILRD.Networking.UDP.UDPServer;
 
-import java.io.*;
+import java.io.IOException;
 
-public class Server {
+public class Hardcoded_mpServer {
     private TCPServer tcps;
     private UDPServer udps;
 
-    public Server(int port) throws IOException {
+    public Hardcoded_mpServer(int port) throws IOException {
         this.udps = new UDPServer(port);
         this.tcps = new TCPServer(port);
     }
@@ -21,6 +21,6 @@ public class Server {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        new Server(8080).startServer();
+        new Hardcoded_mpServer(8080).startServer();
     }
 }

@@ -12,8 +12,10 @@ public class TCPClient {
     public TCPClient(String ipAdress, int port) {
         this.ipAdress = ipAdress;
         try {
+            System.out.println("ServerSocket Started : Client");
+            System.out.println("SERVER CONNECTED");
+            System.out.println("Type 'bye' to exit");
             socket = new Socket(InetAddress.getByName(ipAdress),port);
-            System.out.println(socket);
             din = new DataInputStream(socket.getInputStream());
             dout = new DataOutputStream(socket.getOutputStream());
             ClientChat();
@@ -36,6 +38,6 @@ public class TCPClient {
     }
 
     public static void main(String[] as) {
-        new TCPClient("10.10.2.56",8080);
+        new TCPClient("10.10.0.4",8090);
     }
 }

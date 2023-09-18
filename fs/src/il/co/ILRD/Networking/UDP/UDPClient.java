@@ -9,7 +9,7 @@ import java.net.InetAddress;
 
 public class UDPClient {
     public static void main(String[] args) throws IOException {
-        new UDPClient(8080, "10.10.2.56");
+        new UDPClient(8080, "localhost");
     }
 
     private final DatagramSocket datagramSocket;

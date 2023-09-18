@@ -14,7 +14,7 @@ public class Exer4 {
     public static String rotateCharArray(String str, int rotate) {
         rotate = rotate % str.length();
         if (rotate < 0) {
-            rotate = str.length() + rotate;
+            rotate += str.length();
         }
 
         str = reverseString(str.toCharArray(), 0, str.length() - 1);

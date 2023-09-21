@@ -1,4 +1,4 @@
-package il.co.ILRD.Networking.UDP;
+package il.co.ILRD.Networking.hardcoded_mps.UDP;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.net.InetAddress;
 
 public class UDPClient {
     public static void main(String[] args) throws IOException {
-        new UDPClient(8080, "localhost");
+        new UDPClient(9898, "localhost");
     }
 
     private final DatagramSocket datagramSocket;

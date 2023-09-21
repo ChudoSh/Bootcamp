@@ -1,4 +1,4 @@
-package il.co.ILRD.Networking.TCP;
+package il.co.ILRD.Networking.hardcoded_mps.TCP;
 
 import java.io.*;
 import java.net.ServerSocket;

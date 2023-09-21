@@ -1,7 +1,7 @@
-package il.co.ILRD.Networking.multiProtocolServer;
+package il.co.ILRD.Networking.hardcoded_mps;
 
-import il.co.ILRD.Networking.TCP.TCPServer;
-import il.co.ILRD.Networking.UDP.UDPServer;
+import il.co.ILRD.Networking.hardcoded_mps.TCP.TCPServer;
+import il.co.ILRD.Networking.hardcoded_mps.UDP.UDPServer;
 
 import java.io.IOException;
 

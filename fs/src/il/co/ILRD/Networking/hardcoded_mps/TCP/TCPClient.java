@@ -1,4 +1,4 @@
-package il.co.ILRD.Networking.TCP;
+package il.co.ILRD.Networking.hardcoded_mps.TCP;
 
 import java.io.*;
 import java.net.*;
@@ -38,6 +38,6 @@ public class TCPClient {
     }
 
     public static void main(String[] as) {
-        new TCPClient("10.10.0.4",8090);
+        new TCPClient("localhost",8989);
     }
 }

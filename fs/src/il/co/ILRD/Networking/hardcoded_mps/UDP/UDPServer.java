@@ -1,4 +1,4 @@
-package il.co.ILRD.Networking.UDP;
+package il.co.ILRD.Networking.hardcoded_mps.UDP;
 
 import java.io.BufferedReader;
 import java.io.IOException;

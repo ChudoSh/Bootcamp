@@ -1,4 +1,4 @@
-package il.co.ILRD.Networking.multiProtocolServer;
+package il.co.ILRD.Networking.hardcoded_mps;
 
 
 import java.io.*;

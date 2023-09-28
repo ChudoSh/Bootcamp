@@ -3,37 +3,77 @@ package il.co.ILRD.Quizzes_and_Exams.JavaQuizzes;
 import java.util.Stack;
 
 public class ExpressionTree {
-    Stack<Character> tree;
-    String expression;
+    private NodeComposite root;
 
-    public ExpressionTree(String expression) {
-        this.tree = new Stack<>();
-        this.expression = expression;
+    enum OperatorEnum {
+        PLUS('+') {
+            @Override
+            public double calc(NodeComposite Left, NodeComposite Right) {
+                return Left.calculate() + Right.calculate();
+            }
+        },
+        MINUS('-') {
+            @Override
+            public double calc(NodeComposite Left, NodeComposite Right) {
+                return Left.calculate() - Right.calculate();
+            }
+        },
+        DIV('/') {
+            @Override
+            public double calc(NodeComposite Left, NodeComposite Right) {
+                return Left.calculate() / Right.calculate();
+            }
+        },
+        MULTI('*') {
+            @Override
+            public double calc(NodeComposite Left, NodeComposite Right) {
+                return Left.calculate() * Right.calculate();
+            }
+        };
+        private char val;
+
+        OperatorEnum(char character) {
+            this.val = character;
+        }
+
+        public abstract double calc(NodeComposite Left, NodeComposite Right);
+    }
+
+    public ExpressionTree(String expressio) {
+        //DO some stuff
+    }
+
+    interface NodeComposite {
+        double calculate();
+    }
+
+    private class Operand implements NodeComposite {
+        double val;
+
+        //Constuctor
+
+        @Override
+        public double calculate() {
+            return this.val;
+        }
+    }
+
+    private class Operator implements NodeComposite {
+        NodeComposite Lchild;
+        NodeComposite Rchild;
+        OperatorEnum op;
+
+        //Constuctor
+
+        @Override
+        public double calculate() {
+            return op.calc(Lchild, Rchild);
+        }
     }
 
     public double calculate() {
-        Node temp, v1, v2;
-        Stack<Node> stack = new Stack<>();
-
-        for (char ch : this.expression.toCharArray()){
-
-        }
-
-        return 0.0;
+        return this.root.calculate();
     }
-
-    private boolean isOperator(char c) {
-        return '+' == c || '-' == c || '*' == c || '/' == c;
-    }
-    private static class Node{
-        char value;
-        Node right, left;
-
-        public Node(char value){
-            this.value = value;
-
-        }
-    }
-
 }
+
 // +,3,*,+,2,5,9

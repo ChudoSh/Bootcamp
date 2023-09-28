@@ -8,7 +8,7 @@ Date:
 package il.co.ILRD.thread_pool;
 
 import com.sun.istack.internal.NotNull;
-import il.co.ILRD.WaitableQueue.SemWaitableQueue;
+import il.co.ILRD.waitable_queue.SemWaitableQueue;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -77,7 +77,7 @@ public class ThreadPool implements Executor {
     }
 
     public void pause() {
-        Callable<?> pause = () -> {
+        Callable<?> pause = () -> { //posion pill
             semPause.acquire();
             return null;
         };
@@ -142,7 +142,8 @@ public class ThreadPool implements Executor {
         }
     }
 
-    /*----------------------------------------------------------------*/
+    /*--------------------------------------
+--------------------------*/
     private class WorkingThread extends Thread {
         private boolean toStop = false;
 
@@ -155,15 +156,18 @@ public class ThreadPool implements Executor {
             while (!toStop) {
                 try {
                     tasks.dequeue().execute();
+                } catch (InterruptedException e) {
+                    boolean ignored = Thread.interrupted();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
+
             }
             numOfThreads.decrementAndGet();
         }
     }
 
-    /*----------------------------------------------------------------*/
+    /*---------------------------Task-------------------------------------*/
     private class Task<V> implements Comparable<Task<V>> {
         private final int priority;
         private final TaskFuture<V> future;
@@ -193,7 +197,7 @@ public class ThreadPool implements Executor {
         }
     }
 
-    /*----------------------------------------------------------------*/
+    /*------------------------------TaskFuture--------------------------------*/
     private class TaskFuture<V> implements Future<V> {
         private volatile boolean isCancelFlag = false;
         private volatile boolean isDoneFlag = false;
@@ -218,7 +222,7 @@ public class ThreadPool implements Executor {
         }
 
         public V getValue() throws ExecutionException {
-            if (null != this.thrownException){
+            if (null != this.thrownException) {
                 throw this.thrownException;
             }
             return value;
@@ -230,13 +234,13 @@ public class ThreadPool implements Executor {
                 return false;
             }
 
-            if (tasks.remove(this.parentTask)){
-               isCancelFlag = true;
+            if (tasks.remove(this.parentTask)) {
+                isCancelFlag = true;
             } else if (mayInterruptIfRunning) { // what does it mean?
                 this.parentTask.workingThread.interrupt();
             }
 
-            this.isCancelFlag= true;
+            this.isCancelFlag = true;
             return this.isCancelFlag;
         }
 
@@ -252,11 +256,11 @@ public class ThreadPool implements Executor {
 
         @Override
         public V get() throws InterruptedException, ExecutionException {
-            if (isCancelled()){
-               throw new CancellationException();
+            if (isCancelled()) {
+                throw new CancellationException();
             }
 
-            while (!isDone()){
+            while (!isDone()) {
                 TimeUnit.SECONDS.sleep(1); //again, why?
             }
 
@@ -265,16 +269,16 @@ public class ThreadPool implements Executor {
 
         @Override
         public V get(long timeout, @NotNull TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-            if (isCancelled()){
+            if (isCancelled()) {
                 throw new CancellationException();
             }
 
             long end = System.currentTimeMillis() + unit.toMillis(timeout);
 
-            while (!isDone() && end >= System.currentTimeMillis()){
+            while (!isDone() && end >= System.currentTimeMillis()) {
                 TimeUnit.SECONDS.sleep(1); //again, why?
             }
-            if(!isDone()){
+            if (!isDone()) {
                 throw new TimeoutException();
             }
 
@@ -289,12 +293,14 @@ public class ThreadPool implements Executor {
             return returnValue;
         };
     }
-   private void createWorkingThreads(int toCreate){
-       for (int i = 0; i < toCreate; ++i) {
-           new WorkingThread().start();
-       }
-   }
-    private void destroyWorkingThreads(int toDestroy, int priority){
+
+    private void createWorkingThreads(int toCreate) {
+        for (int i = 0; i < toCreate; ++i) {
+            new WorkingThread().start();
+        }
+    }
+
+    private void destroyWorkingThreads(int toDestroy, int priority) {
         Callable<?> destroyThread = () -> {
             ((WorkingThread) (Thread.currentThread())).toStop = true;
             return null;

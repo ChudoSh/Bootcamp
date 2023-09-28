@@ -15,27 +15,36 @@ public class Quiz6 {
         private static Singleton<T> instance = null;
     }
 */
-    interface Person {
-        default void sayHello() {
-            System.out.println("Hello");
-        }
+
+
+
+}
+
+interface Person {
+    default void sayHello() {
+        System.out.println("Hello");
+    }
+}
+
+interface Male {
+    default void sayHello() {
+        System.out.println("Hi");
+    }
+}
+class Sam implements Person, Male {
+    @Override
+    public void sayHello() {
+        Person.super.sayHello();
+    }
+}
+
+class test{
+    public static void main(String[] args) {
+        Sam sam = new Sam();
+        sam.sayHello();
+        Sam secondSam = new Sam();
+        secondSam.sayHello();
+
     }
 
-    interface Male {
-        default void sayHello() {
-            System.out.println("Hi");
-        }
-    }
-
-    public class Sam implements Person, Male {
-        @Override
-        public void sayHello() {
-            Person.super.sayHello();
-        }
-    }
-
-//    Sam sam = new Sam();
-//    sam.sayHello();
-//    Sam secondSam = new Sam();
-//    secondSam.sayHello();
 }

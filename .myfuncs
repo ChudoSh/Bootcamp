@@ -11,4 +11,6 @@ alias lg='git log --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\
 
 alias dsdir='cd ~/Mygit/bar.shadkhin/ds'
 alias spdir='cd ~/Mygit/bar.shadkhin/system_programming'
+alias fsrcdir='cd ~/Mygit/bar.shadkhin/fs/src/il/co/ILRD'
+alias foutdir='cd ~/Mygit/bar.shadkhin/fs/out'
 alias quizzes='cd ~/Mygit/bar.shadkhin/quizzes'

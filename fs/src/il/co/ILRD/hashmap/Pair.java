@@ -6,7 +6,6 @@ status : approved
  */
 package il.co.ILRD.hashmap;
 
-import com.sun.istack.internal.NotNull;
 import java.util.Map;
 
 public class Pair<K extends Comparable<K>, V> implements Map.Entry<K, V>, Comparable<K> {
@@ -68,7 +67,7 @@ public class Pair<K extends Comparable<K>, V> implements Map.Entry<K, V>, Compar
     }
 
     @Override
-    public int compareTo(@NotNull K key) {
+    public int compareTo(K key) {
         return key.compareTo(this.key);
     }
 }

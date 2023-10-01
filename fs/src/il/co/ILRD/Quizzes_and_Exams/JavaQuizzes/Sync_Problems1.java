@@ -26,15 +26,8 @@ public class Sync_Problems1 {
     }
 
     public void endRead() {
-        // Acquire the lock to ensure that no writers are writing.
-        lock.lock();
         // Decrement the counter to indicate that there is one fewer reader.
         cnt.decrementAndGet();
-
-        // If there are no more readers, release the lock to allow writers to start writing.
-        if (cnt.get() == 0) {
-            lock.unlock();
-        }
     }
 
     public void startWrite() {
@@ -43,7 +36,7 @@ public class Sync_Problems1 {
             lock.lock();
 
             while (cnt.get() > 0) {
-                lock.newCondition().await();
+                Thread.currentThread().sleep(1);
             }
         } catch (InterruptedException e) {
             lock.unlock();

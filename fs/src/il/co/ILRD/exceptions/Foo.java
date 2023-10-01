@@ -2,7 +2,6 @@ package il.co.ILRD.exceptions;
 
 import java.io.IOException;
 
-import static com.sun.corba.se.impl.util.Utility.printStackTrace;
 
 public class Foo {
     private static void foo1() throws IOException {
@@ -35,7 +34,7 @@ public class Foo {
         try {
             throw new MyException.MyException1("Meh");
         }catch (Exception e){
-            printStackTrace();
+            e.printStackTrace();
         }
     }
 }

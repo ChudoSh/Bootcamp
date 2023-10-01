@@ -6,7 +6,6 @@ status : approved
  */
 package il.co.ILRD.hashmap;
 
-import com.sun.istack.internal.NotNull;
 
 import java.util.*;
 
@@ -61,7 +60,7 @@ public class HashMap<K extends Comparable<K>, V> implements Map<K, V> {
     }
 
     @Override
-    public boolean containsKey(@NotNull Object key) {
+    public boolean containsKey(Object key) {
         if (null == listOfBuckets.get(getHashCode(key))) {
             return false;
         }
@@ -75,12 +74,12 @@ public class HashMap<K extends Comparable<K>, V> implements Map<K, V> {
     }
 
     @Override
-    public boolean containsValue(@NotNull Object value) {
+    public boolean containsValue(Object value) {
         return this.valueCollection.contains(value);
     }
 
     @Override
-    public V get(@NotNull Object key) {
+    public V get(Object key) {
         int index = getHashCode(key);
 
         if (null == listOfBuckets.get(index)) {
@@ -97,7 +96,7 @@ public class HashMap<K extends Comparable<K>, V> implements Map<K, V> {
     }
 
     @Override
-    public V put(@NotNull K key, V value) {
+    public V put(K key, V value) {
         V toReturn = value;
 
         if (this.containsKey(key)) {
@@ -121,7 +120,7 @@ public class HashMap<K extends Comparable<K>, V> implements Map<K, V> {
     }
 
     @Override
-    public V remove(@NotNull Object key) {
+    public V remove(Object key) {
         int index = getHashCode(key);
         Collection<Entry<K, V>> currentBucket = listOfBuckets.get(index);
 
@@ -144,7 +143,7 @@ public class HashMap<K extends Comparable<K>, V> implements Map<K, V> {
     }
 
     @Override
-    public void putAll(@NotNull Map<? extends K, ? extends V> map) {
+    public void putAll(Map<? extends K, ? extends V> map) {
         for (Entry<? extends K, ? extends V> entry : map.entrySet()) {
             this.put(entry.getKey(), entry.getValue());
         }
@@ -179,7 +178,7 @@ public class HashMap<K extends Comparable<K>, V> implements Map<K, V> {
     private class EntrySet extends AbstractSet<Entry<K, V>> {
 
         @Override
-        public @NotNull Iterator<Entry<K, V>> iterator() {
+        public Iterator<Entry<K, V>> iterator() {
             return new EntryIterator();
         }
 

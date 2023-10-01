@@ -7,7 +7,6 @@ Date:
 
 package il.co.ILRD.thread_pool;
 
-import com.sun.istack.internal.NotNull;
 import il.co.ILRD.waitable_queue.SemWaitableQueue;
 
 import java.util.concurrent.*;
@@ -100,7 +99,7 @@ public class ThreadPool implements Executor {
         this.isShutdown = true;
     }
 
-    public void awaitTermination(long timeout, @NotNull TimeUnit unit) throws TimeoutException {
+    public void awaitTermination(long timeout, TimeUnit unit) throws TimeoutException {
         long end = System.currentTimeMillis() + unit.toMillis(timeout);
 
         while (0 != numOfThreads.get() && end >= System.currentTimeMillis()) {
@@ -192,7 +191,7 @@ public class ThreadPool implements Executor {
         }
 
         @Override
-        public int compareTo(@NotNull Task<V> task) {
+        public int compareTo(Task<V> task) {
             return task.getPriority() - this.priority;
         }
     }
@@ -268,7 +267,7 @@ public class ThreadPool implements Executor {
         }
 
         @Override
-        public V get(long timeout, @NotNull TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+        public V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
             if (isCancelled()) {
                 throw new CancellationException();
             }

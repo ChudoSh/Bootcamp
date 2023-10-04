@@ -1,8 +1,8 @@
 /*
 Dev: BarSh
-Rev:
-Status:
-Date:
+Rev: Daniel
+Status: Approved
+Date: 5.9.23
 */
 
 package il.co.ILRD.thread_pool;
@@ -62,7 +62,7 @@ public class ThreadPool implements Executor {
     }
 
     public void setNumOfThreads(int numOfThreads) {
-        int newNumOfThreads = 0;
+        int newNumOfThreads;
         int oldNumOfThreads = this.numOfThreads.get();
 
         newNumOfThreads = oldNumOfThreads - numOfThreads;
@@ -76,7 +76,7 @@ public class ThreadPool implements Executor {
     }
 
     public void pause() {
-        Callable<?> pause = () -> { //posion pill
+        Callable<?> pause = () -> { //poison pill
             semPause.acquire();
             return null;
         };
@@ -141,8 +141,7 @@ public class ThreadPool implements Executor {
         }
     }
 
-    /*--------------------------------------
---------------------------*/
+    /*----------------------------------------------------------------*/
     private class WorkingThread extends Thread {
         private boolean toStop = false;
 
@@ -235,7 +234,7 @@ public class ThreadPool implements Executor {
 
             if (tasks.remove(this.parentTask)) {
                 isCancelFlag = true;
-            } else if (mayInterruptIfRunning) { // what does it mean?
+            } else if (mayInterruptIfRunning) {
                 this.parentTask.workingThread.interrupt();
             }
 
@@ -300,7 +299,7 @@ public class ThreadPool implements Executor {
     }
 
     private void destroyWorkingThreads(int toDestroy, int priority) {
-        Callable<?> destroyThread = () -> {
+        Callable<?> destroyThread = () -> { //poison pill
             ((WorkingThread) (Thread.currentThread())).toStop = true;
             return null;
         };

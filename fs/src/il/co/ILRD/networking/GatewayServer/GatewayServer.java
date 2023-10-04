@@ -359,11 +359,13 @@ public class GatewayServer {
 
                 @Override
                 public ByteBuffer receive() {
+                    int FAIL = -1;
+
                     try {
                         ByteBuffer buffer = ByteBuffer.allocate(2048);
                         int bytesRead = this.clientSocketChannel.read(buffer);
 
-                        if (bytesRead == -1) {
+                        if (bytesRead == FAIL) {
                             this.clientSocketChannel.close();
                             return null;
                         }
@@ -397,7 +399,6 @@ public class GatewayServer {
             }
 
             private class UDPCommunicator implements Communicator {
-
                 private final DatagramChannel clientDatagramChannel;
                 private SocketAddress clientAddress;
 
@@ -434,7 +435,7 @@ public class GatewayServer {
     /*===================================== Plug & Play =====================================*/
     /*=================================================================================================*/
 
-    private class PlugAndPlay implements Runnable {
+    private class PlugAndPlay implements Runnable { /*add a way to load classes that already exist in the folder*/
         private Loader jarLoader;
         private Wathcer wathcer;
 

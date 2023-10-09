@@ -19,9 +19,6 @@ public class DataObjectCRUD {
         }
     }
 
-    public DataObjectCRUD(String url) {
-        this(url, null, null);
-    }
 
     public void create(Student newStudent, String tableName) {
         String sql = String.format(this.create, tableName);

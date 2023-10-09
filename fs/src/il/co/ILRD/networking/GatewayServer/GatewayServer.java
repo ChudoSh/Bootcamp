@@ -4,7 +4,6 @@ import com.sun.media.sound.InvalidDataException;
 import il.co.ILRD.hashmap.Pair;
 import il.co.ILRD.thread_pool.ThreadPool;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -29,16 +28,15 @@ public class GatewayServer {
     private RequestHandler requestHandler;
     private PlugAndPlay plugAndPlay;
 
-    public GatewayServer(int numOfThreads) throws IOException, ClassNotFoundException {
+    public GatewayServer(int numOfThreads) throws IOException {
         this.requestHandler = new RequestHandler(numOfThreads);
         this.multiProtocolServer = new MultiProtocolServer();
-        this.plugAndPlay = new PlugAndPlay("/home/barchik/Mygit/bar.shadkhin/fs/src/il/co/ILRD/networking/GatewayServer/Mock data/");
+        this.plugAndPlay = new PlugAndPlay("/home/barchik/Mygit/bar.shadkhin/fs/src/il/co/ILRD/networking/GatewayServer/Mock data");
         this.multiProtocolServer.addTCPConnection(8989);
 
         this.multiProtocolServer.start();
         this.plugAndPlay.start();
     }
-
 
     private void handle(ByteBuffer buffer, Communicator communicator) {
         if (null == buffer) {
@@ -66,10 +64,10 @@ public class GatewayServer {
         private RequestHandler(int numOfThreads) {
             this.threadPool = new ThreadPool(numOfThreads);
             this.factory = new Factory<>();
-            this.factory.add("RegisterCompany", new RegisterCompany());
-            this.factory.add("RegisterProduct", new RegisterProduct());
-            this.factory.add("RegisterIOT", new RegisterIOT());
-            this.factory.add("Update", new Update());
+//            this.factory.add("RegisterCompany", new RegisterCompany());
+//            this.factory.add("RegisterProduct", new RegisterProduct());
+//            this.factory.add("RegisterIOT", new RegisterIOT());
+//            this.factory.add("Update", new Update());
         }
 
         private void handle(ByteBuffer buffer, Communicator communicator) {
@@ -96,7 +94,7 @@ public class GatewayServer {
 
             private void add(K key, Function<D, Command> command) {
                 this.commands.put(key, command);
-                System.out.println( "command " + key + " added to factory");
+                System.out.println("command " + key + " added to factory");
             }
 
             private Command create(K key, D data) {
@@ -432,14 +430,16 @@ public class GatewayServer {
     }
 
     /*=================================================================================================*/
-    /*===================================== Plug & Play =====================================*/
+    /*===================================== Plug & Play ===============================================*/
     /*=================================================================================================*/
 
     private class PlugAndPlay implements Runnable { /*add a way to load classes that already exist in the folder*/
-        private Loader jarLoader;
-        private Wathcer wathcer;
+        private final Loader jarLoader;
+        private final Wathcer wathcer;
+        private final String path;
 
         public PlugAndPlay(String path) {
+            this.path = path;
             this.wathcer = new Wathcer(path);
             this.jarLoader = new Loader();
         }
@@ -451,7 +451,10 @@ public class GatewayServer {
         @Override
         public void run() {
             try {
-                while (true) {
+//                this.addToFactory(
+//                        this.jarLoader.load(
+//                                Path.of(this.path)));
+                while (!Thread.currentThread().isInterrupted()) {
                     this.addToFactory(this.jarLoader.load(
                             this.wathcer.watch()));
                 }
@@ -468,7 +471,7 @@ public class GatewayServer {
                     try {
                         Object obj = cmd.newInstance();
                         Method method = cmd.getMethod("call");
-                        Function<String, Command> recipe = toCommand(obj, method);
+                        Function<String, GatewayServer.Command> recipe = toCommand(obj, method);
                         System.out.println("cmd.name " + cmd.getName());
 
                         GatewayServer.this.requestHandler.
@@ -482,8 +485,8 @@ public class GatewayServer {
             }
         }
 
-        private Function<String, Command> toCommand(Object instance, Method method) {
-            Function<String, Command> recipe = data -> () -> {
+        private Function<String, GatewayServer.Command> toCommand(Object instance, Method method) {
+            Function<String, GatewayServer.Command> recipe = data -> () -> {
                 try {
                     method.invoke(instance);
                 } catch (IllegalAccessException |
@@ -505,6 +508,18 @@ public class GatewayServer {
 
             private Path watch() throws ClassNotFoundException {
                 try {
+
+//                    File plugins = SRC_PATH.toFile();
+//                    if (plugins.isDirectory()) {
+//                        for (File jar : Objects.requireNonNull(plugins.listFiles())) {
+//                            try {
+//                                addJar(jar.getAbsolutePath());
+//                            } catch (IOException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+
                     this.watchService =
                             FileSystems.getDefault().newWatchService();
                     toMonitor.register(this.watchService,
@@ -539,8 +554,8 @@ public class GatewayServer {
             public Loader() {
             }
 
-            public List<Class<?>> load(Path path) throws
-                    IOException, ClassNotFoundException {
+
+            public List<Class<?>> load(Path path) throws IOException, ClassNotFoundException {
                 List<Class<?>> list = new ArrayList<>();
                 Enumeration<JarEntry> entryEnumeration;
                 Class<?> classToAdd;

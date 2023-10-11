@@ -1,12 +1,13 @@
-package il.co.ILRD.sql.mockClasses;
+package Test;
 
+import databases.AdminDB;
+import databases.CompanyRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
-public class Tests {
+public class AdminBDTest {
     AdminDB adminDB;
 
     @BeforeEach

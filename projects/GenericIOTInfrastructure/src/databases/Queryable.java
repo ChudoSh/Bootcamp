@@ -1,4 +1,4 @@
-package il.co.ILRD.sql.mockClasses;
+package databases;
 
 abstract public class Queryable {
     private static final String queryCreate = "INSERT INTO %s %s VALUES %s";
@@ -80,7 +80,9 @@ abstract public class Queryable {
     private static String generateValueString(int numOfValues) {
         StringBuilder str = new StringBuilder("(");
 
-        str.append("?, ".repeat(Math.max(0, numOfValues - 1)));
+        for (int i = 0; i < numOfValues - 1; ++i){
+           str.append("?, ");
+        }
 
         return str.append("?)").toString();
 

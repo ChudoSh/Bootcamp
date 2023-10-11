@@ -1,4 +1,4 @@
-package il.co.ILRD.sql.mockClasses;
+package databases;
 
 import java.sql.*;
 

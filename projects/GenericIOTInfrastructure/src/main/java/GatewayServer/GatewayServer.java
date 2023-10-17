@@ -1,11 +1,11 @@
-package GatewayServer;
+package main.java.GatewayServer;
 
 import com.sun.media.sound.InvalidDataException;
-import databases.AdminDB;
-import databases.CRUD;
-import databases.CompanyRecord;
-import hashmap.Pair;
-import thread_pool.ThreadPool;
+import main.java.databases.CRUD;
+import main.java.databases.AdminDB;
+import main.java.databases.CompanyRecord;
+import main.java.hashmap.Pair;
+import main.java.thread_pool.ThreadPool;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,8 +39,8 @@ public class GatewayServer {
 
         this.multiProtocolServer.start();
         this.plugAndPlay.start();
-        this.adminDB = new AdminDB("testdamin");
-        this.adminDB.createDatabase("jdbc:mysql://localhost:3306/", "root", "password");
+        adminDB = new AdminDB("testdamin");
+        adminDB.createDatabase("jdbc:mysql://localhost:3306/", "root", "password");
         String[] definitions =
                 {"BIGINT NOT NULL AUTO_INCREMENT",
                         "VARCHAR(255)",
@@ -71,7 +71,6 @@ public class GatewayServer {
         ByteBuffer receive();
 
         void send(ByteBuffer buffer);
-
     }
 
     public interface Command {

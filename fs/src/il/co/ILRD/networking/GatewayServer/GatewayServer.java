@@ -49,7 +49,6 @@ public class GatewayServer {
         ByteBuffer receive();
 
         void send(ByteBuffer buffer);
-
     }
 
     public interface Command {

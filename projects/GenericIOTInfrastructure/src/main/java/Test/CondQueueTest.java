@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 public class CondQueueTest {
     CondWaitableQueue<Integer> condQueue;
     int capacity = 1000;

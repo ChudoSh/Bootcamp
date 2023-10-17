@@ -1,4 +1,4 @@
-package il.co.ILRD.networking.GatewayServer;
+package main.java.GatewayServer;
 
 import java.io.Serializable;
 

@@ -2,8 +2,6 @@ package il.co.ILRD.sql.mockClasses;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.sql.Connection;
 import java.sql.SQLException;
 
 public class Tests {
@@ -35,13 +33,13 @@ public class Tests {
 
 
     @Test
-    void createCompany() throws SQLException {
+    void createCompany() {
         CompanyRecord newCompany = new CompanyRecord("Bezeq", "tel aviv", "bar", "something", "something", 49, this.adminDB.getDatabaseConnection());
         this.adminDB.create(newCompany);
     }
 
     @Test
-    void readCompany() throws SQLException {
+    void readCompany() {
         CompanyRecord newCompany = new CompanyRecord("Tadiran", "tel aviv", "bar", "something", "something", 49, this.adminDB.getDatabaseConnection());
         this.adminDB.create(newCompany);
         CompanyRecord toRead = (CompanyRecord) this.adminDB.read(newCompany);
@@ -49,7 +47,7 @@ public class Tests {
     }
 
     @Test
-    void updateCompany() throws SQLException {
+    void updateCompany() {
         CompanyRecord newCompany = new CompanyRecord("Electra", "tel aviv", "bar", "something", "something", 49, this.adminDB.getDatabaseConnection());
         this.adminDB.create(newCompany);
         newCompany.setCompanyName("SomeUpdate");

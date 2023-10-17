@@ -1,4 +1,4 @@
-package databases;
+package main.java.databases;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -37,7 +37,7 @@ public class AdminDB implements CRUD {
 
     @Override
     public void update(Recordable toUpdate) {
-        if (!(toUpdate instanceof CompanyRecord)) { /*should be inner to company*/
+        if (null == toUpdate) {
             System.out.println("Not the right record.");
             return;
         }

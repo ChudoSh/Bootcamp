@@ -1,4 +1,4 @@
-package databases;
+package main.java.databases;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -44,7 +44,6 @@ public class CompanyRecord implements Recordable {
                 values[4],
                 Integer.parseInt(values[5]), tableConnection);
     }
-
 
     @Override
     public Recordable getRecordFromResultSet(ResultSet result) throws SQLException {

@@ -1,4 +1,4 @@
-package databases;
+package main.java.databases;
 
 abstract public class Queryable {
     private static final String queryCreate = "INSERT INTO %s %s VALUES %s";

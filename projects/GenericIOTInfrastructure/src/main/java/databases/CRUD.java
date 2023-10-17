@@ -1,6 +1,4 @@
-package databases;
-
-import java.sql.*;
+package main.java.databases;
 
 public interface CRUD {
     void create(Recordable toCreate);

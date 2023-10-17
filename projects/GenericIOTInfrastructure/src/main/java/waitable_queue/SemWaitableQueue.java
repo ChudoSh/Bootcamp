@@ -5,7 +5,7 @@ Date: 30.8.23
 Status: Approved
 */
 
-package waitable_queue;
+package main.java.waitable_queue;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;

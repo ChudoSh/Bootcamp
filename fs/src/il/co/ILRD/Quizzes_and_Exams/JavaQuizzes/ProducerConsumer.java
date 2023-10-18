@@ -8,14 +8,16 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ProducerConsumer {
-    private final Semaphore sem;
+    private final Semaphore proSem;
+    private final Semaphore conSem;
     private final ReentrantLock lock;
     private final Condition con;
     private final int numOfProducers;
-    private AtomicInteger atomic;
+    private final AtomicInteger atomic;
 
     public ProducerConsumer(int numOfProducers) {
-        this.sem = new Semaphore(numOfProducers);
+        this.proSem = new Semaphore(numOfProducers);
+        this.conSem = new Semaphore(0);
         this.numOfProducers = numOfProducers;
         this.lock = new ReentrantLock();
         this.con = lock.newCondition();
@@ -25,18 +27,21 @@ public class ProducerConsumer {
     public void producer() {
         try {
             while (!Thread.currentThread().isInterrupted()) {
-                while (this.numOfProducers != this.sem.availablePermits()) {
+                while (0 != this.proSem.availablePermits()) {
                     this.lock.lock();
-                    this.sem.acquire();
+                    this.proSem.acquire();
+                    this.conSem.release();
 
-                    System.out.println(this.atomic.incrementAndGet());
+                    System.out.println(Thread.currentThread() + " this is producer " + this.atomic.incrementAndGet());
 
-                    while (0 == sem.availablePermits()) {
+                    while (this.numOfProducers != proSem.availablePermits()) {
                         con.await();
                     }
 
                     this.lock.unlock();
                 }
+
+                System.out.println("after a while");
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -45,12 +50,20 @@ public class ProducerConsumer {
 
     public void consumer() {
         while (!Thread.currentThread().isInterrupted()) {
-            while (this.numOfProducers == this.sem.availablePermits()) {
+            while (this.numOfProducers == this.conSem.availablePermits()) {
                 this.lock.lock();
+                this.atomic.set(0);
 
-                System.out.println(this.atomic.getAndAdd(-10));
+                System.out.println(Thread.currentThread() + " this is consumer " + this.atomic.get());
 
-                this.sem.release(this.numOfProducers);
+                try {
+                    this.conSem.acquire(this.numOfProducers);
+                    this.proSem.release(this.numOfProducers);
+                    System.out.println("this is consumer sem: " + this.conSem.availablePermits() + " this is producer sem: " + this.proSem.availablePermits());
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
                 this.con.signalAll();
                 this.lock.unlock();
             }

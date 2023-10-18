@@ -30,10 +30,10 @@ public class ExpressionTree {
                 return Left.calculate() * Right.calculate();
             }
         };
-        private char val;
+        private char value;
 
         OperatorEnum(char character) {
-            this.val = character;
+            this.value = character;
         }
 
         public abstract double calc(NodeComposite Left, NodeComposite Right);

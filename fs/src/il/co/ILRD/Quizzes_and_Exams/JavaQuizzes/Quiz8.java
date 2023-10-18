@@ -6,7 +6,7 @@ public class Quiz8 {
         public void foo(Object o) {
         }
 
-//        public void foo(T t) { what if T is of type Object
+//        public void foo(T t) { /*what if T is of type Object*/
 //        }
     }
 

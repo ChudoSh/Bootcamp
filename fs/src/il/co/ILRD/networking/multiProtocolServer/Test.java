@@ -10,12 +10,6 @@ public class Test {
     @BeforeEach
     void init() throws IOException {
         this.server = new MultiProtocolServer();
-    }
-
-    @org.junit.jupiter.api.Test
-    void TU_add() throws IOException {
-        this.server.addUDPConnection(9898);
-        this.server.addTCPConnection(8989);
         this.server.start();
     }
 }

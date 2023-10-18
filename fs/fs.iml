@@ -50,5 +50,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="mysql.connector.java" level="project" />
+    <orderEntry type="library" name="javax.json.api" level="project" />
+    <orderEntry type="library" name="glassfish.javax.json" level="project" />
   </component>
 </module>

@@ -1,9 +1,8 @@
-package il.co.ILRD.sql.mockClasses;
+package il.co.ILRD.sql.database_manager;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.PreparedStatement;
 
 public interface Recordable {
     Recordable getRecordFromResultSet(ResultSet result) throws SQLException;

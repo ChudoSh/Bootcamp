@@ -1,6 +1,6 @@
-package il.co.ILRD.sql.mockClasses;
+package il.co.ILRD.sql.database_manager;
 
-import java.sql.*;
+import java.sql.Connection;
 
 public interface CRUD {
     void create(Recordable toCreate);
@@ -10,4 +10,6 @@ public interface CRUD {
     void update(Recordable toUpdate);
 
     void delete(Recordable toDelete);
+
+    Connection getDatabaseConnection();
 }

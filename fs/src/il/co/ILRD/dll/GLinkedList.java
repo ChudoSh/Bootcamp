@@ -127,7 +127,6 @@ public class GLinkedList<T> implements Iterable<T> {
 
     public static <U> void merge(GLinkedList<U> dest,
                                  GLinkedList<U> src) {
-
         ++dest.expectedModCounter;
         ++src.expectedModCounter;
 

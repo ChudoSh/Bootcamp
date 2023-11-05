@@ -1,4 +1,4 @@
-package main.java.databases;
+package databases;
 
 abstract public class Queryable {
     private static final String queryCreate = "INSERT INTO %s %s VALUES %s";
@@ -16,22 +16,6 @@ abstract public class Queryable {
 
         return String.format(queryCreate, tableName, toCreateStringFields(attributes), generateValueString(values));
     }
-
-//    public static String read(String tableName, String[] attributes, String[] conditions) {
-//        if (null == tableName || null == conditions) {
-//            return null;
-//        }
-//
-//        return String.format(queryRead,
-//                Objects.requireNonNullElse(
-//                        generateListedString(attributes), "*"),
-//                tableName,
-//                generateListedString(conditions));
-//    }
-//
-//    public static String read(String tableName, String[] conditions) {
-//        return read(tableName, null, conditions);
-//    }
 
     public static String read(String tableName, String primaryKey) {
         return String.format(queryRead,tableName, primaryKey);

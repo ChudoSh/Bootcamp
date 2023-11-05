@@ -1,4 +1,4 @@
-package il.co.ILRD.sql.mockClasses;
+package il.co.ILRD.sql.database_manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ public class Tests {
                         "contact_email",
                         "service_fee"};
 
-        this.adminDB.createTable("Companies", tableFields, definitions, "company_id", "root", "password");
+        this.adminDB.createTable("Companies", tableFields, definitions, "company_id");
     }
 
 

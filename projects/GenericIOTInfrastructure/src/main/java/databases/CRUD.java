@@ -1,4 +1,4 @@
-package main.java.databases;
+package databases;
 
 public interface CRUD {
     void create(Recordable toCreate);

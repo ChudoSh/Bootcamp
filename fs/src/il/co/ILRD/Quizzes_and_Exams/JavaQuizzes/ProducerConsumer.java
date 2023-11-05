@@ -34,11 +34,18 @@ public class ProducerConsumer {
 
                     System.out.println(Thread.currentThread() + " this is producer " + this.atomic.incrementAndGet());
 
-                    while (this.numOfProducers != proSem.availablePermits()) {
-                        con.await();
+                    if (this.lock.isLocked()) {
+                        System.out.println("locked");
+                    } else {
+                        System.out.println("not Locked");
+                    }
+
+                    while(this.numOfProducers != this.conSem.availablePermits()){
+                        this.con.await();
                     }
 
                     this.lock.unlock();
+                    System.out.println(Thread.currentThread() + " im here");
                 }
 
                 System.out.println("after a while");

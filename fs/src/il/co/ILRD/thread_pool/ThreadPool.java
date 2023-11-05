@@ -18,15 +18,21 @@ public class ThreadPool implements Executor {
     private Semaphore semPause;
     private int pausedThreads = 0;
     private volatile boolean isShutdown = false;
+    private volatile boolean isPaused = false;
     private final int MIN_PRIORITY = Priority.LOW.value - 1;
     private final int MAX_PRIORITY = Priority.HIGH.value + 1;
 
-    /*----------------------------------------------------------------*/
+    /*==============================Main functions============================*/
     public ThreadPool(int numOfThreads) {
-        this.numOfThreads = new AtomicInteger(0);
+        this.numOfThreads = new AtomicInteger(
+0);
         this.tasks = new SemWaitableQueue<>(numOfThreads);
         this.semPause = new Semaphore(0);
-        createWorkingThreads(numOfThreads);
+        this.createWorkingThreads(numOfThreads);
+    }
+
+    public ThreadPool() {
+        this(Runtime.getRuntime().availableProcessors());
     }
 
     public <V> Future<V> submit(Callable<V> command, Priority priority) {
@@ -46,7 +52,7 @@ public class ThreadPool implements Executor {
     }
 
     private <V> Future<V> submit(Callable<V> command, int priority) {
-        if (isShutdown) {
+        if (this.isShutdown) {
             return null;
         }
 
@@ -61,54 +67,58 @@ public class ThreadPool implements Executor {
         this.submit(command, Priority.DEFAULT);
     }
 
-    public void setNumOfThreads(int numOfThreads) {
+    public void setNumOfThreads(int numOfThreads) { //add pausing factor
         int newNumOfThreads;
         int oldNumOfThreads = this.numOfThreads.get();
 
         newNumOfThreads = oldNumOfThreads - numOfThreads;
 
         if (0 > newNumOfThreads) {
-            createWorkingThreads(-newNumOfThreads);
+            this.createWorkingThreads(-newNumOfThreads);
         } else if (0 < newNumOfThreads) {
-            destroyWorkingThreads(newNumOfThreads, MAX_PRIORITY);
+            this.destroyWorkingThreads(newNumOfThreads, this.MAX_PRIORITY);
         }
 
     }
 
     public void pause() {
         Callable<?> pause = () -> { //poison pill
-            semPause.acquire();
+            this.semPause.acquire();
             return null;
         };
 
         int oldNumPausedThreads = this.pausedThreads;
         this.pausedThreads = this.numOfThreads.get();
         for (int i = oldNumPausedThreads; i < this.pausedThreads; ++i) {
-            this.submit(pause, MAX_PRIORITY);
+            this.submit(pause, this.MAX_PRIORITY);
         }
+        this.isPaused = true;
     }
 
     public void resume() {
-        this.semPause.release(this.pausedThreads);
-        this.pausedThreads = 0;
+        if (this.isPaused) {
+            this.semPause.release(this.pausedThreads);
+            this.pausedThreads = 0;
+        }
     }
 
     public void shutDown() {
         this.resume();
-        destroyWorkingThreads(this.numOfThreads.get(), MIN_PRIORITY);
+        this.destroyWorkingThreads(this.numOfThreads.get(), this.MIN_PRIORITY);
         this.isShutdown = true;
     }
 
     public void awaitTermination(long timeout, TimeUnit unit) throws TimeoutException {
         long end = System.currentTimeMillis() + unit.toMillis(timeout);
 
-        while (0 != numOfThreads.get() && end >= System.currentTimeMillis()) {
+        while (0 != this.numOfThreads.get() && end >= System.currentTimeMillis()) {
             try {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
+
         if (0 != numOfThreads.get()) {
             throw new TimeoutException();
         }
@@ -124,7 +134,7 @@ public class ThreadPool implements Executor {
         }
     }
 
-    /*----------------------------------------------------------------*/
+    /*============================Priority====================================*/
     public enum Priority {
         LOW(1),
         DEFAULT(5),
@@ -141,31 +151,30 @@ public class ThreadPool implements Executor {
         }
     }
 
-    /*----------------------------------------------------------------*/
+    /*==============================Thread====================================*/
     private class WorkingThread extends Thread {
         private boolean toStop = false;
 
         {
-            numOfThreads.incrementAndGet();
+            ThreadPool.this.numOfThreads.incrementAndGet();
         }
 
         @Override
         public void run() {
             while (!toStop) {
                 try {
-                    tasks.dequeue().execute();
+                    ThreadPool.this.tasks.dequeue().execute();
                 } catch (InterruptedException e) {
                     boolean ignored = Thread.interrupted();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-
             }
-            numOfThreads.decrementAndGet();
+            ThreadPool.this.numOfThreads.decrementAndGet();
         }
     }
 
-    /*---------------------------Task-------------------------------------*/
+    /*===============================Task=====================================*/
     private class Task<V> implements Comparable<Task<V>> {
         private final int priority;
         private final TaskFuture<V> future;
@@ -195,7 +204,7 @@ public class ThreadPool implements Executor {
         }
     }
 
-    /*------------------------------TaskFuture--------------------------------*/
+    /*==============================TaskFuture================================*/
     private class TaskFuture<V> implements Future<V> {
         private volatile boolean isCancelFlag = false;
         private volatile boolean isDoneFlag = false;
@@ -211,11 +220,11 @@ public class ThreadPool implements Executor {
 
         public void run() throws Exception {
             try {
-                this.value = callable.call();
+                this.value = this.callable.call();
             } catch (ExecutionException e) {
-                thrownException = e;
+                this.thrownException = e;
             } finally {
-                isDoneFlag = true;
+                this.isDoneFlag = true;
             }
         }
 
@@ -233,58 +242,58 @@ public class ThreadPool implements Executor {
             }
 
             if (tasks.remove(this.parentTask)) {
-                isCancelFlag = true;
+                this.isCancelFlag = true;
             } else if (mayInterruptIfRunning) {
                 this.parentTask.workingThread.interrupt();
             }
 
             this.isCancelFlag = true;
-            return this.isCancelFlag;
+            return true;
         }
 
         @Override
         public boolean isCancelled() {
-            return isCancelFlag;
+            return this.isCancelFlag;
         }
 
         @Override
         public boolean isDone() {
-            return isDoneFlag;
+            return this.isDoneFlag;
         }
 
         @Override
         public V get() throws InterruptedException, ExecutionException {
-            if (isCancelled()) {
+            if (this.isCancelled()) {
                 throw new CancellationException();
             }
 
-            while (!isDone()) {
-                TimeUnit.SECONDS.sleep(1); //again, why?
+            while (!this.isDone()) {
+                TimeUnit.SECONDS.sleep(1);
             }
 
-            return getValue();
+            return this.getValue();
         }
 
         @Override
         public V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-            if (isCancelled()) {
+            if (this.isCancelled()) {
                 throw new CancellationException();
             }
 
             long end = System.currentTimeMillis() + unit.toMillis(timeout);
 
-            while (!isDone() && end >= System.currentTimeMillis()) {
-                TimeUnit.SECONDS.sleep(1); //again, why?
+            while (!this.isDone() && end >= System.currentTimeMillis()) {
+                TimeUnit.SECONDS.sleep(1);
             }
-            if (!isDone()) {
+            if (!this.isDone()) {
                 throw new TimeoutException();
             }
 
-            return getValue();
+            return this.getValue();
         }
     }
 
-    /***********************************************************/
+    /*===============================Private methods==========================*/
     private <V> Callable<V> toCallable(Runnable runnable, V returnValue) {
         return () -> {
             runnable.run();
@@ -305,7 +314,7 @@ public class ThreadPool implements Executor {
         };
 
         for (int i = 0; i < toDestroy; ++i) {
-            submit(destroyThread, priority);
+            this.submit(destroyThread, priority);
         }
     }
 }

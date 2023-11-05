@@ -4,7 +4,7 @@ rev : amitaiB
 date : 22.8.23
 status : approved
  */
-package main.java.hashmap;
+package hashmap;
 
 import java.util.Map;
 

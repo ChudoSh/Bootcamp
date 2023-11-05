@@ -1,11 +1,9 @@
-package main.java.GatewayServer;
+package GatewayServer;
 
 import com.sun.media.sound.InvalidDataException;
-import main.java.databases.CRUD;
-import main.java.databases.AdminDB;
-import main.java.databases.CompanyRecord;
-import main.java.hashmap.Pair;
-import main.java.thread_pool.ThreadPool;
+import databases.*;
+import thread_pool.ThreadPool;
+import hashmap.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,40 +22,24 @@ import java.util.function.Function;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-
 public class GatewayServer {
-    private MultiProtocolServer multiProtocolServer;
-    private RequestHandler requestHandler;
-    private PlugAndPlay plugAndPlay;
-    private static AdminDB adminDB;
+    private final MultiProtocolServer multiProtocolServer;
+    private final RequestHandler requestHandler;
+    private final PlugAndPlay plugAndPlay;
+    private final AdminDB adminDB;
 
-    public GatewayServer(int numOfThreads) throws IOException {
+    public GatewayServer(int numOfThreads) {
         this.requestHandler = new RequestHandler(numOfThreads);
         this.multiProtocolServer = new MultiProtocolServer();
+        this.adminDB = new AdminDB("v1database");
         this.plugAndPlay = new PlugAndPlay("/home/barchik/Mygit/bar.shadkhin/fs/src/il/co/ILRD/networking/GatewayServer/Mock data");
-        this.multiProtocolServer.addTCPConnection(9090);
+    }
 
+    public void start() throws IOException {
+        this.multiProtocolServer.addTCPConnection(9090);
         this.multiProtocolServer.start();
         this.plugAndPlay.start();
-        adminDB = new AdminDB("testdamin");
-        adminDB.createDatabase("jdbc:mysql://localhost:3306/", "root", "password");
-        String[] definitions =
-                {"BIGINT NOT NULL AUTO_INCREMENT",
-                        "VARCHAR(255)",
-                        "VARCHAR(255)",
-                        "VARCHAR(255)",
-                        "VARCHAR(255)",
-                        "VARCHAR(255)",
-                        "BIGINT"};
-        String[] tableFields =
-                {"company_id",
-                        "company_name",
-                        "company_address",
-                        "contact_name",
-                        "contact_phone",
-                        "contact_email",
-                        "service_fee"};
-        this.adminDB.createTable("Companies", tableFields, definitions, "company_id", "root", "password");
+        this.adminDB.initiateDatabaseAndTables();
     }
 
     private void handle(ByteBuffer buffer, Communicator communicator) {
@@ -74,10 +56,10 @@ public class GatewayServer {
     }
 
     public interface Command {
-        void exec(CRUD database) throws InvalidDataException;
+        void exec(CRUD crudObject) throws InvalidDataException;
     }
 
-    private static class RequestHandler {
+    private class RequestHandler {
         private ThreadPool threadPool;
         private Factory<String, String> factory;
         private static final String fileDir = "/home/barchik/Mygit/bar.shadkhin/fs/src/il/co/ILRD/networking/GatewayServer/Mock data/mocodata.txt";
@@ -92,7 +74,9 @@ public class GatewayServer {
         }
 
         private void handle(ByteBuffer buffer, Communicator communicator) {
-            this.threadPool.submit(this.createRunnable(buffer, communicator), ThreadPool.Priority.DEFAULT);
+            this.threadPool.submit(
+                    this.createRunnable(buffer, communicator),
+                    ThreadPool.Priority.DEFAULT);
         }
 
         private Entry<String, String> parse(String request) {
@@ -135,17 +119,15 @@ public class GatewayServer {
                     if (null == newEntry) {
                         communicator.send(ByteBuffer.wrap("Failed Parse".getBytes()));
                         return;
-//                        throw new InvalidDataException(");
                     }
 
                     Command cmd = this.factory.create(newEntry.getKey(), newEntry.getValue());
                     if (null == cmd) {
                         communicator.send(ByteBuffer.wrap("No Command".getBytes()));
                         return;
-//                        throw new InvalidDataException("No Valid Command");
                     }
 
-                    cmd.exec(GatewayServer.adminDB);
+                    cmd.exec((CRUD) GatewayServer.this.adminDB);
                     communicator.send(ByteBuffer.wrap("Sent Successfully".getBytes()));
 
                 } catch (InvalidDataException e) {
@@ -154,11 +136,12 @@ public class GatewayServer {
             };
         }
 
-        private static class RegisterCompany implements Function<String, Command> {
+        private class RegisterCompany implements Function<String, Command> {
             @Override
             public Command apply(String data) {
                 return adminDB -> {
-                    adminDB.create(CompanyRecord.of(data, GatewayServer.adminDB.getDatabaseConnection()));
+                    adminDB.create(CompanyRecord.of(data,
+                            GatewayServer.this.adminDB.getDatabaseConnection()));
                 };
             }
         }
@@ -264,11 +247,15 @@ public class GatewayServer {
             }
 
             public void addTCPConnection(int TCPClientPort) throws IOException {
-                this.selectorRunner.tcpServerSocket.bind(new InetSocketAddress("localhost", TCPClientPort));
+                this.selectorRunner.tcpServerSocket.bind(
+                        new InetSocketAddress(
+                                "localhost", TCPClientPort));
             }
 
             public void addUDPConnection(int UDPClientPort) throws IOException {
-                this.selectorRunner.udpServerSocket.bind(new InetSocketAddress("localhost", UDPClientPort));
+                this.selectorRunner.udpServerSocket.bind(
+                        new InetSocketAddress(
+                                "localhost", UDPClientPort));
             }
 
             public void start() {
@@ -292,8 +279,10 @@ public class GatewayServer {
                         this.udpServerSocket = DatagramChannel.open();
                         this.tcpServerSocket.configureBlocking(false);
                         this.udpServerSocket.configureBlocking(false);
-                        this.udpServerSocket.register(selector, SelectionKey.OP_READ);
-                        this.tcpServerSocket.register(selector, SelectionKey.OP_ACCEPT);
+                        this.udpServerSocket.register(
+                                selector, SelectionKey.OP_READ);
+                        this.tcpServerSocket.register(
+                                selector, SelectionKey.OP_ACCEPT);
                         this.tcpRegister = new TCPRegister();
 
                     } catch (IOException e) {
@@ -327,16 +316,19 @@ public class GatewayServer {
                 private void getConnectionAndHandle(SelectionKey key)
                         throws IOException, ClassNotFoundException {
                     if (key.isAcceptable()) {
-                        ServerSocketChannel ssc = (ServerSocketChannel) key.channel();
+                        ServerSocketChannel ssc =
+                                (ServerSocketChannel) key.channel();
                         tcpRegister.TCPAccept(ssc);
                     } else if (key.isReadable()) {
                         Channel channel = key.channel();
                         if (channel instanceof SocketChannel) {
-                            messageManager.handle((TCPCommunicator) key.attachment());
+                            messageManager.handle(
+                                    (TCPCommunicator) key.attachment());
                         } else {
                             DatagramChannel datagramChannel = (DatagramChannel) channel;
 
-                            messageManager.handle(new UDPCommunicator(datagramChannel));
+                            messageManager.handle(
+                                    new UDPCommunicator(datagramChannel));
                         }
                     }
                 }
@@ -395,7 +387,8 @@ public class GatewayServer {
                 @Override
                 public void send(ByteBuffer buffer) {
                     try {
-                        if (!this.clientSocketChannel.isOpen() || !this.clientSocketChannel.isConnected()) {
+                        if (!this.clientSocketChannel.isOpen() ||
+                                !this.clientSocketChannel.isConnected()) {
                             System.out.println("SocketChannel is not open or connected!");
                             return;
                         }
@@ -451,10 +444,8 @@ public class GatewayServer {
     private class PlugAndPlay implements Runnable { /*add a way to load classes that already exist in the folder*/
         private final Loader jarLoader;
         private final Wathcer wathcer;
-        private final String path;
 
         public PlugAndPlay(String path) {
-            this.path = path;
             this.wathcer = new Wathcer(path);
             this.jarLoader = new Loader();
         }

@@ -1,19 +1,12 @@
 package il.co.ILRD.networking.multiProtocolServer;
 
-import il.co.ILRD.networking.GatewayServer.GatewayServer;
-import il.co.ILRD.networking.HttpServer.HttpServer;
-
-import javax.crypto.spec.PSource;
 import javax.json.Json;
 import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-
-import static il.co.ILRD.networking.multiProtocolServer.MultiProtocolServer.*;
 
 public class TCPClient {
     int buffSize = 6000;
@@ -44,7 +37,7 @@ public class TCPClient {
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(buffSize);
 
         // Write the data to the ByteBuffer object.
-        String[] body = {"Alarm", "Tel Aviv", "Bar", "number", "mail", "number"};
+        String[] body = {"Alarm", "Tel Aviv", "Bar", "number", "mail", "85"};
         JsonObject json = Json.createObjectBuilder().add("StartLine",
                         Json.createObjectBuilder().
                                 add("method", "POST/company").
@@ -59,7 +52,7 @@ public class TCPClient {
                         add("contact_name", body[2]).
                         add("contact_phone", body[3]).
                         add("contact_email", body[4]).
-                        add("service_fee", body[5])).build();
+                        add("service_fee", Integer.parseInt(body[5]))).build();
 
         byteBuffer.put(this.write(json));
         byteBuffer.flip();

@@ -5,7 +5,11 @@ import java.util.Stack;
 public class ExpressionTree {
     private NodeComposite root;
 
-    enum OperatorEnum {
+    public ExpressionTree(String expression){
+        //do something to parse the tree correctly, if it is valid
+    }
+
+    private enum OperatorEnum {
         PLUS('+') {
             @Override
             public double calc(NodeComposite Left, NodeComposite Right) {
@@ -39,18 +43,16 @@ public class ExpressionTree {
         public abstract double calc(NodeComposite Left, NodeComposite Right);
     }
 
-    public ExpressionTree(String expressio) {
-        //DO some stuff
-    }
-
-    interface NodeComposite {
+    private interface NodeComposite {
         double calculate();
     }
 
     private class Operand implements NodeComposite {
-        double val;
+        private final double val;
 
-        //Constuctor
+        public Operand(double value){
+            this.val = value;
+        }
 
         @Override
         public double calculate() {
@@ -59,11 +61,15 @@ public class ExpressionTree {
     }
 
     private class Operator implements NodeComposite {
-        NodeComposite Lchild;
-        NodeComposite Rchild;
-        OperatorEnum op;
+        private NodeComposite Lchild;
+        private NodeComposite Rchild;
+        private OperatorEnum op;
 
-        //Constuctor
+        public Operator(NodeComposite Lchild, NodeComposite Rchild, OperatorEnum operator){
+            this.Lchild = Lchild;
+            this.Rchild = Rchild;
+            this.op = operator;
+        }
 
         @Override
         public double calculate() {

@@ -2,6 +2,9 @@ package il.co.ILRD.networking.HttpServer;
 
 import com.sun.media.sound.InvalidDataException;
 import il.co.ILRD.hashmap.Pair;
+import il.co.ILRD.sql.database_manager.AdminDB;
+import il.co.ILRD.sql.database_manager.CRUD;
+import il.co.ILRD.sql.database_manager.CompanyRecord;
 import il.co.ILRD.thread_pool.ThreadPool;
 
 
@@ -29,15 +32,24 @@ import java.util.jar.JarFile;
 public class HttpServer {
     private MultiProtocolServer multiProtocolServer;
     private RequestHandler requestHandler;
+    private AdminDB adminDB;
     private PlugAndPlay plugAndPlay;
 
-    public HttpServer(int numOfThreads) throws IOException {
+    public HttpServer(int numOfThreads) {
         this.requestHandler = new RequestHandler(numOfThreads);
+        this.adminDB = new AdminDB("httpServerTest");
         this.multiProtocolServer = new MultiProtocolServer();
         this.plugAndPlay = new PlugAndPlay("/home/barchik/Mygit/bar.shadkhin/fs/src/il/co/ILRD/networking/GatewayServer/Mock data");
-        this.multiProtocolServer.addTCPConnection(8989);
+    }
 
+    public void start() {
+        try {
+            this.multiProtocolServer.addTCPConnection(8989);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         this.multiProtocolServer.start();
+        this.adminDB.initiateDatabaseAndTables();
 //        this.plugAndPlay.start();
     }
 
@@ -55,10 +67,10 @@ public class HttpServer {
     }
 
     public interface Command {
-        void exec() throws InvalidDataException;
+        void exec(CRUD adminDB) throws InvalidDataException;
     }
 
-    private static class RequestHandler {
+    private class RequestHandler {
         private ThreadPool threadPool;
         private RequestHandler.Factory<String, JsonObject> factory;
         private HttpHandler httpHandler;
@@ -68,10 +80,10 @@ public class HttpServer {
             this.httpHandler = new HttpHandler();
             this.threadPool = new ThreadPool(numOfThreads);
             this.factory = new Factory<>();
-            this.factory.add("POST/company", new RegisterCompany());
-//            this.factory.add("RegisterProduct", new RegisterProduct());
-//            this.factory.add("RegisterIOT", new RegisterIOT());
-//            this.factory.add("Update", new Update());
+            this.factory.add("POST/company", new CreateCompany());
+            this.factory.add("GET/company", new ReadCompany());
+            this.factory.add("PUT/company", new UpdateCompany());
+            this.factory.add("DELETE/company", new DeleteCompany());
         }
 
         private void handle(ByteBuffer buffer, Communicator communicator) {
@@ -146,7 +158,7 @@ public class HttpServer {
                                 Json.createObjectBuilder().
                                         add("Status Code", statusCode).
                                         add("URL", "")).
-                                        add("Version","").
+                        add("Version", "").
                         add("Headers", Json.createObjectBuilder().
                                 add("ContentType", "application/json").
                                 add("ContentLength", message.length())).
@@ -157,7 +169,7 @@ public class HttpServer {
         private Runnable createRunnable(ByteBuffer buffer, Communicator communicator) {
             return () -> {
                 try {
-                    Objects.requireNonNull(httpHandler.handle(buffer, communicator)).exec();
+                    Objects.requireNonNull(httpHandler.handle(buffer, communicator)).exec(HttpServer.this.adminDB);
                     JsonObject success = httpHandler.createResponse(200, "Success");
                     communicator.send(httpHandler.write(success));
                 } catch (InvalidDataException e) {
@@ -166,68 +178,66 @@ public class HttpServer {
             };
         }
 
-        private static class RegisterCompany implements Function<JsonObject, Command> {
+        private class CreateCompany implements Function<JsonObject, Command> {
             @Override
             public Command apply(JsonObject data) {
-                return () -> {
-                    try {
-                        FileWriter writer = new FileWriter(fileDir);
-                        writer.write("Register Company");
-                        writer.write("Company Name: " + data.getString("company_name"));
-                        writer.write("Company Address: " + data.getString("company_address"));
-                        writer.write("Contact Name: " + data.getString("contact_name"));
-                        writer.write("Contact Phone: " + data.getString("contact_phone"));
-                        writer.write("Register Email: " + data.getString("contact_email"));
-                        writer.write("Service Fee: " + data.getString("service_fee"));
-                        writer.close();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                return adminDB -> {
+                    CompanyRecord companyRecord = new CompanyRecord(data.getString("company_name"),
+                            data.getString("company_address"),
+                            data.getString("contact_name"),
+                            data.getString("contact_email"),
+                            data.getString("contact_phone"),
+                            data.getInt("service_fee"), adminDB.getDatabaseConnection());
+                    adminDB.create(companyRecord);
                 };
             }
         }
 
-        private static class RegisterProduct implements Function<String, Command> {
+        private class ReadCompany implements Function<JsonObject, Command> {
             @Override
-            public Command apply(String data) {
-                return () -> {
-                    try {
-                        FileWriter writer = new FileWriter(fileDir);
-                        writer.write("Register Proudct: " + data);
-                        writer.close();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+            public Command apply(JsonObject data) {
+                return adminDB -> {
+                    CompanyRecord companyRecord = new CompanyRecord(data.getString("company_name"),
+                            data.getString("company_address"),
+                            data.getString("contact_name"),
+                            data.getString("contact_email"),
+                            data.getString("contact_phone"),
+                            data.getInt("service_fee"), adminDB.getDatabaseConnection());
+                    companyRecord.setCompanyID(data.getInt("company_id"));
+                    CompanyRecord read = (CompanyRecord) adminDB.read(companyRecord);
+                    System.out.println(read.toString());
                 };
             }
         }
 
-        private static class RegisterIOT implements Function<String, Command> {
+        private class UpdateCompany implements Function<JsonObject, Command> {
             @Override
-            public Command apply(String data) {
-                return () -> {
-                    try {
-                        FileWriter writer = new FileWriter(fileDir);
-                        writer.write("Register IOT: " + data);
-                        writer.close();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+            public Command apply(JsonObject data) {
+                return adminDB -> {
+                    CompanyRecord companyRecord = new CompanyRecord(data.getString("company_name"),
+                            data.getString("company_address"),
+                            data.getString("contact_name"),
+                            data.getString("contact_email"),
+                            data.getString("contact_phone"),
+                            data.getInt("service_fee"), adminDB.getDatabaseConnection());
+                    companyRecord.setCompanyID(data.getInt("company_id"));
+                    adminDB.update(companyRecord);
                 };
             }
         }
 
-        private static class Update implements Function<String, Command> {
+        private class DeleteCompany implements Function<JsonObject, Command> {
             @Override
-            public Command apply(String data) {
-                return () -> {
-                    try {
-                        FileWriter writer = new FileWriter(fileDir);
-                        writer.write("Update: " + data);
-                        writer.close();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+            public Command apply(JsonObject data) {
+                return adminDB -> {
+                    CompanyRecord companyRecord = new CompanyRecord(data.getString("company_name"),
+                            data.getString("company_address"),
+                            data.getString("contact_name"),
+                            data.getString("contact_email"),
+                            data.getString("contact_phone"),
+                            data.getInt("service_fee"), adminDB.getDatabaseConnection());
+                    companyRecord.setCompanyID(data.getInt("company_id"));
+                    adminDB.delete(companyRecord);
                 };
             }
         }
@@ -527,7 +537,7 @@ public class HttpServer {
         }
 
         private Function<JsonObject, Command> toCommand(Object instance, Method method) {
-            Function<JsonObject, Command> recipe = data -> () -> {
+            Function<JsonObject, Command> recipe = data -> adminDB -> {
                 try {
                     method.invoke(instance);
                 } catch (IllegalAccessException |

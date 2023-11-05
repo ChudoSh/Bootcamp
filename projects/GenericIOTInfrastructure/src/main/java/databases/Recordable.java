@@ -1,4 +1,4 @@
-package main.java.databases;
+package databases;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

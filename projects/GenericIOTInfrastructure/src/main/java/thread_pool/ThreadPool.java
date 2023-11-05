@@ -5,8 +5,8 @@ Status: Approved
 Date: 5.9.23
 */
 
-package main.java.thread_pool;
-import main.java.waitable_queue.SemWaitableQueue;
+package thread_pool;
+import SemWaitableQueue;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;

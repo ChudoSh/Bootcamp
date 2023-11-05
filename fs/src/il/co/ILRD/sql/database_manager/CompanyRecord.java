@@ -1,4 +1,4 @@
-package il.co.ILRD.sql.mockClasses;
+package il.co.ILRD.sql.database_manager;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -25,7 +25,6 @@ public class CompanyRecord implements Recordable {
                     "contact_email",
                     "service_fee"};
 
-
     public CompanyRecord(String companyName, String companyAddress, String contactName, String contactEmail, String contactPhone, int serviceFee, Connection connection) {
         this.companyName = companyName;
         this.companyAddress = companyAddress;
@@ -34,6 +33,16 @@ public class CompanyRecord implements Recordable {
         this.contactPhone = contactPhone;
         this.serviceFee = serviceFee;
         this.tableConnection = connection;
+    }
+
+    public static CompanyRecord of(String data, Connection tableConnection) {
+        String[] values = data.split("\\.", data.length());
+        return new CompanyRecord(values[0],
+                values[1],
+                values[2],
+                values[3],
+                values[4],
+                Integer.parseInt(values[5]), tableConnection);
     }
 
     @Override
@@ -143,14 +152,15 @@ public class CompanyRecord implements Recordable {
         return "company_id";
     }
 
-    private void setCompanyID(int companyID) {
-        this.companyID = companyID;
-    }
-
     /*------------------------Getters and Setters---------------------------------*/
     public int getCompanyID() {
         return this.companyID;
     }
+
+    public void setCompanyID(int companyID) {
+        this.companyID = companyID;
+    }
+
 
     public String getCompanyName() {
         return this.companyName;

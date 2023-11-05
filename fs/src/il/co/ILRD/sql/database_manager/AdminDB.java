@@ -1,4 +1,4 @@
-package il.co.ILRD.sql.mockClasses;
+package il.co.ILRD.sql.database_manager;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -37,7 +37,7 @@ public class AdminDB implements CRUD {
 
     @Override
     public void update(Recordable toUpdate) {
-        if (!(toUpdate instanceof CompanyRecord)) { /*should be inner to company*/
+        if (null == toUpdate) {
             System.out.println("Not the right record.");
             return;
         }
@@ -73,7 +73,7 @@ public class AdminDB implements CRUD {
         }
     }
 
-    public void createTable(String tableName, String[] fields, String[] definitions, String primaryKey, String username, String password) throws SQLException {
+    public void createTable(String tableName, String[] fields, String[] definitions, String primaryKey) {
         if (this.tableNames.containsKey(tableName)) {
             return;
         }
@@ -112,9 +112,59 @@ public class AdminDB implements CRUD {
             throw new RuntimeException(e);
         }
     }
+    public void initiateDatabaseAndTables() {
+        String[] companyTableDefinitions =
+                {"BIGINT NOT NULL AUTO_INCREMENT",
+                        "VARCHAR(255)",
+                        "VARCHAR(255)",
+                        "VARCHAR(255)",
+                        "VARCHAR(255)",
+                        "VARCHAR(255)",
+                        "BIGINT"};
+        String[] companyTableFields =
+                {"company_id",
+                        "company_name",
+                        "company_address",
+                        "contact_name",
+                        "contact_phone",
+                        "contact_email",
+                        "service_fee"};
+        String[] productTableDefinitions =
+                {"BIGINT NOT NULL AUTO_INCREMENT",
+                        "BIGINT",
+                        "VARCHAR(255)",
+                        "VARCHAR(255)"};
+        String[] productTableFields =
+                {"product_id",
+                        "company_id",
+                        "product_name",
+                        "product_description"};
+        String[] paymentTableDefinitions =
+                {"BIGINT NOT NULL AUTO_INCREMENT",
+                        "BIGINT",
+                        "BIGINT",
+                        "VARCHAR(255)",
+                        "VARCHAR(255)",
+                        "VARCHAR(255)",
+                        "VARCHAR(255)",
+                        "VARCHAR(255)"};
+        String[] paymentTableFields =
+                {"pd_id",
+                        "bill_outstanding",
+                        "company_id",
+                        "IBAN",
+                        "SWIFT",
+                        "bank_address",
+                        "bank_account",
+                        "bank_branch"};
+        this.createDatabase("jdbc:mysql://localhost:3306/", "root", "password");
+        this.createTable("Companies", companyTableFields, companyTableDefinitions, "company_id");
+        this.createTable("Products", productTableFields, productTableDefinitions, "product_id");
+        this.createTable("PaymentDetails", paymentTableFields, paymentTableDefinitions, "pd_id");
+    }
 
+    @Override
     public Connection getDatabaseConnection() {
         return this.databaseConnection;
     }
-
 }

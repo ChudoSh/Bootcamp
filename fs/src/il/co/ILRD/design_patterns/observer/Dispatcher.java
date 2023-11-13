@@ -71,6 +71,4 @@ public class Dispatcher<V> {
             this.stopDispatcher();
         }
     }
-
-
 }

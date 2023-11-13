@@ -48,7 +48,7 @@ public class GLinkedList<T> implements Iterable<T> {
         private final S data;
 
         private Node(S data, Node<S> next, Node<S> prev) {
-            this.data = (S) data;
+            this.data = data;
             this.next = next;
             this.prev = prev;
             next.setPrev(this);
@@ -144,6 +144,5 @@ public class GLinkedList<T> implements Iterable<T> {
         src.head = new Node<>(null, null, null);
 
         toFree.setPrev(null);
-
     }
 }

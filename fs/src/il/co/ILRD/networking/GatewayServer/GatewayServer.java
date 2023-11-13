@@ -56,8 +56,8 @@ public class GatewayServer {
     }
 
     private static class RequestHandler {
-        private ThreadPool threadPool;
-        private Factory<String, String> factory;
+        private final ThreadPool threadPool;
+        private final Factory<String, String> factory;
         private static final String fileDir = "/home/barchik/Mygit/bar.shadkhin/fs/src/il/co/ILRD/networking/GatewayServer/Mock data/mocodata.txt";
 
         private RequestHandler(int numOfThreads) {
@@ -85,7 +85,7 @@ public class GatewayServer {
         }
 
         private class Factory<K, D> {
-            private Map<K, Function<D, Command>> commands;
+            private final Map<K, Function<D, Command>> commands;
 
             public Factory() {
                 this.commands = new HashMap<>();
@@ -297,7 +297,7 @@ public class GatewayServer {
 
                             while (iterator.hasNext()) {
                                 SelectionKey key = iterator.next();
-                                getConnectionAndHandle(key);
+                                this.getConnectionAndHandle(key);
                             }
                         } catch (IOException | ClassNotFoundException e) {
                             throw new RuntimeException(e);

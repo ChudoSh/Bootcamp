@@ -40,14 +40,17 @@ public class FileTree {
     private class DirectoryComposite implements FileSystemComponent{
         private final String name;
         private final List<FileSystemComponent> list;
+
         private DirectoryComposite(String name){
             this.name = name;
             this.list = new LinkedList<>();
             File dirFile = new File(name);
             File[] filesList = dirFile.listFiles();
+
             if(filesList == null){
                 return;
             }
+
             for (File file: filesList){
                 if(file.isDirectory()){
                     this.list.add(new DirectoryComposite(file.getAbsolutePath()));
@@ -57,13 +60,14 @@ public class FileTree {
                 }
             }
         }
+
         @Override
         public void printName() {
             String nameOfDir = new File(this.name).getName();
             StringBuilder spaces = new StringBuilder();
-            for (int i =0; i < hierarchyCounter ; ++i){
-                spaces.append("│  ");
-            }
+
+            spaces.append("│  ".repeat(Math.max(0, hierarchyCounter)));
+
             System.out.println(spaces + nameOfDir);
             System.out.print("├──");
             ++hierarchyCounter;
@@ -74,6 +78,5 @@ public class FileTree {
             }
             --hierarchyCounter;
         }
-
     }
 }

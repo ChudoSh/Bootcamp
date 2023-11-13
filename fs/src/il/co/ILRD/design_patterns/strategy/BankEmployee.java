@@ -1,4 +1,4 @@
-package il.co.ILRD.Quizzes_and_Exams.BankBranch;
+package il.co.ILRD.design_patterns.strategy;
 
 import java.time.LocalDate;
 
@@ -26,8 +26,20 @@ public class BankEmployee {
         return id;
     }
 
-    public void setRole(EmployeeStrategy newSalaryLevel) {
-        this.salaryLevel = newSalaryLevel;
+    public void setRole(BankEmployee employee) {
+        if(this.salaryLevel instanceof ManagerSalary && employee.getSalaryLevel() instanceof JuniorSalary){
+            employee.salaryLevel = new SeniorSalary();
+        } else {
+            System.out.println("Access denied");
+        }
+    }
+
+    public EmployeeStrategy getSalaryLevel() {
+        return salaryLevel;
+    }
+
+    public void setSalaryLevel(EmployeeStrategy salaryLevel) {
+        this.salaryLevel = salaryLevel;
     }
 
     public String getName() {

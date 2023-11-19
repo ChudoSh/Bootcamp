@@ -1,33 +1,33 @@
 package il.co.ILRD.Quizzes_and_Exams.JavaQuizzes;
 
+import java.util.HashMap;
+
 public class PairToSum {
-    public static int countPairToSum(int[] arr, int sum){
-        int pairCount = 0;
+    public static int countPairsToSum(int[] array, int targetSum) {
+        HashMap<Integer, Integer> numbers = new HashMap<>();
+        int pairs = 0;
 
-        /*
-        need to store the number of pairs that make up the sum in the given array.
+        for (int num : array) {
+            Integer curPairs = numbers.get(targetSum - num);
 
-        input:
-        arr = 1, 5, 7 ,-1
-        sum = 6
+            if (null != curPairs) {
+                pairs += curPairs;
+            }
 
-        output:
-        (1 + 5 = 6), (7 - 1 = 6) => 2
+            incrementKey(numbers, num);
+        }
 
-        solutions:
-            map -> store the corresponding value that completes to the sum, thus the entry will be: (key = 1, value = 6 - 1)
-            how it works if there are apearences of the same numbers in the array?
+        return pairs;
+    }
 
-        dynamic programming
-            problematic for backtracking, might not meet the requirements
-            that is if i 1 and a 5 somewhere in the array, how do i find them?
-        */
-
-
-        return  pairCount;
+    private static <K> void incrementKey(HashMap<K, Integer> map, K key) {
+        map.putIfAbsent(key, 0);
+        map.put(key, map.get(key) + 1);
     }
 
     public static void main(String[] args) {
+        System.out.println(countPairsToSum(new int[]{1, 5, 7, -1, 5, 1, 3, 3},
+                6));
 
     }
 }

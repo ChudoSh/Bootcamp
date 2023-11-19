@@ -9,8 +9,6 @@ public interface Recordable {
 
     String getPrimaryKeyName();
 
-    Connection getConnection();
-
     void createRecord();
 
     Recordable readRecord();

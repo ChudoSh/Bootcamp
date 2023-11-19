@@ -65,11 +65,6 @@ public class CompanyRecord implements Recordable {
     }
 
     @Override
-    public Connection getConnection() {
-        return tableConnection;
-    }
-
-    @Override
     public void createRecord() {
         String query = Queryable.create(tableName, tableFields, numOfFieldsInTable);
         try (PreparedStatement statement = tableConnection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {

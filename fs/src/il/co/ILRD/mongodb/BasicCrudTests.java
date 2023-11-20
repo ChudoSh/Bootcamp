@@ -23,6 +23,7 @@ public class Tests {
         create.setId(this.connection.create(create.toDocument()));
         id = create.getId();
 
+
         Restaurant toRead = new Restaurant(this.connection.read(id));
         System.out.println(toRead);
 

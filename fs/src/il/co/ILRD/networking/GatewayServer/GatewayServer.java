@@ -132,7 +132,7 @@ public class GatewayServer {
             };
         }
 
-        private static class RegisterCompany implements Function<String, Command> {
+        private static class RegisterCompany implements Function<String, Command>{
             @Override
             public Command apply(String data) {
                 return () -> {

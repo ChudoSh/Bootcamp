@@ -9,7 +9,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-public class CreateTest implements Runnable{
+public class CreateTest implements Runnable {
     private int buffSize = 6000;
     private String address = "localhost";
     private int port = 8989;
@@ -51,7 +51,7 @@ public class CreateTest implements Runnable{
             System.out.println(socketChannel);
             ByteBuffer byteBuffer = ByteBuffer.allocateDirect(buffSize);
 
-            String[] body = {"Alarm", "Tel Aviv", "Bar", "number", "mail", "85"};
+            String[] body = {"Firco", "Tel Aviv", "Bar", "number", "mail", "85", "65465465654", "barchik", "28/9/2344", "000"};
             JsonObject json = Json.createObjectBuilder().add("StartLine",
                             Json.createObjectBuilder().
                                     add("method", "POST/company").
@@ -66,7 +66,11 @@ public class CreateTest implements Runnable{
                             add("contact_name", body[2]).
                             add("contact_phone", body[3]).
                             add("contact_email", body[4]).
-                            add("service_fee", Integer.parseInt(body[5]))).build();
+                            add("service_fee", Integer.parseInt(body[5])).
+                            add("card_number", body[6]).
+                            add("card_holder_name", body[7]).
+                            add("ex_date", body[8]).
+                            add("CVV", body[9])).build();
 
             byteBuffer.put(this.write(json));
             byteBuffer.flip();

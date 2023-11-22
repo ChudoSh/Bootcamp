@@ -4,7 +4,7 @@ Rev: Daniel
 Date: 30.8.23
 Status: Approved
 */
-package main.java.waitable_queue;
+package waitable_queue;
 
 
 import java.util.Comparator;

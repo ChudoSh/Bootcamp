@@ -14,17 +14,7 @@ public class ReadTest implements  Runnable{
     private int port = 8989;
     int buffSize = 6000;
 
-    public static void main(String[] args) throws IOException {
-        ReadTest test = new ReadTest();
-    }
-
     public ReadTest() {
-        try {
-            System.out.println("SocketChannel Started : ReadClient");
-            System.out.println("SERVER CONNECTED");
-        } catch (Exception e) {
-            System.out.println(e);
-        }
     }
 
 

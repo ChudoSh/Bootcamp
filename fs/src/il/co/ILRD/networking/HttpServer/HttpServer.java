@@ -1,7 +1,10 @@
 package il.co.ILRD.networking.HttpServer;
 
 import com.sun.media.sound.InvalidDataException;
+import il.co.ILRD.crud_sql_n_nosql.NoSqlCrudManager;
+import il.co.ILRD.crud_sql_n_nosql.SqlCrudManager;
 import il.co.ILRD.hashmap.Pair;
+import il.co.ILRD.networking.GatewayServer.GatewayServer;
 import il.co.ILRD.sql.database_manager.AdminDB;
 import il.co.ILRD.sql.database_manager.CRUD;
 import il.co.ILRD.sql.database_manager.CompanyRecord;
@@ -31,12 +34,14 @@ import java.util.jar.JarFile;
 public class HttpServer {
     private MultiProtocolServer multiProtocolServer;
     private RequestHandler requestHandler;
-    private AdminDB adminDB;
+    private SqlCrudManager sqlCrudManager;
+    private NoSqlCrudManager noSqlCrudManager;
     private PlugAndPlay plugAndPlay;
 
     public HttpServer(int numOfThreads) {
         this.requestHandler = new RequestHandler(numOfThreads);
-        this.adminDB = new AdminDB("httpServerTest");
+        this.noSqlCrudManager= new NoSqlCrudManager("localhost");
+        this.sqlCrudManager = new SqlCrudManager("SqlAndNoSqlTest");
         this.multiProtocolServer = new MultiProtocolServer();
         this.plugAndPlay = new PlugAndPlay("/home/barchik/Mygit/bar.shadkhin/fs/src/il/co/ILRD/networking/GatewayServer/Mock data");
     }
@@ -48,7 +53,7 @@ public class HttpServer {
             throw new RuntimeException(e);
         }
         this.multiProtocolServer.start();
-        this.adminDB.initiateDatabaseAndTables();
+        this.sqlCrudManager.start();
 //        this.plugAndPlay.start();
     }
 
@@ -66,7 +71,7 @@ public class HttpServer {
     }
 
     public interface Command {
-        void exec(CRUD adminDB) throws InvalidDataException;
+        void exec(SqlCrudManager sql, NoSqlCrudManager noSql) throws InvalidDataException;
     }
 
     private class RequestHandler {
@@ -80,9 +85,9 @@ public class HttpServer {
             this.threadPool = new ThreadPool(numOfThreads);
             this.factory = new Factory<>();
             this.factory.add("POST/company", new CreateCompany());
-            this.factory.add("GET/company", new ReadCompany());
-            this.factory.add("PUT/company", new UpdateCompany());
-            this.factory.add("DELETE/company", new DeleteCompany());
+//            this.factory.add("GET/company", new ReadCompany());
+//            this.factory.add("PUT/company", new UpdateCompany());
+//            this.factory.add("DELETE/company", new DeleteCompany());
         }
 
         private void handle(ByteBuffer buffer, Communicator communicator) {
@@ -168,7 +173,7 @@ public class HttpServer {
         private Runnable createRunnable(ByteBuffer buffer, Communicator communicator) {
             return () -> {
                 try {
-                    Objects.requireNonNull(httpHandler.handle(buffer, communicator)).exec(HttpServer.this.adminDB);
+                    Objects.requireNonNull(httpHandler.handle(buffer, communicator)).exec(sqlCrudManager,noSqlCrudManager);
                     JsonObject success = httpHandler.createResponse(200, "Success");
                     communicator.send(httpHandler.write(success));
                 } catch (InvalidDataException e) {
@@ -180,66 +185,61 @@ public class HttpServer {
         private class CreateCompany implements Function<JsonObject, Command> {
             @Override
             public Command apply(JsonObject data) {
-                return adminDB -> {
-                    CompanyRecord companyRecord = new CompanyRecord(data.getString("company_name"),
-                            data.getString("company_address"),
-                            data.getString("contact_name"),
-                            data.getString("contact_email"),
-                            data.getString("contact_phone"),
-                            data.getInt("service_fee"), adminDB.getDatabaseConnection());
-                    adminDB.create(companyRecord);
+                return (sqlCrudManager,noSqlCrudManager)-> {
+                   sqlCrudManager.registerCompany(data);
+                   noSqlCrudManager.registerCompany(data);
                 };
             }
         }
 
-        private class ReadCompany implements Function<JsonObject, Command> {
-            @Override
-            public Command apply(JsonObject data) {
-                return adminDB -> {
-                    CompanyRecord companyRecord = new CompanyRecord(data.getString("company_name"),
-                            data.getString("company_address"),
-                            data.getString("contact_name"),
-                            data.getString("contact_email"),
-                            data.getString("contact_phone"),
-                            data.getInt("service_fee"), adminDB.getDatabaseConnection());
-                    companyRecord.setCompanyID(data.getInt("company_id"));
-                    CompanyRecord read = (CompanyRecord) adminDB.read(companyRecord);
-                    System.out.println(read.toString());
-                };
-            }
-        }
-
-        private class UpdateCompany implements Function<JsonObject, Command> {
-            @Override
-            public Command apply(JsonObject data) {
-                return adminDB -> {
-                    CompanyRecord companyRecord = new CompanyRecord(data.getString("company_name"),
-                            data.getString("company_address"),
-                            data.getString("contact_name"),
-                            data.getString("contact_email"),
-                            data.getString("contact_phone"),
-                            data.getInt("service_fee"), adminDB.getDatabaseConnection());
-                    companyRecord.setCompanyID(data.getInt("company_id"));
-                    adminDB.update(companyRecord);
-                };
-            }
-        }
-
-        private class DeleteCompany implements Function<JsonObject, Command> {
-            @Override
-            public Command apply(JsonObject data) {
-                return adminDB -> {
-                    CompanyRecord companyRecord = new CompanyRecord(data.getString("company_name"),
-                            data.getString("company_address"),
-                            data.getString("contact_name"),
-                            data.getString("contact_email"),
-                            data.getString("contact_phone"),
-                            data.getInt("service_fee"), adminDB.getDatabaseConnection());
-                    companyRecord.setCompanyID(data.getInt("company_id"));
-                    adminDB.delete(companyRecord);
-                };
-            }
-        }
+//        private class ReadCompany implements Function<JsonObject, Command> {
+//            @Override
+//            public Command apply(JsonObject data) {
+//                return adminDB -> {
+//                    CompanyRecord companyRecord = new CompanyRecord(data.getString("company_name"),
+//                            data.getString("company_address"),
+//                            data.getString("contact_name"),
+//                            data.getString("contact_email"),
+//                            data.getString("contact_phone"),
+//                            data.getInt("service_fee"), adminDB.getDatabaseConnection());
+//                    companyRecord.setCompanyID(data.getInt("company_id"));
+//                    CompanyRecord read = (CompanyRecord) adminDB.read(companyRecord);
+//                    System.out.println(read.toString());
+//                };
+//            }
+//        }
+//
+//        private class UpdateCompany implements Function<JsonObject, Command> {
+//            @Override
+//            public Command apply(JsonObject data) {
+//                return adminDB -> {
+//                    CompanyRecord companyRecord = new CompanyRecord(data.getString("company_name"),
+//                            data.getString("company_address"),
+//                            data.getString("contact_name"),
+//                            data.getString("contact_email"),
+//                            data.getString("contact_phone"),
+//                            data.getInt("service_fee"), adminDB.getDatabaseConnection());
+//                    companyRecord.setCompanyID(data.getInt("company_id"));
+//                    adminDB.update(companyRecord);
+//                };
+//            }
+//        }
+//
+//        private class DeleteCompany implements Function<JsonObject, Command> {
+//            @Override
+//            public Command apply(JsonObject data) {
+//                return adminDB -> {
+//                    CompanyRecord companyRecord = new CompanyRecord(data.getString("company_name"),
+//                            data.getString("company_address"),
+//                            data.getString("contact_name"),
+//                            data.getString("contact_email"),
+//                            data.getString("contact_phone"),
+//                            data.getInt("service_fee"), adminDB.getDatabaseConnection());
+//                    companyRecord.setCompanyID(data.getInt("company_id"));
+//                    adminDB.delete(companyRecord);
+//                };
+//            }
+//        }
 
     }
 
@@ -536,7 +536,7 @@ public class HttpServer {
         }
 
         private Function<JsonObject, Command> toCommand(Object instance, Method method) {
-            Function<JsonObject, Command> recipe = data -> adminDB -> {
+            Function<JsonObject, Command> recipe = data -> (sqlCrudManager,noSqlCrudManager)-> {
                 try {
                     method.invoke(instance);
                 } catch (IllegalAccessException |

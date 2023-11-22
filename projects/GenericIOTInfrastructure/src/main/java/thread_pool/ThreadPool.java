@@ -6,7 +6,9 @@ Date: 5.9.23
 */
 
 package thread_pool;
-import SemWaitableQueue;
+
+
+import waitable_queue.SemWaitableQueue;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;

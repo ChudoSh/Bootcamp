@@ -17,22 +17,6 @@ abstract public class Queryable {
         return String.format(queryCreate, tableName, toCreateStringFields(attributes), generateValueString(values));
     }
 
-//    public static String read(String tableName, String[] attributes, String[] conditions) {
-//        if (null == tableName || null == conditions) {
-//            return null;
-//        }
-//
-//        return String.format(queryRead,
-//                Objects.requireNonNullElse(
-//                        generateListedString(attributes), "*"),
-//                tableName,
-//                generateListedString(conditions));
-//    }
-//
-//    public static String read(String tableName, String[] conditions) {
-//        return read(tableName, null, conditions);
-//    }
-
     public static String read(String tableName, String primaryKey) {
         return String.format(queryRead,tableName, primaryKey);
     }
@@ -53,12 +37,12 @@ abstract public class Queryable {
         return String.format(queryDelete, tableName, conditions);
     }
 
-    public static String queryCreateTable(String tableName, String[] fields, String[] defintions, String primaryKey) {
+    public static String queryCreateTable(String tableName, String[] fields, String[] definitions, String primaryKey) {
         if (null == tableName) {
             return null;
         }
 
-        return String.format(queryCreateTable, tableName,appendDefinitions(fields, defintions), primaryKey);
+        return String.format(queryCreateTable, tableName,appendDefinitions(fields, definitions), primaryKey);
     }
 
     public static String queryCreateDatabase(String databaseNAme) {

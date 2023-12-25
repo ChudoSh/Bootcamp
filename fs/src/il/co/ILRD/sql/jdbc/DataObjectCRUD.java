@@ -10,7 +10,6 @@ public class DataObjectCRUD {
     private final String update = "UPDATE %s SET Age = ?, Class = ?, Year = ? WHERE Name = ?";
     private final String delete = "DELETE FROM %s WHERE Name = ?";
 
-
     public DataObjectCRUD(String url, String user, String password) {
         try {
             this.con = DriverManager.getConnection(url, user, password);
@@ -18,7 +17,6 @@ public class DataObjectCRUD {
             throw new RuntimeException(e.getSQLState());
         }
     }
-
 
     public void create(Student newStudent, String tableName) {
         String sql = String.format(this.create, tableName);

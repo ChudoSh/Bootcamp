@@ -1,13 +1,8 @@
 package il.co.ILRD.networking.HttpServer;
 
-import com.sun.media.sound.InvalidDataException;
 import il.co.ILRD.crud_sql_n_nosql.NoSqlCrudManager;
 import il.co.ILRD.crud_sql_n_nosql.SqlCrudManager;
 import il.co.ILRD.hashmap.Pair;
-import il.co.ILRD.networking.GatewayServer.GatewayServer;
-import il.co.ILRD.sql.database_manager.AdminDB;
-import il.co.ILRD.sql.database_manager.CRUD;
-import il.co.ILRD.sql.database_manager.CompanyRecord;
 import il.co.ILRD.thread_pool.ThreadPool;
 
 
@@ -15,46 +10,34 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import com.sun.media.sound.InvalidDataException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
-import java.nio.file.*;
 import java.util.*;
 import java.util.function.Function;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 public class HttpServer {
     private MultiProtocolServer multiProtocolServer;
     private RequestHandler requestHandler;
-    private SqlCrudManager sqlCrudManager;
-    private NoSqlCrudManager noSqlCrudManager;
     private PlugAndPlay plugAndPlay;
 
     public HttpServer(int numOfThreads) {
         this.requestHandler = new RequestHandler(numOfThreads);
-        this.noSqlCrudManager= new NoSqlCrudManager("localhost");
-        this.sqlCrudManager = new SqlCrudManager("SqlAndNoSqlTest");
         this.multiProtocolServer = new MultiProtocolServer();
-        this.plugAndPlay = new PlugAndPlay("/home/barchik/Mygit/bar.shadkhin/fs/src/il/co/ILRD/networking/GatewayServer/Mock data");
+        this.plugAndPlay = new PlugAndPlay("/home/barchik/Mygit/bar.shadkhin/fs/src/il/co/ILRD/networking/GatewayServer/Mock data", this.requestHandler.factory);
     }
 
     public void start() {
         try {
-            this.multiProtocolServer.addTCPConnection(8989);
+            this.multiProtocolServer.addTCPConnection(9797);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         this.multiProtocolServer.start();
-        this.sqlCrudManager.start();
-//        this.plugAndPlay.start();
+        this.plugAndPlay.start();
     }
 
     private void handle(ByteBuffer buffer, Communicator communicator) {
@@ -70,20 +53,19 @@ public class HttpServer {
         void send(ByteBuffer buffer);
     }
 
-    public interface Command {
-        void exec(SqlCrudManager sql, NoSqlCrudManager noSql) throws InvalidDataException;
-    }
-
     private class RequestHandler {
-        private ThreadPool threadPool;
-        private RequestHandler.Factory<String, JsonObject> factory;
-        private HttpHandler httpHandler;
+        private final ThreadPool threadPool;
+        private final Factory<String, JsonObject> factory;
         private static final String fileDir = "/home/barchik/Mygit/bar.shadkhin/fs/src/il/co/ILRD/networking/GatewayServer/Mock data/mocodata.txt";
+        private SqlCrudManager sqlCrudManager;
+        private NoSqlCrudManager noSqlCrudManager;
 
         private RequestHandler(int numOfThreads) {
-            this.httpHandler = new HttpHandler();
             this.threadPool = new ThreadPool(numOfThreads);
             this.factory = new Factory<>();
+            this.noSqlCrudManager = new NoSqlCrudManager("localhost");
+            this.sqlCrudManager = new SqlCrudManager("SqlAndNoSqlTest");
+            this.sqlCrudManager.start();
             this.factory.add("POST/company", new CreateCompany());
 //            this.factory.add("GET/company", new ReadCompany());
 //            this.factory.add("PUT/company", new UpdateCompany());
@@ -91,106 +73,80 @@ public class HttpServer {
         }
 
         private void handle(ByteBuffer buffer, Communicator communicator) {
-            this.threadPool.submit(this.createRunnable(buffer, communicator), ThreadPool.Priority.DEFAULT);
-        }
-
-        private class Factory<K, D> {
-            private Map<K, Function<D, Command>> commands;
-
-            public Factory() {
-                this.commands = new HashMap<>();
-            }
-
-            private void add(K key, Function<D, Command> command) {
-                this.commands.put(key, command);
-                System.out.println("command " + key + " added to factory");
-            }
-
-            private Command create(K key, D data) {
-                Function<D, Command> recipe = this.commands.get(key);
-
-                return (null == recipe) ? null : recipe.apply(data);
-            }
-        }
-
-        private class HttpHandler {
-            public HttpHandler() {
-            }
-
-            public Command handle(ByteBuffer buffer, Communicator communicator) {
-                JsonObject json = this.read(buffer);
-                if (null == json) {
-                    JsonObject error = this.createResponse(400, "No Request Found");
-                    communicator.send(this.write(error));
-                    return null;
-                }
-
-                Map.Entry<String, JsonObject> newEntry = Pair.of(json.getJsonObject("StartLine").getString("method"), json.getJsonObject("Body"));
-
-                Command cmd = factory.create(newEntry.getKey(), newEntry.getValue());
-                if (null == cmd) {
-                    JsonObject error = this.createResponse(405, "Method Not Allowed");
-                    communicator.send(this.write(error));
-                    return null;
-                }
-
-                return cmd;
-            }
-
-            private ByteBuffer write(JsonObject json) {
-                if (json.isNull("StartLine") || json.isNull("Body") || json.isNull("Headers")) {
-                    return null;
-                }
-
-                return ByteBuffer.wrap(json.toString().getBytes());
-            }
-
-            private JsonObject read(ByteBuffer buffer) {
-                if (null == buffer) {
-                    return null;
-                }
-
-                JsonReader reader = Json.createReader(new ByteArrayInputStream(buffer.array()));
-                JsonObject json = reader.readObject();
-                reader.close();
-
-                return json;
-            }
-
-            private JsonObject createResponse(int statusCode, String message) {
-                return Json.createObjectBuilder().add("StartLine",
-                                Json.createObjectBuilder().
-                                        add("Status Code", statusCode).
-                                        add("URL", "")).
-                        add("Version", "").
-                        add("Headers", Json.createObjectBuilder().
-                                add("ContentType", "application/json").
-                                add("ContentLength", message.length())).
-                        add("Body", message).build();
-            }
+            Runnable run = this.createRunnable(buffer, communicator);
+            this.threadPool.execute(run);
         }
 
         private Runnable createRunnable(ByteBuffer buffer, Communicator communicator) {
             return () -> {
                 try {
-                    Objects.requireNonNull(httpHandler.handle(buffer, communicator)).exec(sqlCrudManager,noSqlCrudManager);
-                    JsonObject success = httpHandler.createResponse(200, "Success");
-                    communicator.send(httpHandler.write(success));
+                    JsonObject json = this.read(buffer);
+                    if (null == json) {
+                        throw new InvalidDataException("json is null");
+                    }
+
+                    Map.Entry<String, JsonObject> newEntry = Pair.of(json.getJsonObject("StartLine").getString("method"), json.getJsonObject("Body"));
+
+                    Command cmd = factory.create(newEntry.getKey(), newEntry.getValue());
+                    if (null == cmd) {
+                        throw new InvalidDataException("invalid request");
+                    }
+
+                    cmd.exec(this.sqlCrudManager, this.noSqlCrudManager);
+                    JsonObject success = this.createResponse(200, "Success");
+                    communicator.send(this.write(success));
+
                 } catch (InvalidDataException e) {
-                    communicator.send(ByteBuffer.wrap(e.getMessage().getBytes()));
+                    System.out.println("um here");
+                    JsonObject error = this.createResponse(405, e.getMessage());
+                    communicator.send(ByteBuffer.wrap(error.toString().getBytes()));
                 }
             };
         }
 
-        private class CreateCompany implements Function<JsonObject, Command> {
-            @Override
-            public Command apply(JsonObject data) {
-                return (sqlCrudManager,noSqlCrudManager)-> {
-                   sqlCrudManager.registerCompany(data);
-                   noSqlCrudManager.registerCompany(data);
-                };
-            }
+        private JsonObject createResponse(int statusCode, String message) {
+            return Json.createObjectBuilder().add("StartLine",
+                            Json.createObjectBuilder().
+                                    add("Status Code", statusCode).
+                                    add("URL", "")).
+                    add("Version", "").
+                    add("Headers", Json.createObjectBuilder().
+                            add("ContentType", "application/json").
+                            add("ContentLength", message.length())).
+                    add("Body", message).build();
         }
+
+        private ByteBuffer write(JsonObject json) {
+            if (json.isNull("StartLine") || json.isNull("Body") || json.isNull("Headers")) {
+                return null;
+            }
+
+            return ByteBuffer.wrap(json.toString().getBytes());
+        }
+
+        private JsonObject read(ByteBuffer buffer) {
+            if (null == buffer) {
+                return null;
+            }
+
+            JsonReader reader = Json.createReader(new ByteArrayInputStream(buffer.array()));
+            JsonObject json = reader.readObject();
+            reader.close();
+
+            return json;
+        }
+
+    }
+
+    private class CreateCompany implements Function<JsonObject, Command> {
+        @Override
+        public Command apply(JsonObject data) {
+            return (sqlCrudManager, noSqlCrudManager) -> {
+                sqlCrudManager.registerCompany(data);
+                noSqlCrudManager.registerCompany(data);
+            };
+        }
+    }
 
 //        private class ReadCompany implements Function<JsonObject, Command> {
 //            @Override
@@ -241,7 +197,6 @@ public class HttpServer {
 //            }
 //        }
 
-    }
 
     private class MultiProtocolServer {
         private final CommunicationManager communicationManger;
@@ -277,7 +232,6 @@ public class HttpServer {
                 HttpServer.this.handle(communicator.receive(), communicator);
             }
         }
-
 
         /*=================================================================================================*/
         /*===================================== Communication Manager =====================================*/
@@ -418,8 +372,6 @@ public class HttpServer {
                         }
 
                         buffer.flip();
-                        System.out.println("In receive TCP Communicator "
-                                + new String(buffer.array()));
                         return buffer;
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -479,164 +431,8 @@ public class HttpServer {
         }
     }
 
-    /*=================================================================================================*/
-    /*===================================== Plug & Play ===============================================*/
-    /*=================================================================================================*/
-
-    private class PlugAndPlay implements Runnable { /*add a way to load classes that already exist in the folder*/
-        private final Loader jarLoader;
-        private final Wathcer wathcer;
-        private final String path;
-
-        public PlugAndPlay(String path) {
-            this.path = path;
-            this.wathcer = new Wathcer(path);
-            this.jarLoader = new Loader();
-        }
-
-        public void start() {
-            new Thread(this).start();
-        }
-
-        @Override
-        public void run() {
-            try {
-//                this.addToFactory(
-//                        this.jarLoader.load(
-//                                Path.of(this.path)));
-                while (!Thread.currentThread().isInterrupted()) {
-                    this.addToFactory(this.jarLoader.load(
-                            this.wathcer.watch()));
-                }
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException("Class not found - Wathcer");
-            } catch (IOException e) {
-                throw new RuntimeException("IO - watcher");
-            }
-        }
-
-        private void addToFactory(List<Class<?>> commands) {
-            if (null != commands) {
-                for (Class<?> cmd : commands) {
-                    try {
-                        Object obj = cmd.newInstance();
-                        Method method = cmd.getMethod("call");
-                        Function<JsonObject, Command> recipe = toCommand(obj, method);
-                        System.out.println("cmd.name " + cmd.getName());
-
-                        HttpServer.this.requestHandler.
-                                factory.add(cmd.getName(), recipe);
-
-                    } catch (InstantiationException | IllegalAccessException |
-                             NoSuchMethodException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-
-        private Function<JsonObject, Command> toCommand(Object instance, Method method) {
-            Function<JsonObject, Command> recipe = data -> (sqlCrudManager,noSqlCrudManager)-> {
-                try {
-                    method.invoke(instance);
-                } catch (IllegalAccessException |
-                         InvocationTargetException e) {
-                    throw new InvalidDataException(e.getMessage());
-                }
-            };
-
-            return recipe;
-        }
-
-        private class Wathcer {
-            private final Path toMonitor;
-
-            public Wathcer(String toMonitor) {
-                this.toMonitor = Paths.get(toMonitor);
-            }
-
-            private Path watch() throws ClassNotFoundException {
-                try {
-
-//                    File plugins = SRC_PATH.toFile();
-//                    if (plugins.isDirectory()) {
-//                        for (File jar : Objects.requireNonNull(plugins.listFiles())) {
-//                            try {
-//                                addJar(jar.getAbsolutePath());
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    }
-
-                    WatchService watchService = FileSystems.getDefault().newWatchService();
-                    toMonitor.register(watchService,
-                            StandardWatchEventKinds.ENTRY_CREATE);
-
-                    WatchKey key;
-                    while ((key = watchService.take()) != null) {
-                        for (WatchEvent<?> event : key.pollEvents()) {
-                            if (StandardWatchEventKinds.ENTRY_CREATE == event.kind()) {
-                                Path dir = (Path) key.watchable();
-                                Path jarFile = dir.resolve((Path) event.context());
-                                System.out.println(jarFile);
-
-                                return jarFile;
-                            }
-                        }
-                        key.reset();
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException("Folder not found - Watcher");
-                } catch (InterruptedException e) {
-                    throw new RuntimeException("Thread interrupted");
-                }
-
-                return null;
-            }
-        }
-
-        private class Loader {
-            private final String interfaceName = "Callable";
-
-            public Loader() {
-            }
-
-
-            public List<Class<?>> load(Path path) throws IOException, ClassNotFoundException {
-                List<Class<?>> list = new ArrayList<>();
-                Enumeration<JarEntry> entryEnumeration;
-                Class<?> classToAdd;
-                URL[] urls = {new URL("jar:file:" + path + "!/")};
-                URLClassLoader cl = URLClassLoader.newInstance(urls);
-
-                try (JarFile jar = new JarFile(new File(path.toString()))) {
-                    entryEnumeration = jar.entries();
-
-                    while (entryEnumeration.hasMoreElements()) {
-                        JarEntry jarEntry = entryEnumeration.nextElement();
-
-                        if (jarEntry.getName().endsWith(".class")) {
-                            String className = jarEntry.getName().substring(0,
-                                    jarEntry.getName().length() - 6);
-                            className = className.replace('/', '.');
-                            System.out.println(className);
-                            Class<?> classInJar = cl.loadClass(className);
-
-                            Class<?>[] interfaces = classInJar.getInterfaces();
-                            for (Class<?> clazz : interfaces) {
-                                if (clazz.getSimpleName().equals(this.interfaceName)) {
-                                    ClassLoader classLoader = classInJar.getClassLoader();
-                                    classToAdd = classLoader.loadClass(className);
-                                    list.add(classToAdd);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                return list;
-            }
-        }
+    public static void main(String[] args) throws IOException {
+        HttpServer server = new HttpServer(4);
+        server.start();
     }
 }

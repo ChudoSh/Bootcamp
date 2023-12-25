@@ -3,28 +3,33 @@ package il.co.ILRD.Quizzes_and_Exams.JavaQuizzes;
 import java.util.*;
 
 public class FirstNonDuplicate {
-    private static final Queue<Long> q = new LinkedList<>();
+    private static final Deque<Long> s = new ArrayDeque<>();
     private static final Map<Long, Integer> map = new HashMap<>();
 
     public static void input(long num) {
-        if (null == map.putIfAbsent(num, 0)) {
-            map.put(num, 1);
-            q.add(num);
+        if (null == map.putIfAbsent(num, 1)) {
+            s.addLast(num);
             return;
-
         }
-        q.remove();
-        q.add(q.peek());
+
+        int count = map.get(num) + 1;
+        map.put(num,count);
+        if (2 == count){
+            s.remove(num);
+        }
+
     }
 
     public static Long output() {
-        return q.peek();
+        if (!s.isEmpty()){
+            return s.getFirst();
+        }
+
+        return 0L;
     }
 
     public static void print() {
-        for (Long num : q) {
-            System.out.println(num);
-        }
+        System.out.println(s);
     }
 
     public static void main(String[] args) {

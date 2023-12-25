@@ -1,91 +1,54 @@
 package il.co.ILRD.crud_sql_n_nosql;
 
+import com.sun.media.sound.InvalidDataException;
 import il.co.ILRD.sql.database_manager.Queryable;
 
-import javax.json.Json;
 import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonArray;
-import java.math.BigDecimal;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
 
 public class SqlCrudManager {
     private Connection databaseConnection;
     private final String databaseName;
-    private final Map<String, Connection> tableNames;
-    private CompanyCRUDable companyCrud;
+    private final CompanyCRUDable companyCrud;
     private ProductCRUDable productCrud;
 
     public SqlCrudManager(String databaseName) {
         this.databaseName = databaseName;
-        this.tableNames = new HashMap<>();
         this.companyCrud = new CompanyCRUDable();
     }
 
-    public void registerCompany(JsonObject json) {
+    public void registerCompany(JsonObject json) throws InvalidDataException {
         this.companyCrud.create(json);
     }
 
-    public void registerProduct(JsonObject json) {
+    public void registerProduct(JsonObject json) throws InvalidDataException {
         this.productCrud.create(json);
     }
 
-
+    /*===============================CompanyCrud==================================*/
     private class CompanyCRUDable implements CRUDable {
         @Override
-        public void create(JsonObject json) {
+        public void create(JsonObject json) throws InvalidDataException {
             String companyQuery = Queryable.create("Companies",
                     FieldsAndDefinitions.Companies_Fields.values,
-                    FieldsAndDefinitions.Companies_Fields.values.length);
+                    json);
+
             String paymentQuery = Queryable.create("PaymentDetails",
                     FieldsAndDefinitions.PaymentDetails_Fields.values,
-                    FieldsAndDefinitions.PaymentDetails_Fields.values.length);
+                    json);
 
-
-            try (PreparedStatement statement = tableNames.get("Companies").
-                    prepareStatement(companyQuery)) {
-                statement.setString(1, json.getString("company_name"));
-                statement.setString(2, json.getString("company_address"));
-                statement.setString(3, json.getString("contact_name"));
-                statement.setString(4, json.getString("contact_phone"));
-                statement.setString(5, json.getString("contact_email"));
-                statement.setInt(6, json.getInt("service_fee"));
-                statement.execute();
+            try (Statement statement = SqlCrudManager.this.databaseConnection.createStatement()) {
+                statement.execute(companyQuery);
+                statement.execute(paymentQuery);
             } catch (SQLException e) {
-                e.printStackTrace();
-                return;
-//                throw new RuntimeException("Company CRUDable error");
+                throw new InvalidDataException("Companies CRUDable error");
             }
 
-            try (PreparedStatement statement = tableNames.get("PaymentDetails").
-                    prepareStatement(paymentQuery)) {
-                statement.setString(1, json.getString("card_number"));
-                statement.setString(2, json.getString("company_name"));
-                statement.setString(3, json.getString("card_holder_name"));
-                statement.setString(4, json.getString("ex_date"));
-                statement.setString(5, json.getString("CVV"));
-                statement.execute();
-            } catch (SQLException e) {
-                throw new RuntimeException("Payment CRUDable error");
-            }
         }
 
         @Override
-        public JsonObject read(JsonObject json) {
-            String query = Queryable.read("Companies",
-                    FieldsAndDefinitions.Companies_Fields.values[0]);
-
-            try (PreparedStatement statement = tableNames.get("Companies").prepareStatement(query)) {
-                statement.setInt(1, json.getInt("company_id"));
-
-                return SqlCrudManager.this.convertResultSetToJson(statement.executeQuery());
-            } catch (SQLException e) {
-                System.out.println("Couldnt read");
-                throw new RuntimeException(e);
-            }
-
+        public JsonObject read(JsonObject json) throws InvalidDataException {
+            return null;
         }
 
         @Override
@@ -99,23 +62,24 @@ public class SqlCrudManager {
         }
     }
 
+    /*===============================ProductCrud==============================*/
     private class ProductCRUDable implements CRUDable {
 
         @Override
         public void create(JsonObject json) {
-            String productQuery = Queryable.create("Companies",
-                    FieldsAndDefinitions.Companies_Fields.values,
-                    FieldsAndDefinitions.Companies_Fields.values.length);
-
-            try (PreparedStatement statement = tableNames.get("Companies").
-                    prepareStatement(productQuery, Statement.RETURN_GENERATED_KEYS)) {
-                statement.setInt(1, json.getInt("company_id"));
-                statement.setString(2, json.getString("product_name"));
-                statement.setString(3, json.getString("product_description"));
-                statement.executeUpdate();
-            } catch (SQLException e) {
-                throw new RuntimeException("Bad syntax product");
-            }
+//            String productQuery = Queryable.create("Products",
+//                    FieldsAndDefinitions.Companies_Fields.values,
+//                    FieldsAndDefinitions.Companies_Fields.values.length);
+//
+//            try (PreparedStatement statement = tableNames.get("Products").
+//                    prepareStatement(productQuery, Statement.RETURN_GENERATED_KEYS)) {
+//                statement.setInt(1, json.getInt("company_id"));
+//                statement.setString(2, json.getString("product_name"));
+//                statement.setString(3, json.getString("product_description"));
+//                statement.executeUpdate();
+//            } catch (SQLException e) {
+//                throw new RuntimeException("Bad syntax product");
+//            }
         }
 
         @Override
@@ -133,83 +97,31 @@ public class SqlCrudManager {
 
         }
     }
+    /*==========================Private methods and classes=======================*/
 
-    private JsonObject convertResultSetToJson(ResultSet resultSet) throws SQLException {
-        JsonObjectBuilder mainJsonObjectBuilder = Json.createObjectBuilder();
-        JsonArray jsonArray = Json.createArrayBuilder().build();
-
-        try (ResultSet resultSetLocal = resultSet) {
-            ResultSetMetaData resultSetMetaData = resultSetLocal.getMetaData();
-            int columnCount = resultSetMetaData.getColumnCount();
-
-            while (resultSetLocal.next()) {
-                JsonObjectBuilder rowJsonObjectBuilder = Json.createObjectBuilder();
-
-                for (int i = 1; i <= columnCount; i++) {
-                    String columnName = resultSetMetaData.getColumnName(i);
-                    Object value = resultSetLocal.getObject(i);
-
-                    if (value instanceof String) {
-                        rowJsonObjectBuilder.add(columnName, (String) value);
-                    } else if (value instanceof Integer) {
-                        rowJsonObjectBuilder.add(columnName, (Integer) value);
-                    } else if (value instanceof Boolean) {
-                        rowJsonObjectBuilder.add(columnName, (Boolean) value);
-                    } else if (value != null) {
-                        rowJsonObjectBuilder.add(columnName, value.toString());
-                    }
-                }
-
-                jsonArray.add(rowJsonObjectBuilder.build());
-            }
-        }
-
-        mainJsonObjectBuilder.add("data", jsonArray);
-        return mainJsonObjectBuilder.build();
-    }
-
-    public void createDatabase(String url, String username, String password) {
+    private void createDatabase(String url, String username, String password) {
         try {
             this.databaseConnection = DriverManager.getConnection(url, username, password);
             Statement stmt = this.databaseConnection.createStatement();
-            String sql = Queryable.queryCreateDatabase(this.databaseName);
-            stmt.executeUpdate(sql);
+            stmt.execute(Queryable.queryCreateDatabase(this.databaseName));
         } catch (SQLException e) {
             throw new RuntimeException("Create database fail" + this.databaseName);
         }
     }
 
-    public void createTable(String tableName, String[] fields, String[] definitions, String primaryKey) {
-        if (this.tableNames.containsKey(tableName)) {
-            return;
-        }
-
-        this.useDatabase();
+    private void createTable(String tableName, String[] fields, String[] definitions, String primaryKey) {
         try {
             Statement stmt = this.databaseConnection.createStatement();
             String sql = Queryable.queryCreateTable(tableName, fields, definitions, primaryKey);
-            stmt.executeUpdate(sql);
+            stmt.execute(sql);
         } catch (SQLException e) {
             throw new RuntimeException("Create table fail " + tableName);
-        }
-        this.tableNames.put(tableName, this.databaseConnection);
-    }
-
-    private void useTable(String tableName, Connection connection) {
-        String query = Queryable.queryUseTable(tableName);
-
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.execute();
-        } catch (SQLException e) {
-            throw new RuntimeException("Use table fail");
         }
     }
 
     private void useDatabase() {
-        String query = Queryable.queryUseDatabase(this.databaseName);
-
-        try (PreparedStatement statement = this.databaseConnection.prepareStatement(query)) {
-            statement.execute();
+        try (Statement statement = this.databaseConnection.createStatement()) {
+            statement.execute(Queryable.queryUseDatabase(this.databaseName));
         } catch (SQLException e) {
             throw new RuntimeException("Use database fail");
         }
@@ -217,6 +129,7 @@ public class SqlCrudManager {
 
     public void start() {
         this.createDatabase("jdbc:mysql://localhost:3306/", "root", "password");
+        this.useDatabase();
 
         this.createTable("Companies",
                 FieldsAndDefinitions.Companies_Fields.values,
@@ -250,7 +163,7 @@ public class SqlCrudManager {
                         "VARCHAR(255)",
                         "VARCHAR(255)",
                         "VARCHAR(255)",
-                        "BIGINT"}
+                        "VARCHAR(255)"}
         ),
         Products_Fields(
                 new String[]

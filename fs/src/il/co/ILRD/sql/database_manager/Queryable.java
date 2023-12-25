@@ -1,7 +1,10 @@
 package il.co.ILRD.sql.database_manager;
 
+import javax.json.JsonObject;
+import java.util.Arrays;
+
 abstract public class Queryable {
-    private static final String queryCreate = "INSERT INTO %s %s VALUES %s";
+    private static final String queryCreate = "INSERT INTO %s (%s) VALUES (%s)";
     private static final String queryRead = "SELECT * FROM %s WHERE %s = ?";
     private static final String queryUpdate = "UPDATE %s SET %s WHERE %s = ?";
     private static final String queryDelete = "DELETE FROM %s WHERE %s = ?";
@@ -17,8 +20,16 @@ abstract public class Queryable {
         return String.format(queryCreate, tableName, toCreateStringFields(attributes), generateValueString(values));
     }
 
+    public static String create(String tableName, String[] attributes, JsonObject data) {
+        if (null == data || null == attributes | null == tableName) {
+            return null;
+        }
+
+        return String.format(queryCreate, tableName, toCreateStringFields(attributes), parseJson(data, attributes));
+    }
+
     public static String read(String tableName, String primaryKey) {
-        return String.format(queryRead,tableName, primaryKey);
+        return String.format(queryRead, tableName, primaryKey);
     }
 
     public static String update(String tableName, String[] fields, String primaryKey) {
@@ -42,7 +53,7 @@ abstract public class Queryable {
             return null;
         }
 
-        return String.format(queryCreateTable, tableName,appendDefinitions(fields, definitions), primaryKey);
+        return String.format(queryCreateTable, tableName, appendDefinitions(fields, definitions), primaryKey);
     }
 
     public static String queryCreateDatabase(String databaseNAme) {
@@ -64,7 +75,7 @@ abstract public class Queryable {
     private static String generateValueString(int numOfValues) {
         StringBuilder str = new StringBuilder("(");
 
-        for (int i = 0; i < numOfValues - 1; ++i){
+        for (int i = 0; i < numOfValues - 1; ++i) {
             str.append("?, ");
         }
 
@@ -83,11 +94,12 @@ abstract public class Queryable {
     }
 
     private static String toCreateStringFields(String[] attributes) {
-        StringBuilder attributeList = new StringBuilder("(");
+        StringBuilder attributeList = new StringBuilder();
         for (int i = 0; i < attributes.length - 1; ++i) {
             attributeList.append(attributes[i]).append(", ");
         }
-        return attributeList.append(attributes[attributes.length - 1]).append(")").toString();
+
+        return attributeList.append(attributes[attributes.length - 1]).toString();
     }
 
     private static String toUpdateStringFields(String[] attributes) {
@@ -108,5 +120,17 @@ abstract public class Queryable {
 
         attributeList.append(fields[fields.length - 1]).append(" ").append(defintions[fields.length - 1]);
         return attributeList.toString();
+    }
+
+    public static String parseJson(JsonObject data, String[] keys) {
+        String[] values = new String[keys.length];
+        for (int i = 0; i < keys.length; ++i) {
+            values[i] = String.format("'%s'",data.getString(keys[i]));
+        }
+
+        String value = Arrays.toString(values);
+        value = value.replace("[", "");
+        value = value.replace("]", "");
+        return value;
     }
 }

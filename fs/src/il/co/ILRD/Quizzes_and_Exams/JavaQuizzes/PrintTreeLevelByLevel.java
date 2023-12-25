@@ -17,18 +17,20 @@ public class PrintTreeLevelByLevel {
     }
 
     static void printLevelOrder(Node root) {
-        if (root == null)
+        if (root == null){
             return;
+        }
 
         Queue<Node> q = new LinkedList<>();
 
         q.add(root);
 
         while (true) {
-
             int nodeCount = q.size();
-            if (nodeCount == 0)
-                break;
+
+            if (nodeCount == 0){
+                return;
+            }
 
             while (nodeCount > 0) {
                 Node node = q.peek();
@@ -44,6 +46,7 @@ public class PrintTreeLevelByLevel {
 
                 --nodeCount;
             }
+
             System.out.println();
         }
     }

@@ -7,6 +7,10 @@ public class LazyNotTHS {
     }
 
     public static LazyNotTHS getInstance() {
-        return (null == lazyNotTHS) ? (lazyNotTHS = new LazyNotTHS()) : lazyNotTHS;
+        if (null == lazyNotTHS) {
+            lazyNotTHS = new LazyNotTHS();
+        }
+
+        return lazyNotTHS;
     }
 }

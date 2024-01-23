@@ -35,7 +35,7 @@ public class GatewayServer {
     }
 
     public void start() throws IOException {
-        this.multiProtocolServer.addTCPConnection(9080);
+        this.multiProtocolServer.addTCPConnection(3003);
         this.multiProtocolServer.start();
 //        this.plugAndPlay.start();
     }
@@ -53,7 +53,6 @@ public class GatewayServer {
         void send(ByteBuffer buffer);
     }
 
-
     private class RequestHandler {
         private final ThreadPool threadPool;
         private final Factory<String, JsonObject> factory;
@@ -67,7 +66,7 @@ public class GatewayServer {
             this.adminDB = new AdminSQLManager("v2database");
             this.mongoDB = new MongoDBManager("localhost");
             this.factory.add("RegisterCompany", new RegisterCompany());
-//            this.factory.add("RegisterProduct", new RegisterProduct());
+            this.factory.add("RegisterProduct", new RegisterProduct());
 //            this.factory.add("RegisterIOT", new RegisterIOT());
 //            this.factory.add("Update", new Update());
         }
@@ -143,57 +142,19 @@ public class GatewayServer {
             @Override
             public Command apply(JsonObject json) {
                 return (adminSQLManager, mongoDBManager) -> {
-//                    adminSQLManager.registerCompany(json);
                     mongoDBManager.registerCompany(json);
                 };
             }
         }
 
-//        private static class RegisterProduct implements Function<String, Command> {
-//            @Override
-//            public Command apply(String data) {
-//                return () -> {
-//                    try {
-//                        FileWriter writer = new FileWriter(fileDir);
-//                        writer.write("Register Proudct: " + data);
-//                        writer.close();
-//                    } catch (IOException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                };
-//            }
-//        }
-//
-//        private static class RegisterIOT implements Function<String, Command> {
-//            @Override
-//            public Command apply(String data) {
-//                return () -> {
-//                    try {
-//                        FileWriter writer = new FileWriter(fileDir);
-//                        writer.write("Register IOT: " + data);
-//                        writer.close();
-//                    } catch (IOException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                };
-//            }
-//        }
-//
-//        private static class Update implements Function<String, Command> {
-//            @Override
-//            public Command apply(String data) {
-//                return () -> {
-//                    try {
-//                        FileWriter writer = new FileWriter(fileDir);
-//                        writer.write("Update: " + data);
-//                        writer.close();
-//                    } catch (IOException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                };
-//            }
-//        }
-
+        private class RegisterProduct implements Function<JsonObject, Command> {
+            @Override
+            public Command apply(JsonObject json) {
+                return (adminSQLManager, mongoDBManager) -> {
+                    mongoDBManager.registerProduct(json);
+                };
+            }
+        }
     }
 
     private class MultiProtocolServer {

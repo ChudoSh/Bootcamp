@@ -39,6 +39,6 @@
         "stddef.h": "c",
         "uid.h": "c"
     },
-    "vim.vimrc.enable": false,
-    "vim.vimrc.path": ""
+    "vim.vimrc.enable": true,
+    "vim.vimrc.path": "/home/barchik/.vimrc"
 }
